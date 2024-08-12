@@ -1,4 +1,31 @@
 function mesh = readMesh(varargin)
+% Reads mesh data from a file
+%
+% Authors: M.A. Peres and P. Pagliosa
+% Last revision: 12/08/2024
+%
+% Input
+% =====
+% VARARGIN: one or more comma-separated strings.
+% A string can be a flag or a filename. Flags can be:
+% '-f': next file has no element face data (default: with face data)
+% '-g': set the GLUE flag to TRUE (default)
+% '-a': set the GLUE flag to FALSE
+%
+% Output
+% ======
+% MESH: output mesh
+%
+% Description
+% ===========
+% Creates a mesh from one or more files. For each filename given as 
+% input argument, a mesh is created and its data is read from the file.
+% The meshes are then combined according to the GLUE flag. If GLUE is TRUE,
+% nodes with the same position are merged to form continuous elements.
+% Otherwise, nodes with the same position are replicated in the final mesh,
+% which results in semi-discontinuous elements. The GLUE flag is ignored if
+% only one filename is given as input argument. Each connected component of
+% the final mesh must represent a surface with no boundaries.
   mesh = [];
   glue = true;
   noFaces = false;
@@ -78,4 +105,4 @@ function mesh = readMesh(varargin)
     mesh.renumerateAll;
     mesh.zeroTractions;
   end
-end
+end % readMesh

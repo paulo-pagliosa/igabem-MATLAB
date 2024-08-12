@@ -1,4 +1,13 @@
 function saveMeshColors(mesh, filename)
+% Saves element colors to be used in the C++/CUDA C++ code
+%
+% Author: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Input
+% =====
+% MESH: mesh to be colored
+% FILENAME: file with the color data
   [colors, count] = meshColoring(mesh, true);
   nc = numel(count);
   file = fopen(filename, 'w');
@@ -12,4 +21,4 @@ function saveMeshColors(mesh, filename)
     fprintf(file, '\n');
   end
   fclose(file);
-end
+end % saveColorMesh

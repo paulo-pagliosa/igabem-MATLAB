@@ -1,6 +1,19 @@
 classdef LoadGroup < BCGroup
+% LoadGroup: region load class
+%
+% Author: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Description
+% ===========
+% An object of the class LoadGroup represents a load applied to
+% the elements of an element region of a BEA model.
+%
+% See also: class Load
 
+%% Public methods
 methods
+  % Constructs a load group
   function this = LoadGroup(id, elements, evaluator, varargin)
     narginchk(3, inf);
     this = this@BCGroup(id, elements);
@@ -21,11 +34,13 @@ methods
   end
 end
 
+%% Private properties
 properties (Access = private)
   regions;
   t;
 end
 
+%% Protected methods
 methods (Access = protected)
   function setValues(this, nodes, regions, t)
     m = numel(nodes);
@@ -40,6 +55,7 @@ methods (Access = protected)
   end
 end
 
+%% Private methods
 methods (Access = {?LoadGroup, ?Mesh})
   function unload(this)
     nodes = this.elements.nodeSet;

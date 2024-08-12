@@ -1,10 +1,26 @@
 classdef BezierElementReader < ElementReader
+% BezierElementReader: Bezier element reader class
+%
+% Author: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Description
+% ===========
+% An object of the class BezierElementReader reads Bezier element data
+% from a file. The element data includes: the id, the number of nodes, 
+% the id and element region of each node, and optionally, the node ids
+% of the face associated with the element.
+%
+% See also: class BezierElement, class Node, class Face
 
+%% Public methods
 methods
+  % Constructor
   function this = BezierElementReader
     this@ElementReader('BezierElement');
   end
 
+  % Reads element data from a file
   function element = read(this, file, noFaces)
     elementInfo = fscanf(file, '%d', 3);
     id = elementInfo(1);

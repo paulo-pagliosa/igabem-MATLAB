@@ -1,13 +1,18 @@
 classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
-% Authors: M. Peres and P. Pagliosa
+% Authors: M.A. Peres and P. Pagliosa
 % Last revision: 12/08/2024
 %
 % Description
 % ===========
 % An object of the class MeshInterface is a graphic tool for visualization
-% of a mesh (see class Mesh).
+% of the geometry and analysis results of a BEA model.
+% A detailed documentation is available in
+%
+% https://github.com/paulo-pagliosa/igabem-MATLAB
+%
+% See also: class Mesh
 
 %% Public properties
 properties

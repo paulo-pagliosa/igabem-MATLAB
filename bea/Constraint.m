@@ -1,10 +1,27 @@
 classdef Constraint < BC
+% Constraint: element constraint class
+%
+% Author: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Description
+% ===========
+% An object of the class Constraint represents a displacement contrainst
+% imposed to an element of a BEA model.
+% A detailed documentation is available in
+%
+% https://github.com/paulo-pagliosa/igabem-MATLAB
+%
+% See also: class Element, class MeshInterface
 
+%% Public constants
 properties (Constant)
   tolerance = 1 / 100;
 end
 
+%% Public static methods
 methods (Static)
+  % Constructs a constraint
   function c = New(id, element, dofs, evaluator, varargin)
     narginchk(4, inf);
     c = Constraint(id, element, BC.parseDofs(dofs));
@@ -12,6 +29,7 @@ methods (Static)
   end
 end
 
+%% Private methods
 methods (Access = {?Constraint, ?ConstraintGroup})
   function this = Constraint(id, element, dofs)
     this = this@BC(id, element);
@@ -20,6 +38,7 @@ methods (Access = {?Constraint, ?ConstraintGroup})
   end
 end
 
+%% Protected methods
 methods (Access = protected)
   function setValues(this, u)
     regions = this.element.nodeRegions;
@@ -45,6 +64,7 @@ methods (Access = protected)
   end
 end
 
+%% Private static methods
 methods (Static, Access = {?Constraint, ?ConstraintGroup, ?Mesh})
   function checkDof(dof, node, regions, u, i)
     if node.dofs(dof, 1) == 0

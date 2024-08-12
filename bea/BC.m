@@ -1,5 +1,22 @@
 classdef (Abstract) BC < MeshComponent
+% BC: generic element boundary condition class
+%
+% Author: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Description
+% ===========
+% The abstract class BC is a mesh component that encapsulates the
+% properties and behavior of a generic boundary condition applied to an
+% element of a BEA model. The properties of a boundary condition are
+% the element to which the boundary condition is applied, the dofs
+% (defining which degrees of freedom have prescribed values), an evaluator
+% (for computing the prescribed values at points in the element), and
+% the direction in which the prescribed values act (if defined as scalars).
+%
+% See also: class Element, class BCGroup
 
+%% Public read-only properties
 properties (SetAccess = {?BC, ?BCGroup})
   element (1, 1);
   dofs (1, 3);
@@ -7,6 +24,7 @@ properties (SetAccess = {?BC, ?BCGroup})
   direction;
 end
 
+%% Protected methods
 methods (Access = protected)
   function this = BC(id, element)
     assert(isa(element, 'Element'), 'Mesh element expected');
@@ -15,6 +33,11 @@ methods (Access = protected)
   end
 end
 
+methods (Abstract, Access = protected)
+  setValues(this, x);
+end
+
+%% Private methods
 methods (Access = {?BC, ?BCGroup})
   function setProps(this, dim, evaluator, direction)
     if any(direction ~= 0)
@@ -59,7 +82,7 @@ methods (Access = {?BC, ?BCGroup})
       [P, S] = s.interpolate(r, u, v);
       A(i, :) = S';
       if isnan(this.direction)
-        [~, ~, ~, D] = s.interpolateDiff(r, u, v);
+        [~, ~, ~, D] = s.computeNormal(r, u, v);
         D = D ./ norm(D) * sign;
       end
       P = P(1:3) / P(4);
@@ -69,7 +92,9 @@ methods (Access = {?BC, ?BCGroup})
   end
 end
 
+%% Public methods
 methods
+  % Applies this boundary condition to the nodes of its element
   function x = apply(this, p)
     n = this.element.nodeCount;
     idx = this.dofs(this.dofs > 0);
@@ -86,11 +111,9 @@ methods
   end
 end
 
-methods (Abstract, Access = protected)
-  setValues(this, x);
-end
-
+%% Public static methods
 methods (Static)
+  % Parses a dof
   function dof = parseDof(dof)
     if ischar(dof)
       switch dof
@@ -107,6 +130,7 @@ methods (Static)
     end
   end
 
+  % Parses XYZ dofs
   function dofs = parseDofs(dofs)
     n = numel(dofs);
     assert(n > 0 && n < 4, 'Bad dof dimension');
@@ -122,6 +146,7 @@ methods (Static)
   end
 end
 
+%% Private static methods
 methods (Static, Access = {?BC, ?BCGroup})
   function [direction, nargs] = parseDirection(varargin)
     direction = [0 0 0];

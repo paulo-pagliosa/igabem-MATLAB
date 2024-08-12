@@ -1,5 +1,15 @@
 classdef BCFunction
+% BCFunction: boundary condition function class
+%
+% Author: P. Pagliosa
+% Last revision: 12/08/2024
+%
+% Description
+% ===========
+% The class BCFunction defines static methods for computing and
+% composing functions used for specifying boundary conditions.
 
+%% Public static methods
 methods (Static)
   function f = constant(z)
     assert(isscalar(z), 'Scalar expected');

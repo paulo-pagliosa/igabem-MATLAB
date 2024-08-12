@@ -1,11 +1,21 @@
 classdef ElastostaticSolver < EPBase & Solver
+% ElastostaticSolver: linear elastostatic solver class
+%
+% Authors: M.A. Peres and P. Pagliosa
+% Last revision: 12/08/2024
+%
+% See also: class Mesh, class Material
 
+%% Public methods
 methods
+  % Constructs an elastostatic solver
   function this = ElastostaticSolver(mesh, material, varargin)
     this@EPBase(material, varargin{:});
     this@Solver(mesh);
   end
 
+  % Evaluates the maximum integration error of BIEs as described in the
+  % tests reported in Section 5 of the paper
   function testBIE(this, nids, printCFlag)
     if nargin < 2
       nids = 1;
@@ -36,6 +46,8 @@ methods
     end
   end
 
+  % Evaluates the average integration error of BIEs as described in the
+  % tests reported in Section 5 of the paper
   function averageBIE(this, nids)
     if nargin < 2
       nids = 1:this.mesh.nodeCount;
@@ -76,6 +88,7 @@ methods
   end
 end
 
+%% Protected methods
 methods (Access = protected)
   function initialize(this)
     initialize@Solver(this);

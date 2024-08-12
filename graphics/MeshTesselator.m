@@ -7,7 +7,9 @@ classdef MeshTesselator < handle
 % Description
 % ===========
 % An object of the class MeshTesselator transforms every element of a
-% mesh (see the class Mesh) into a triangle submesh.
+% mesh into a triangle submesh.
+%
+% See also: class Mesh
 
 %% Public read-only properties
 properties (SetAccess = private)
@@ -130,7 +132,7 @@ methods
       k = 1;
       for v = -1:dp:1
         for u = -1:dp:1
-          [p, ~, ~, g] = s.interpolateDiff(r, u, v);
+          [p, ~, ~, g] = s.computeNormal(r, u, v);
           vertices(k, :) = p;
           N(k, :) = g ./ norm(g) * sign;
           k = k + 1;

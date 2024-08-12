@@ -1,10 +1,24 @@
-classdef BCGroup < MeshComponent
+classdef (Abstract) BCGroup < MeshComponent
+% BCGroup: generic region boundary condition class
+%
+% Author: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Description
+% ===========
+% The abstract class BCGroup is a mesh component that encapsulates
+% the properties and behavior of a generic boundary conditions applied
+% to the elements of an element region of a BEA model.
+%
+% See also: class Element, class BC
 
+%% Public read-only properties
 properties (SetAccess = protected)
   elements (:, 1) Element = Element.empty;
   bcs BC = BC.empty;
 end
 
+%% Protected methods
 methods (Access = protected)
   function this = BCGroup(id, elements)
     assert(isa(elements, 'Element'), 'Mesh element expected');
@@ -36,11 +50,18 @@ methods (Access = protected)
   end
 end
 
+methods (Abstract, Access = protected)
+  setValues(this, nodes, regions, x);
+end
+
+%% Public methods
 methods
+  % Returns the dofs of this BC group
   function dofs = dofs(this)
     dofs = this.bcs(1).dofs;
   end
 
+  % Merges two BC groups
   function merge(this, group)
     assert(isa(group, 'BCGroup'), 'BC group expected');
     if group == this
@@ -56,6 +77,7 @@ methods
     group.bcs = BC.empty;
   end
 
+  % Applies the BCs in this BC group to the node set of its elements
   function x = apply(this)
     n = 10; % TODO
     p = gridSpace(n);
@@ -85,10 +107,6 @@ methods
     x(:, dofs) = A \ b;
     this.setValues(nodes.nodes, regions, x);
   end
-end
-
-methods (Abstract, Access = protected)
-  setValues(this, nodes, regions, x);
 end
 
 end % BCGroup

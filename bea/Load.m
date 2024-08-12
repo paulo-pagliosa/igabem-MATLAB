@@ -1,6 +1,23 @@
 classdef Load < BC
+% Load: element load class
+%
+% Author: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Description
+% ===========
+% An object of the class Load represents a load applied to an element
+% of a BEA model. A load can be a uniformely distributed load,
+% a pressure or a torque, among others.
+% A detailed documentation is available in
+%
+% https://github.com/paulo-pagliosa/igabem-MATLAB
+%
+% See also: class Element, class MeshInterface
 
+%% Public static methods
 methods (Static)
+  % Constructs a load
   function l = New(id, element, evaluator, varargin)
     narginchk(3, inf);
     l = Load(id, element);
@@ -9,6 +26,7 @@ methods (Static)
   end
 end
 
+%% Private static methods
 methods (Static, Access = {?BC, ?BCGroup})
   function f = torque(O, D, S)
     % O coordinates of the rotation axis' origin
@@ -53,7 +71,9 @@ methods (Static, Access = {?BC, ?BCGroup})
   end
 end
 
+%% Public methods
 methods
+  % Constructs a null load
   function this = Load(id, element)
     this = this@BC(id, element);
     this.dofs = [1 2 3];
@@ -61,6 +81,7 @@ methods
   end
 end
 
+%% Protected methods
 methods (Access = protected)
   function setValues(this, t)
     regions = this.element.nodeRegions;

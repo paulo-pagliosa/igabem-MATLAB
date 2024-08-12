@@ -1,6 +1,19 @@
 classdef ConstraintGroup < BCGroup
+% ConstraintGroup: region constraint class
+%
+% Author: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Description
+% ===========
+% An object of the class ConstraintGroup represents a constraint imposed
+% to the elements of an element region of a BEA model.
+%
+% See also: class Constraint
 
+%% Public methods
 methods
+  % Constructs a constraint group
   function this = ConstraintGroup(id, elements, dofs, evaluator, varargin)
     narginchk(4, inf);
     this = this@BCGroup(id, elements);
@@ -25,6 +38,7 @@ methods
   end
 end
 
+%% Protected methods
 methods (Access = protected)
   function setValues(this, nodes, regions, u)
     dofs = this.dofs;

@@ -1,5 +1,15 @@
 classdef Bernstein
+% Bernstein: Bernstein function basis class
+%
+% Authors: M.A. Peres and P. Pagliosa
+% Last revision: 12/08/2024
+%
+% Description
+% ===========
+% The class Bernstein defines static methods for computing the
+% Bernsteing basis functions of degrees 3 and 4 and their derivatives.
 
+%% Public static methods
 methods (Static)
   function b = basis2(u)
     b(3) = 0.25 * (1 + u) * (1 + u);
@@ -13,7 +23,7 @@ methods (Static)
     b(2) = 0.375 * (1 - u) * (1 - u) * (1 + u);
     b(1) = 0.125 * (1 - u) * (1 - u) * (1 - u);
   end
-  
+
   function b = basis4(u)
     b(5) = 0.0625 * (1 + u) * (1 + u) * (1 + u) * (1 + u);
     b(4) = 0.250  * (1 - u) * (1 + u) * (1 + u) * (1 + u);
@@ -21,7 +31,7 @@ methods (Static)
     b(2) = 0.250  * (1 - u) * (1 - u) * (1 - u) * (1 + u);
     b(1) = 0.0625 * (1 - u) * (1 - u) * (1 - u) * (1 - u);
   end
-  
+
   function b = basis2x2(u, v)
     b = kron(Bernstein.basis2(u), Bernstein.basis2(v)');
   end
@@ -49,7 +59,7 @@ methods (Static)
   function d = derivativeV3x3(u, v)
     d = kron(Bernstein.basis3(u), Bernstein.derivative3(v)');
   end
-  
+
   function d = derivative4(u)
     b = 3 * Bernstein.basis3(u);
     d(5) = +b(4);

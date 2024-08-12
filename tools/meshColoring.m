@@ -1,4 +1,26 @@
 function [colors, count, sets] = meshColoring(mesh, check)
+% Colors the elements of a mesh
+%
+% Author: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Input
+% =====
+% MESH: mesh to be colored
+% CHECK: check flag (default: FALSE)
+%
+% Output
+% ======
+% COLORS: NEx1 array where COLORS(I) is the color of the I-th element
+% of MESH, I in [1:NE]
+% COUNT: NCx1 array where the COUNT(I) is the number of elements with
+% the I-th color, I in [1:NC]
+% SETS: NCx1 cell array where SETS{I} is a COUNT(I)x1 array with the ids
+% of the elements colored with I in [1:NC]
+%
+% Description
+% ===========
+% Colors the elements of MESH as described in Section 6.3 of the paper.
   assert(isa(mesh, 'Mesh'), 'Mesh expected');
   ne = mesh.elementCount;
   colors = -ones(ne, 1);

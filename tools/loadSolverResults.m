@@ -1,4 +1,13 @@
 function loadSolverResults(mesh, filename)
+% Loads BEA results from a file
+%
+% Author: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Input
+% =====
+% MESH: mesh in which the BEA results will be saved
+% FILENAME: file with the BEA results
   assert(isa(mesh, 'Mesh'), 'Mesh expected');
   file = fopen(filename, 'r');
   nn = mesh.nodeCount;
@@ -22,4 +31,4 @@ function loadSolverResults(mesh, filename)
     r = textscan(file, '%c<%f,%f,%f>', 1);
     v = [r{2} r{3} r{4}];
   end
-end
+end % loadSolverResults

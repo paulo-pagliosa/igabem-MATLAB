@@ -7,7 +7,7 @@ The code is a complementary material of the paper:
 M.A. Peres, G. Sanches, A. Paiva, P. Pagliosa, Parallel isogeometric boundary element analysis
 with T-splines on CUDA, Computer Methods in Applied Mechanics and Engineering (2024). Accepted for publication.
 
-## Exemples, data files and scripts
+## Examples, data files and scripts
 
 Coming soon.
 

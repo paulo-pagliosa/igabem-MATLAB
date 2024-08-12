@@ -1,9 +1,30 @@
 classdef (Abstract) Solver < handle
+% Solver: generic static linear solver class
+%
+% Author: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Description
+% ===========
+% The abstract class Solver encapsulates the properties and behavior
+% of a generic static linear solver for 3D BEA. The only public property
+% of a solver is the BEA model to be analyzed. The protected properties
+% include the global matrices H and G, the nodal displacement and traction
+% vectors (for elastic problems, but they can be any other 3D vector
+% variables), the nodal dofs, and the element maps discussed in Section 3
+% of the paper. The protected methods implement the (sequential version
+% of the pipeline) presented in Section 6.1. The class declares an abstract
+% method that must be defined in derived concrete classes for computing the
+% jump term and the influence matrices of a given boundary element.
+%
+% See also: class Mesh
 
+%% Public properties
 properties
   mesh;
 end
 
+%% Public read-only properties
 properties (Access = protected)
   dofs;
   H;
@@ -14,6 +35,7 @@ properties (Access = protected)
   gMap;
 end
 
+%% Public methods
 methods
   function set.mesh(obj, value)
     assert(isa(value, 'Mesh'), 'Mesh expected');
@@ -21,6 +43,19 @@ methods
   end
 end
 
+methods
+  function execute(this)
+    fprintf('**Starting analysis...\n');
+    time = tic;
+    this.initialize;
+    this.run;
+    this.quit;
+    time = toc(time);
+    fprintf('**End of analysis (elapsed time: %f seconds)\n', time);
+  end
+end
+
+%% Protected methods
 methods (Access = protected)
   function this = Solver(mesh)
     this.mesh = mesh;
@@ -170,18 +205,6 @@ end
 
 methods (Abstract, Access = protected)
   [c, h, g] = computeHG(this, s, p, element)
-end
-
-methods
-  function execute(this)
-    fprintf('**Starting analysis...\n');
-    time = tic;
-    this.initialize;
-    this.run;
-    this.quit;
-    time = toc(time);
-    fprintf('**End of analysis (elapsed time: %f seconds)\n', time);
-  end
 end
 
 end % Solver

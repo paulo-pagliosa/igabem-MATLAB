@@ -1,5 +1,15 @@
 classdef Material < handle
+% Material: elastic material class
+%
+% Author: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Description
+% ===========
+% An object of the class Material encapsulates the properties of an
+% elastic material.
 
+%% Public read-only properties
 properties (SetAccess = private)
   scale = 1;
   E;
@@ -11,7 +21,9 @@ properties (SetAccess = private)
   c4;
 end
 
+%% Public methods
 methods
+  % Constructs a meterial
   function this = Material(E, mu)
     if nargin > 1
       this.set(E, mu);
@@ -20,6 +32,7 @@ methods
     end
   end
 
+  % Sets the properties of this material
   function set(this, E, mu)
     this.E = E;
     this.mu = mu;
@@ -30,6 +43,7 @@ methods
     this.c1 = this.scale / (16 * pi * this.G * (1 - mu));
   end
 
+  % Sets the material scale (for test only)
   function setScale(this, scale)
     if scale ~= this.scale && scale >= 1
       this.scale = scale;
@@ -38,6 +52,7 @@ methods
   end
 end
 
+%% Private methods
 methods (Access = private)
   function initDefaultMaterial(this)
     this.set(1e5, 0.3);

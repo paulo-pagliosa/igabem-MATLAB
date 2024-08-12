@@ -6,11 +6,12 @@ classdef MeshRenderer < Renderer
 %
 % Description
 % ===========
-% An object of the class MeshRenderer is responsible for rendering a
-% mesh (see the class Mesh). A mesh renderer relies on a mesh tesselator
-% (see the class MeshTesselator) for transforming every element of its
-% input mesh into into a triangle submesh. The resulting set of triangle
-% submeshes are then rendered by the mesh renderer.
+% An object of the class MeshRenderer is responsible for rendering a mesh.
+% A mesh renderer relies on a mesh tesselator for transforming every
+% element of its input mesh into into a triangle submesh. The resulting
+% set of triangle submeshes are then rendered by the mesh renderer.
+%
+% See also: class Mesh, class MeshTesselator
 
 %% Public properties
 properties

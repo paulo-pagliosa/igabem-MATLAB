@@ -1,12 +1,21 @@
 classdef Face < handle
-% An object of the class Face repreents a quadrilateral face of the
-% control mesh of a piecewise parametric surface. A face is defined
-% by four nodes corresponding to its four vertices.
+% Face: control mesh face class
+%
+% Author: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Description
+% ===========
+% An object of the class Face represents a quadrilateral face of the
+% control mesh of a piecewise parametric surface. A face is defined by
+% the nodes corresponding to its four vertices.
 
-properties
+%% Public read-only properties
+properties (SetAccess = private)
   nodes (:, 1) Node;
 end
 
+%% Public methods
 methods
   function this = Face(mesh, nodeIds)
     if nargin > 0

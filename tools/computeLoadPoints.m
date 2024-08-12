@@ -1,4 +1,29 @@
 function mesh = computeLoadPoints(mesh, eps, dlp)
+% Computes the load points from a mesh with no LTHs
+%
+% Author: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Input
+% =====
+% MESH: mesh with no LTHs
+% EPS: precision to compare point positions (default: 1e-6)
+% DLP: parametric distance to shift load points at corners or on
+% boundary edges (default: 0.2)
+%
+% Output
+% ======
+% MESH: mesh with load points
+%
+% Description
+% ===========
+% Define collocation points as described in Section 4.4 of the paper.
+% It is assumed the input mesh has no semi-discontinuous elements.
+% Thus, this function must be called for a mesh representing a surface
+% with boundaries BEFORE using the function readMesh to combine it
+% with others.
+%
+% See also: function readMesh
   assert(isa(mesh, 'Mesh'), 'Mesh expected');
   ne = mesh.elementCount;
   assert(ne > 0, 'No elements in mesh');
@@ -117,4 +142,4 @@ function mesh = computeLoadPoints(mesh, eps, dlp)
       end
     end
   end
-end
+end % computeLoadPoints

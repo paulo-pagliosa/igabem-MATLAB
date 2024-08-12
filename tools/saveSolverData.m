@@ -1,4 +1,14 @@
 function saveSolverData(mesh, material, filename)
+% Saves mesh and material data to be used in the C++/CUDA C++ code
+%
+% Author: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Input
+% =====
+% MESH: mesh to be saved
+% MATERIAL: material to be saved
+% FILENAME: file with the mesh and material data
   assert(isa(mesh, 'Mesh'), 'Mesh expected');
   assert(isa(material, 'Material'), 'Material expected');
   file = fopen(filename, 'w');
@@ -15,9 +25,9 @@ function saveSolverData(mesh, material, filename)
     node = mesh.nodes(i);
     for k = 1:3
       dIdx = dIdx + 1;
-      if node.dofs(k, 1) > 0 % BC is constraint
+      if node.dofs(k, 1) > 0 % BC is a constraint
         dofs(dIdx) = -(3 * (nt + node.dofs(k, 2) - 1) + k);
-      else % BC is load
+      else % BC is a load
         dofs(dIdx) = dIdx;
       end
     end
@@ -54,10 +64,10 @@ function saveSolverData(mesh, material, filename)
     for k = 1:3
       dIdx = dIdx + 1;
       region = node.dofs(k, 2);
-      if node.dofs(k, 1) > 0 % BC is constraint
+      if node.dofs(k, 1) > 0 % BC is a constraint
         u(dIdx) = node.u(k);
         dofCodes(k) = region;
-      else % BC is load
+      else % BC is a load
         for r = 1:node.multiplicity
           if r == region
             continue;
@@ -135,4 +145,4 @@ function saveSolverData(mesh, material, filename)
     fprintf(file, [fmt, ' '], data(1:end - 1));
     fprintf(file, [fmt '\n'], data(end));
   end
-end
+end % saveSolverData
