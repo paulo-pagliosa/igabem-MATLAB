@@ -1,4 +1,19 @@
 function [d, rc] = projectPoint(element, P, region)
+% Projects a point onto an element region
+%
+% Author: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Input
+% =====
+% ELEMENT: element onto which the point will be projected
+% P: 3D point to project
+% REGION: element region domain
+%
+% Output
+% ======
+% D: distance from P to REGION
+% RC: parametric coordinates of the projection
   assert(isa(element, 'BezierElement'), 'BezierElement expected');
   if nargin < 3
     region = QuadRegion.default;
@@ -101,4 +116,4 @@ function [d, rc] = projectPoint(element, P, region)
     Suv = blend(Duv, p); Suv = Suv(1:3);
     Svv = blend(Dvv, p); Svv = Svv(1:3);
   end
-end
+end % projectPoint

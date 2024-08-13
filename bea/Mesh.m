@@ -1,5 +1,21 @@
 classdef Mesh < handle
+% Mesh: BEA model class
+%
+% Authors: Paulo Pagliosa
+% Last revision: 12/08/2024
+%
+% Description
+% ===========
+% An object of the class Mesh represents a BEA model. The properties
+% of a mesh are the set of mesh nodes, elements, constraints, loads,
+% and node elements (the set of elements influenced by each mesh node).
+% A detailed documentation is available in
+%
+% https://github.com/paulo-pagliosa/igabem-MATLAB
+%
+% See also: class Node, class Element, class Constraint, class Load
 
+%% Public properties
 properties
   name = 'Unnammed';
 end
@@ -8,6 +24,7 @@ properties (Dependent)
   outerShell;
 end
 
+%% Public read-only properties
 properties (SetAccess = private)
   nodes (:, 1) Node = Node.empty;
   shells (:, 1) Shell = Shell.empty;
@@ -18,13 +35,16 @@ properties (SetAccess = private)
   triangular logical = false;
 end
 
+%% Private properties
 properties (Access = private)
   nextConstraintId = 1;
   nextLoadId = 1;
   warpingScale = 0;
   dirtyFlags = false(1, 3);
+  elementCtor;
 end
 
+%% Public methods
 methods
   function b = empty(this)
     b = isempty(this.nodes) || isempty(this.elements);
@@ -379,6 +399,7 @@ methods
   end
 end
 
+%% Public static methods
 methods (Static)
   function setNodeRegions(element, nodeRegions)
     n = numel(nodeRegions);
@@ -391,10 +412,7 @@ methods (Static)
   end
 end
 
-properties(Access = private)
-  elementCtor
-end
-
+%% Private static methods
 methods (Static, Access = private)
   function ctor = findElementConstructor(className)
     c = meta.class.fromName(className);
@@ -406,6 +424,7 @@ methods (Static, Access = private)
   end
 end
 
+%% Piivate methods
 methods (Access = private)
   function element = createElement(this, id, degree, nodeIds, varargin)
     ctor = this.elementCtor;

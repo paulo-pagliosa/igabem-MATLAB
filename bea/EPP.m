@@ -1,28 +1,41 @@
 classdef EPP < EPBase
+% EPP: linear elastostatic post-processor class
+%
+% Authors: M.A. Peres and P. Pagliosa
+% Last revision: 12/08/2024
+%
+% See also: class Mesh, class Material
 
+%% Public properties
 properties
   mesh;
 end
 
+%% Private constants
 properties (Constant, Access = private)
   eps = 10e-5 / sqrt(10);
 end
 
+%% Public methods
 methods
+  % Constructs an EPP
   function this = EPP(mesh, material, varargin)
     this@EPBase(material, varargin{:});
     this.mesh = mesh;
   end
 
+  % Sets the mesh of this EPP
   function set.mesh(obj, value)
     assert(isa(value, 'Mesh'), 'Mesh expected');
     obj.mesh = value;
   end
   
+  % Computes the displacement at internal points
   function u = computeDomainDisplacements(this, points)
     u = this.computeDisplacement(points, true);
   end
 
+  % Computes the displacement at internal and/or boundary points
   function u = computeDisplacements(this, points, dflag)
     if nargin < 3
       dflag = false;
@@ -68,6 +81,7 @@ methods
       nb, nd, size(this.p, 1));
   end
   
+  % Computes the displacement at boundary points
   function u = computeBoundaryDisplacement(this, csi, p, element)
     this.p = [];
     u = [0 0 0];
@@ -89,6 +103,7 @@ methods
   end
 end
 
+%% Private methods
 methods (Access = private)
   function [c, h, g, x, b] = computeHG(this, p, element, dflag)
     b = false;

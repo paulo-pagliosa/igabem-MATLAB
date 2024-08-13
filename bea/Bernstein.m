@@ -7,7 +7,7 @@ classdef Bernstein
 % Description
 % ===========
 % The class Bernstein defines static methods for computing the
-% Bernsteing basis functions of degrees 3 and 4 and their derivatives.
+% Bernstein basis functions of degrees 3 and 4 and their derivatives.
 
 %% Public static methods
 methods (Static)

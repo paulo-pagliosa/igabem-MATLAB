@@ -1,5 +1,15 @@
 classdef Kelvin3 < handle
+% Kelvin3: 3D Kelvin fundamental solutions class
+%
+% Authors: M.A. Peres and P. Pagliosa
+% Last revision: 12/08/2024
+%
+% Description
+% ===========
+% The class Kelvin3 defines a static method for computing the
+% 3D Kelvin fundamental solutions.
 
+%% Public static methods
 methods (Static)
   function [U, T] = eval(r, dr, N, m)
     c = m.c1 / r;

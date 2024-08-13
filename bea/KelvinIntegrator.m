@@ -1,10 +1,21 @@
 classdef KelvinIntegrator < matlab.mixin.SetGet
+% KelvinIntegrator: Kelvin-based integrator class
+%
+% Authors: M.A. Peres and P. Pagliosa
+% Last revision: 12/08/2024
+%
+% Description
+% ===========
+% The class KelvinIntegrator implements the integration scheme
+% described in Section 5 of the paper.
 
+%% Public constants
 properties (Constant)
   tableBeer = [3.05 1.45 0.95 0.75 0.55 0.5 0];
   eps = 1e-4;
 end
 
+%% Public properties
 properties
   dflGaussRule = 4;
   triGaussRule = 4;
@@ -13,17 +24,21 @@ properties
   outGaussRule = 0;
 end
 
+%% Public write-only properties
 properties (GetAccess = private, Dependent)
   srMethod;
 end
 
+%% Private properties
 properties (Access = private)
   material;
   gp = GaussPoints;
   evalSingularRegion function_handle;
 end
 
+%% Public methods
 methods
+  % Constructs an integrator
   function this = KelvinIntegrator(material)
     this.material = material;
     this.srMethod = '4T';
@@ -49,6 +64,8 @@ methods
     end
   end
 
+  % Sets the number of Gauss points to be used for
+  % outside integration (0: adaptive subdivision)
   function set.outGaussRule(this, value)
     if value ~= 0 && value < 2
       fprintf("'outGaussRule' must be 0 or greater than to 1\n");
@@ -89,6 +106,7 @@ methods
     end
   end
 
+  % Performs outside integration
   function [c, h, g, x] = outsideIntegration(this, p, element)
     out = this.initResults(element);
     r = QuadRegion.default;
@@ -108,6 +126,7 @@ methods
     x = out.x;
   end
 
+  % Performs inside integration
   function [c, h, g, x] = insideIntegration(this, csi, p, element)
     out = this.initResults(element);
     region = QuadRegion.default;
@@ -123,6 +142,7 @@ methods
   end
 end
 
+%% Protected methods
 methods (Access = protected)
   function [U, T] = evalKernel(this, p, q, N)
     d = q - p;
@@ -315,6 +335,7 @@ methods (Access = protected)
   end
 end
 
+%% Private static methods
 methods (Static, Access = private)
   function out = initResults(element)
     c = zeros(3, 3);
