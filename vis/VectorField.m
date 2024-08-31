@@ -1,10 +1,31 @@
 classdef VectorField < Field
+% VectorField: vector field class
+%
+% Author: Paulo Pagliosa
+% Last revision: 31/08/2024
+%
+% Description
+% ===========
+% An object of the class VectorField computes a 3D vector
+% (e.g., displacement or traction) at a point on an element.
 
+%% Public read-onky properties
 properties (SetAccess = protected)
   dim = 3;
 end
 
+%% Public methods
 methods
+  % Constructs a vector field
+  %
+  % Input
+  % =====
+  % HANDLE: handle to a function that returns the 3D vectors associated
+  % with the nodes of an element. The function takes as input parameter
+  % a reference to the element. Alternatively, HANDLE can 'u' or 't'.
+  % In this case, the vectors are the displacements or tractions of the
+  % element's nodes, respectively
+  % LABEL: field label
   function this = VectorField(handle, label)
     if ischar(handle)
       switch handle

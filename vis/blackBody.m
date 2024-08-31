@@ -1,4 +1,11 @@
 function c = blackBody
+% Generates a "black body" color table with 64 colors
+%
+% Author: Paulo Pagliosa
+% Last revision: 31/08/2024
+%
+% Extracted from:
+% Color Map Advice for Scientific Visualization by Kenneth Moreland
 % https://www.kennethmoreland.com/color-advice
   c = [ ...
     0, 0, 0; ...

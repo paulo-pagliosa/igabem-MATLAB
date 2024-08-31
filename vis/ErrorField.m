@@ -1,29 +1,44 @@
 classdef ErrorField < ScalarField
+% ErrorField: generic error field class
+%
+% Author: Paulo Pagliosa
+% Last revision: 31/08/2024
+%
+% Description
+% ===========
+% An object of the class ErrorField is an evaluator of scalars
+% defined by an absolute or relative error at a point on an element.
+%
+% See also: enum ErrorType
 
+%% Public read-only properties
 properties (SetAccess = private)
   errorType ErrorType = ErrorType.RELATIVE;
 end
 
+%% Private properties
 properties (Access = private)
   element;
   valuesHandle;
 end
 
+%% Public methods
 methods
-  % Constructor
+  % Constructs an error field
   %
-  % HANDLE is a handle to a function that returns a pair [MV, AV],
-  % where MV is the measured value and AV is the actual value. The
-  % function takes as paramaters:
-  % [U, V]: the parametric coordinates of a point on an element at
-  % which the values are evaluated;
-  % P: the spatial poisition of the point; and
-  % ELEMENT: the element.
+  % Input
+  % =====
+  % HANDLE: handle to a function that returns a pair [MV,AV], where MV
+  % is the measured value and AV is the actual value. The function takes
+  % as input paramaters the parametric coordinates [U,V] of a point on
+  % an element at which the values are evaluated, the spatial position
+  % [X,Y,Z] of the point, and a reference to the element
   function this = ErrorField(handle)
-    assert(isa(handle, 'function_handle'), 'Values handle expected');
+    assert(isa(handle, 'function_handle'), 'Function handle expected');
     this.valuesHandle = handle;
   end
 
+  % Sets the error type of this field
   function setErrorType(this, errorType)
     if errorType ~= this.errorType
       this.errorType = errorType;
@@ -31,10 +46,12 @@ methods
     end
   end
 
+  % Sets the element of this field
   function setElement(this, element)
     this.element = element;
   end
 
+  % Computes the field value at a point on the element of this field
   function x = valueAt(this, u, v)
     p = this.element.positionAt(u, v);
     [mv, av] = this.valuesHandle([u, v], p, this.element);
@@ -45,6 +62,7 @@ methods
   end
 end
 
+%% Protected methods
 methods (Access = protected)
   function handleErrorTypeChange(~)
     % do nothing

@@ -1,21 +1,41 @@
 classdef (Abstract) FieldExtractor < handle
+% FieldExtractor: generic field extractor class
+%
+% Author: Paulo Pagliosa
+% Last revision: 31/08/2024
+%
+% Description
+% ===========
+% The abstract class FieldExtractor encapsulates the behavior of a
+% generic field extractor. A field extractor associates a quantity
+% (scalar or vector) with each point resulting from the tessellation
+% of a mesh. The value of the quantity at a point on an element is
+% determined by an object of a class derived from the abstract class
+% Field. The method for associating field values with points on an
+% element must be implemented in classes derived from FieldExtractor.
+%
+% See also: class Field, class MeshTessellator
 
+%% Public read-only properties
 properties (SetAccess = protected)
-  tesselator;
+  tessellator;
   field;
 end
 
+%% Public methods
 methods
+  % Sets the field of this extractor
   function setField(this, field)
     assert(isa(field, 'Field'), 'Field expected');
     this.field = field;
   end
 
+  % Computes the field values for every point from the mesh tessellation
   function execute(this)
     assert(~isempty(this.field), 'Field not set');
-    mesh = this.tesselator.mesh;
+    mesh = this.tessellator.mesh;
     ne = mesh.elementCount;
-    resolution = this.tesselator.resolution;
+    resolution = this.tessellator.resolution;
     nv = (resolution + 1) ^ 2;
     dp = 2 / double(resolution);
     for i = 1:ne
@@ -33,10 +53,11 @@ methods
   end
 end
 
+%% Protected methods
 methods (Access = protected)
-  function this = FieldExtractor(tesselator)
-    assert(isa(tesselator, 'MeshTesselator'), 'Mesh tesselator expected');
-    this.tesselator = tesselator;
+  function this = FieldExtractor(tessellator)
+    assert(isa(tessellator, 'MeshTessellator'), 'Mesh tessellator expected');
+    this.tessellator = tessellator;
   end
 end
 

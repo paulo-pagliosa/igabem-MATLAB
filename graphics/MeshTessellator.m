@@ -1,12 +1,12 @@
-classdef MeshTesselator < handle
-% MeshTesselator: mesh tesselator class
+classdef MeshTessellator < handle
+% MeshTessellator: mesh tessellator class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
-% An object of the class MeshTesselator transforms every element of a
+% An object of the class MeshTessellator transforms every element of a
 % mesh into a triangle submesh.
 %
 % See also: class Mesh
@@ -21,8 +21,8 @@ end
 
 %% Public methods
 methods
-  % Constructs a mesh tesselator
-  function this = MeshTesselator(mesh, resolution)
+  % Constructs a mesh tessellator
+  function this = MeshTessellator(mesh, resolution)
     narginchk(1, 2);
     this.mesh = mesh;
     if nargin == 2
@@ -34,12 +34,12 @@ methods
     this.execute;
   end
 
-  % Returns the number of tesselated patches
+  % Returns the number of tessellated patches
   function n = patchCount(this)
     n = numel(this.patches);
   end
 
-  % Sets the resolution of this tesselator
+  % Sets the resolution of this tessellator
   function b = setResolution(this, value)
     b = value > 0 && value ~= this.resolution;
     if b
@@ -77,7 +77,7 @@ methods
     b = true;
   end
 
-  % Executes the tesselation
+  % Executes the tessellation
   function execute(this, index)
     narginchk(1, 2);
     if this.mesh.triangular
@@ -161,4 +161,4 @@ methods (Access = private)
   end
 end
 
-end % MeshTesselator
+end % MeshTessellator

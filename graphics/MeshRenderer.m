@@ -2,16 +2,16 @@ classdef MeshRenderer < Renderer
 % MeshRenderer: mesh renderer class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
 % An object of the class MeshRenderer is responsible for rendering a mesh.
-% A mesh renderer relies on a mesh tesselator for transforming every
+% A mesh renderer relies on a mesh tessellator for transforming every
 % element of its input mesh into into a triangle submesh. The resulting
 % set of triangle submeshes are then rendered by the mesh renderer.
 %
-% See also: class Mesh, class MeshTesselator
+% See also: class Mesh, class MeshTessellator
 
 %% Public properties
 properties
@@ -20,10 +20,14 @@ properties
   edgeProperties = LineProperties('blue', '-', 1);
 end
 
+%% Public read-only properties
+properties (SetAccess = private)
+  mesh;
+end
+
 %% Protected properties
 properties (Access = protected)
-  tesselator;
-  mesh;
+  tessellator;
   meshPlot;
   nodePlot;
   vertexNormalPlot;
@@ -51,7 +55,7 @@ methods
     assert(isa(mesh, 'Mesh'), 'Mesh expected');
     assert(~mesh.empty, 'Mesh is empty');
     this = this@Renderer(axes);
-    this.tesselator = MeshTesselator(mesh, 4);
+    this.tessellator = MeshTessellator(mesh, 4);
     this.mesh = mesh;
     if nargin < 2 || redraw
       this.redraw;
@@ -191,9 +195,9 @@ methods
     if ~flag
       return;
     end
-    np = this.tesselator.patchCount;
+    np = this.tessellator.patchCount;
     for i = 1:np
-      s = this.tesselator.patches(i).scalars;
+      s = this.tessellator.patches(i).scalars;
       if ~isempty(s)
         set(this.meshPlot(i), 'CData', s, 'FaceColor', 'interp');
       end
@@ -261,7 +265,7 @@ methods (Access = protected)
     h = zeros(np, 1);
     k = 1;
     for i = index
-      p = this.tesselator.patches(i);
+      p = this.tessellator.patches(i);
       h(k) = patch('Parent', this.axes, ...
         'Vertices', p.vertices, ...
         'Faces', double(p.faces), ...
@@ -290,7 +294,7 @@ methods (Access = protected)
 
   function renderPatches(this, index)
     if nargin == 1
-      index = 1:this.tesselator.patchCount;
+      index = 1:this.tessellator.patchCount;
     end
     if ~isempty(this.meshPlot)
       delete(this.meshPlot(index));
@@ -304,10 +308,10 @@ methods (Access = protected)
     if ~this.flags.vertexNormal
       return;
     end
-    np = this.tesselator.patchCount;
+    np = this.tessellator.patchCount;
     h = zeros(np, 1);
     for i = 1:np
-      p = this.tesselator.patches(i);
+      p = this.tessellator.patches(i);
       N = p.vertexNormals;
       if isempty(N)
         continue;

@@ -1,14 +1,34 @@
 classdef VectorExtractor < FieldExtractor
+% VectorExtractor: vector field extractor class
+%
+% Author: Paulo Pagliosa
+% Last revision: 31/08/2024
+%
+% Description
+% ===========
+% An object of the class VectorExtractor associates a vector to
+% each point resulting from the tessellation of a mesh. The vector
+% at a point of an element is determined by a VectorField object.
+%
+% See also: class VectorField
 
+%% Public methods
 methods
-  function this = VectorExtractor(tesselator, field)
-    this = this@FieldExtractor(tesselator);
+  % Constructs a vector extractor
+  %
+  % Input
+  % =====
+  % TESSELLATOR: tesselattor object
+  % FIELD: vector field object or 'u' or 't'
+  function this = VectorExtractor(tessellator, field)
+    this = this@FieldExtractor(tessellator);
     if nargin < 2
       field = 'u';
     end
     this.setField(field);
   end
 
+  % Sets the field of this extractor
   function setField(this, field)
     if ischar(field)
       field = VectorField(field);
@@ -17,6 +37,7 @@ methods
   end
 end
 
+%% Protected methods
 methods (Access = protected)
   function setPatchValues(~, ~, ~)
     % TODO

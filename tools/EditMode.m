@@ -2,7 +2,9 @@ classdef EditMode < int32
 % EditMode: edit modes of a MeshInterface object
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
+%
+% See also: class MeshInterface
 enumeration
   SELECT (1);
   ROTATE (2);

@@ -1,4 +1,11 @@
 function c = coolWarm
+% Generates a "cool warm" color table with 64 colors
+%
+% Author: Paulo Pagliosa
+% Last revision: 31/08/2024
+%
+% Extracted from:
+% Color Map Advice for Scientific Visualization by Kenneth Moreland
 % https://www.kennethmoreland.com/color-advice
   c = [ ...
     0.22999950386952345, 0.2989989340493756,   0.754000138575591;   ...

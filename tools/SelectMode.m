@@ -2,7 +2,9 @@ classdef SelectMode < int32
 % SelectMode: select modes of a MeshInterface object
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
+%
+% See also: class MeshInterface
 enumeration
   ADD (1);
   SET (2);

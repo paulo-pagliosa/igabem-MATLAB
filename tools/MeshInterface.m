@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -76,7 +76,7 @@ methods
     this.selectedElementFlag = zeros(mesh.elementCount, 1, 'logical');
     this.hiddenPatchFlag = this.selectedElementFlag;
     this.setClickPatchHandle(@this.onClickPatch);
-    this.scalarExtractor = ScalarExtractor(this.tesselator);
+    this.scalarExtractor = ScalarExtractor(this.tessellator);
     this.flags.patchEdge = true;
     this.flags.loadPoint = false;
     this.flags.vector = false;
@@ -305,7 +305,7 @@ methods
   end
 
   function remesh(this, resolution)
-    if this.tesselator.setResolution(resolution)
+    if this.tessellator.setResolution(resolution)
       flag = this.flags.colorMap;
       this.flags.colorMap = false;
       this.redraw;
@@ -320,11 +320,11 @@ methods
     elements = this.selectedElements;
     ne = numel(elements);
     if ne == 0
-      invalid = this.tesselator.flipNormals(this.mesh.outerShell, flag);
+      invalid = this.tessellator.flipNormals(this.mesh.outerShell, flag);
     else
       invalid = false;
       for i = 1:ne
-        if this.tesselator.flipNormals(elements(i).shell, flag)
+        if this.tessellator.flipNormals(elements(i).shell, flag)
           invalid = true;
         end
       end
@@ -359,7 +359,7 @@ methods
   function moveNode(this, t)
     this.selectedNode.move(t);
     index = this.mesh.nodeElements{this.selectedNodeIndex};
-    this.tesselator.execute(index);
+    this.tessellator.execute(index);
     this.flags.colorMap = false;
     this.redraw;
   end
@@ -482,7 +482,7 @@ methods
     for i = nodeIndex
       index = union(index, this.mesh.nodeElements{i});
     end
-    this.tesselator.execute(index);
+    this.tessellator.execute(index);
     this.flags.colorMap = false;
     this.redraw;
   end
@@ -571,7 +571,7 @@ methods
     end
     if this.mesh.deform(scale)
       this.showColorBar(false);
-      this.tesselator.execute;
+      this.tessellator.execute;
       this.flags.colorMap = false;
       this.redraw;
     end
@@ -700,11 +700,11 @@ methods (Access = private)
 
   function h = drawVectors(this, elements, handle)
     function x = patchVertices(element)
-      x = this.tesselator.patches(this.mesh.elements == element);
+      x = this.tessellator.patches(this.mesh.elements == element);
       x = x.vertices;
     end
 
-    n = this.tesselator.resolution + 1;
+    n = this.tessellator.resolution + 1;
     p = gridSpace(n);
     n = n ^ 2;
     m = numel(elements);
@@ -734,14 +734,14 @@ methods (Access = private)
       delete(hc{i});
     end
     this.meshPlots.regionEdges = [];
-    if ~this.flags.patchEdge || isempty(this.tesselator.patchEdges)
+    if ~this.flags.patchEdge || isempty(this.tessellator.patchEdges)
       return;
     end
-    n = this.tesselator.patchCount;
+    n = this.tessellator.patchCount;
     he = zeros(n, 1);
     hc = cell(n, 1);
     for i = 1:n
-      p = this.tesselator.patchEdges{i};
+      p = this.tessellator.patchEdges{i};
       isVisible = ~this.hiddenPatchFlag(i);
       he(i) = drawPatchEdges(p, 1, isVisible);
       face = this.mesh.elements(i).face;
@@ -751,7 +751,7 @@ methods (Access = private)
         if ~isempty(c)
           sidx = 1;
           for k = 1:4
-            eidx = sidx + this.tesselator.resolution;
+            eidx = sidx + this.tessellator.resolution;
             if c(k).multiplicity > 1 && c(rem(k, 4) + 1).multiplicity > 1
               hfc(k) = drawPatchEdges(p(sidx:eidx, :), 2, isVisible);
             end
@@ -787,7 +787,7 @@ methods (Access = private)
       p(i, :) = this.mesh.nodes(i).loadPoint.position;
     end
     s = this.nodeProperties.size + 2;
-    this.meshPlots.loadPoints = this.drawPoint(p, 'red', 'x', s);
+    this.meshPlots.loadPoints = this.drawPoint(p, 'red', '*', s);
   end
 
   function renderVectors(this)
@@ -978,7 +978,7 @@ methods (Access = private)
       MeshInterface.newToggleTool(tb, ...
         'colorbar_tool.mat', ...
         'Show/Hide Color Bar', ...;
-        @(~, ~) this.showColorbar(isempty(this.colorBar)))];
+        @(~, ~) this.showColorBar(isempty(this.colorBar)))];
     this.toolButtons(1).State = 'on';
     this.toolButtons(end).Separator = 'on';
   end

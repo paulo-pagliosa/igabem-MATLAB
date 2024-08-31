@@ -2,7 +2,7 @@ classdef Load < BC
 % Load: element load class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -28,14 +28,20 @@ end
 
 %% Private static methods
 methods (Static, Access = {?BC, ?BCGroup})
+  % Compute the force corresponding to a torque
+  %
+  % Input
+  % =====
+  % O: coordinates of the rotation axis' origin
+  % D: coordinates of the rotation axis' direction
+  % S: scale of the force
+  %
+  % Output
+  % ======
+  % f: function returning the force, F, corresponding to the torque
+  % T=r^F=S*|r|*D, i.e., F=S*(D^r), where r=P-P', being P'=O+(p.D)D,
+  % p=P-O, and P the coordinates of the application point of F
   function f = torque(O, D, S)
-    % O coordinates of the rotation axis' origin
-    % D coordinates of the rotation axis' direction
-    % S scale of the force
-    % f function returning the force, F, corresponding
-    %   to the torque T=r^F=S*|r|*D, i.e., F=S*(D^r),
-    %   where r=P-P', being P'=O+(p.D)D, p=P-O, and P
-    %   the coordinates of the application point of F.
     D = D ./ norm(D);
     f = @force;
 
