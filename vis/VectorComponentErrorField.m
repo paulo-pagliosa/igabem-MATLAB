@@ -19,6 +19,7 @@ end
 
 %% Public methods
 methods
+  function this = VectorComponentErrorField(field, dof, avHandle)
   % Constructs a vector component error field
   %
   % Input
@@ -31,7 +32,6 @@ methods
   % point on an element. The function takes as input paramaters the
   % parametric coordinates [U,V] of the point, the spatial position
   % [X,Y,Z] of the point, and a reference to the element
-  function this = VectorComponentErrorField(field, dof, avHandle)
     assert(isa(avHandle, 'function_handle'), 'Function handle expected');
     field = VectorComponentField(field, dof);
     this = this@ErrorField(@computeValues);
@@ -44,8 +44,8 @@ methods
     end
   end
 
-  % Sets the element of this field
   function setElement(this, element)
+  % Sets the element of this field
     setElement@ErrorField(this, element);
     this.field.setElement(element);
   end

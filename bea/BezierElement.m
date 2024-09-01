@@ -2,7 +2,7 @@ classdef BezierElement < Element
 % BezierElement: Bezier element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -13,8 +13,8 @@ classdef BezierElement < Element
 
 %% Public methods
 methods
-  % Constructs a Bezier element
   function this = BezierElement(mesh, id, degree, nodeIds, C)
+  % Constructs a Bezier element
     this = this@Element(mesh, id, nodeIds);
     this.shapeFunction = BezierShapeFunction(degree, C);
   end

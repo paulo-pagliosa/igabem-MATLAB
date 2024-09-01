@@ -2,7 +2,7 @@ classdef BezierShapeFunction < ShapeFunction
 % BezierShapeFunction: Bezier shape function class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -21,7 +21,7 @@ end
 
 %% Public methods
 methods
-  % Constructor
+  % Constructs a Bezier shape function
   function this = BezierShapeFunction(degree, C)
     assert(degree == 3 || degree == 4, 'Bad Bezier shape function degree');
     this.degree = degree;
@@ -37,13 +37,13 @@ methods
     end
   end
 
-  % Evaluates the shape functions at (U,V)
   function N = eval(this, u, v)
+  % Evaluates the shape functions at (U,V)
     N = this.C * reshape(this.basis(u, v)', [], 1);
   end
 
-  % Evaluates the derivatives of the shape functions at (U,V)
   function [Du, Dv] = diff(this, u, v)
+  % Evaluates the derivatives of the shape functions at (U,V)
     Du = this.C * reshape(this.derivativeU(u, v)', [], 1);
     Dv = this.C * reshape(this.derivativeV(u, v)', [], 1);
   end

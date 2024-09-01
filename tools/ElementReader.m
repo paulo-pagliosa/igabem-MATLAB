@@ -2,7 +2,7 @@ classdef (Abstract) ElementReader < handle
 % ElementReader: generic element reader class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -16,8 +16,8 @@ properties (SetAccess = protected)
 end
 
 %% Public methods
-% Reads element data from a file
 methods (Abstract)
+% Reads element data from a file
   element = read(this, file, flags);
 end
 

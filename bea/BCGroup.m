@@ -2,7 +2,7 @@ classdef (Abstract) BCGroup < MeshComponent
 % BCGroup: generic region boundary condition class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -56,13 +56,13 @@ end
 
 %% Public methods
 methods
-  % Returns the dofs of this BC group
   function dofs = dofs(this)
+  % Returns the dofs of this BC group
     dofs = this.bcs(1).dofs;
   end
 
-  % Merges two BC groups
   function merge(this, group)
+  % Merges two BC groups
     assert(isa(group, 'BCGroup'), 'BC group expected');
     if group == this
       return;
@@ -77,8 +77,8 @@ methods
     group.bcs = BC.empty;
   end
 
-  % Applies the BCs in this BC group to the node set of its elements
   function x = apply(this)
+  % Applies the BCs in this BC group to the node set of its elements
     n = 10; % TODO
     p = gridSpace(n);
     nodes = NodeSet(this.elements);

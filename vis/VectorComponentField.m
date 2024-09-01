@@ -20,6 +20,7 @@ end
 
 %% Public methods
 methods
+  function this = VectorComponentField(field, dof)
   % Constructs a vector component field
   %
   % Input
@@ -28,7 +29,6 @@ methods
   % DOF: char array with any combination of 'x', 'y', and 'z', or an
   % array with any combination of 1, 2, and 3. DOF defines the
   % component(s) of the vector field used to generate scalar values
-  function this = VectorComponentField(field, dof)
     dof = BC.parseDofs(dof);
     dof = dof(dof > 0);
     if ischar(field)
@@ -43,13 +43,13 @@ methods
     this.dof = dof;
   end
 
-  % Sets the element of this field
   function setElement(this, element)
+  % Sets the element of this field
     this.vectorField.setElement(element);
   end
 
-  % Computes the field value at a point on the element of this field
   function x = valueAt(this, u, v)
+  % Computes the field value at a point on the element of this field
     x = this.vectorField.valueAt(u, v);
     x = x(this.dof);
     if size(x, 2) > 1

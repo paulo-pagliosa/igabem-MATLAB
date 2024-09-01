@@ -2,7 +2,7 @@ classdef Stack < handle
 % Stack: stack class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -23,10 +23,10 @@ end
 
 %% Public methods
 methods
-  % Constructs a stack. The parameters 'obj' and 'capacity' defines
-  % the type of object ('obj' can be defaulted constructed) and the
-  % initial capacity of the stack, respectively
   function this = Stack(obj, capacity)
+  % Constructs a stack. The input parameters OBJ and CAPACITY defines
+  % the type of object (OBJ can be defaulted constructed) and the
+  % initial capacity of the stack, respectively
     if nargin < 2 || capacity < this.DEFAULT_SIZE
       capacity = this.DEFAULT_SIZE;
     end
@@ -35,16 +35,16 @@ methods
     this.size = 0;
   end
 
-  % Pushes an array of objects onto the top of this stack
   function push(this, objs)
+  % Pushes an array of objects onto the top of this stack
     n = numel(objs);
     s = this.size;
     this.size = this.size + n;
     this.data(s + 1:this.size) = objs;
   end
 
-  % Pops an object from the top of this stack
   function obj = pop(this)
+  % Pops an object from the top of this stack
     if this.size == 0
       error('Empty stack');
     end
@@ -52,8 +52,8 @@ methods
     this.size = this.size - 1;
   end
 
-  % Is this stack empty?
   function b = isEmpty(this)
+  % Is this stack empty?
     b = this.size == 0;
   end
 end

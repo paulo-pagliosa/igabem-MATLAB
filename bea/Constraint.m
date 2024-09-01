@@ -2,7 +2,7 @@ classdef Constraint < BC
 % Constraint: element constraint class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -21,8 +21,8 @@ end
 
 %% Public static methods
 methods (Static)
-  % Constructs a constraint
   function c = New(id, element, dofs, evaluator, varargin)
+  % Constructs a constraint
     narginchk(4, inf);
     c = Constraint(id, element, BC.parseDofs(dofs));
     BC.parseProps(c, numel(dofs), evaluator, varargin{:});

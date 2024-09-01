@@ -2,7 +2,7 @@ classdef BezierElementReader < ElementReader
 % BezierElementReader: Bezier element reader class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -15,13 +15,13 @@ classdef BezierElementReader < ElementReader
 
 %% Public methods
 methods
-  % Constructor
   function this = BezierElementReader
+  % Constructs a Bezier element reader
     this@ElementReader('BezierElement');
   end
 
-  % Reads element data from a file
   function element = read(this, file, noFaces)
+  % Reads element data from a file
     elementInfo = fscanf(file, '%d', 3);
     id = elementInfo(1);
     nn = elementInfo(2);

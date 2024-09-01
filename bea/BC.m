@@ -2,7 +2,7 @@ classdef (Abstract) BC < MeshComponent
 % BC: generic element boundary condition class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -94,8 +94,8 @@ end
 
 %% Public methods
 methods
-  % Applies this boundary condition to the nodes of its element
   function x = apply(this, p)
+  % Applies this boundary condition to the nodes of its element
     n = this.element.nodeCount;
     idx = this.dofs(this.dofs > 0);
     if isnumeric(this.evaluator)
@@ -113,8 +113,8 @@ end
 
 %% Public static methods
 methods (Static)
-  % Parses a dof
   function dof = parseDof(dof)
+  % Parses a dof
     if ischar(dof)
       switch dof
         case 'x'
@@ -130,8 +130,8 @@ methods (Static)
     end
   end
 
-  % Parses XYZ dofs
   function dofs = parseDofs(dofs)
+  % Parses XYZ dofs
     n = numel(dofs);
     assert(n > 0 && n < 4, 'Bad dof dimension');
     temp = dofs;

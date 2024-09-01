@@ -2,7 +2,7 @@ classdef Material < handle
 % Material: elastic material class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -23,8 +23,8 @@ end
 
 %% Public methods
 methods
-  % Constructs a meterial
   function this = Material(E, mu)
+  % Constructs a material
     if nargin > 1
       this.set(E, mu);
     else
@@ -32,8 +32,8 @@ methods
     end
   end
 
-  % Sets the properties of this material
   function set(this, E, mu)
+  % Sets the properties of this material
     this.E = E;
     this.mu = mu;
     this.G = E / (2 * (1 + mu));
@@ -43,8 +43,8 @@ methods
     this.c1 = this.scale / (16 * pi * this.G * (1 - mu));
   end
 
-  % Sets the material scale (for test only)
   function setScale(this, scale)
+  % Sets the material scale (for test only)
     if scale ~= this.scale && scale >= 1
       this.scale = scale;
       this.c1 = scale / (16 * pi * this.G * (1 - this.mu));

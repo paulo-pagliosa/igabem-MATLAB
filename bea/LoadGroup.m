@@ -2,7 +2,7 @@ classdef LoadGroup < BCGroup
 % LoadGroup: region load class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -13,8 +13,8 @@ classdef LoadGroup < BCGroup
 
 %% Public methods
 methods
-  % Constructs a load group
   function this = LoadGroup(id, elements, evaluator, varargin)
+  % Constructs a load group
     narginchk(3, inf);
     this = this@BCGroup(id, elements);
     [evaluator, dir] = Load.parseArgs(evaluator, varargin{:});

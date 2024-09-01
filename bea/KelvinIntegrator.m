@@ -2,7 +2,7 @@ classdef KelvinIntegrator < matlab.mixin.SetGet
 % KelvinIntegrator: Kelvin-based integrator class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -38,15 +38,15 @@ end
 
 %% Public methods
 methods
-  % Constructs an integrator
   function this = KelvinIntegrator(material)
+  % Constructs an integrator
     this.material = material;
     this.srMethod = '4T';
   end
 
+  function set.dflGaussRule(this, value)
   % Sets the number of Gauss points above which a regular quad
   % region may be divided along a direction
-  function set.dflGaussRule(this, value)
     if value < 2 || value > 8
       fprintf("'dflGaussRule' must be in range [2,8]\n");
     else
@@ -54,9 +54,9 @@ methods
     end
   end
 
+  function set.triGaussRule(this, value)
   % Sets the number of Gauss points to be used for integration
   % of a triangular region (in both directions)
-  function set.triGaussRule(this, value)
     if value < 2 || value > 8
       fprintf("'triGaussRule' must be in range [2,8]\n");
     else
@@ -64,9 +64,9 @@ methods
     end
   end
 
-  % Sets the number of Gauss points to be used for
-  % outside integration (0: adaptive subdivision)
   function set.outGaussRule(this, value)
+  % Sets the number of Gauss points to be used for outside
+  % integration (0: adaptive subdivision)
     if value ~= 0 && value < 2
       fprintf("'outGaussRule' must be 0 or greater than to 1\n");
     else
@@ -74,8 +74,8 @@ methods
     end
   end
 
-  % Sets the max subdivision level of a quad region
   function set.maxDepth(this, value)
+  % Sets the max subdivision level of a quad region
     if value < 0 || value > 4
       fprintf("'maxDepth' must be in range [0,4]\n");
     else
@@ -83,9 +83,9 @@ methods
     end
   end
 
+  function set.minRatio(this, value)
   % Sets the aspect ratio of the image of a region above which
   % the region is divided along a direction (0: no division)
-  function set.minRatio(this, value)
     if value ~= 0 && value < 1
       fprintf("'minRatio' must be 0 or greater than or equal to 1\n");
     else
@@ -93,8 +93,8 @@ methods
     end
   end
 
-  % Sets the method to be used for integration of a singular region
   function set.srMethod(this, value)
+  % Sets the method to be used for integration of a singular region
     value = upper(value);
     switch value
       case '4T'
@@ -106,8 +106,8 @@ methods
     end
   end
 
-  % Performs outside integration
   function [c, h, g, x] = outsideIntegration(this, p, element)
+  % Performs outside integration
     out = this.initResults(element);
     r = QuadRegion.default;
     if this.outGaussRule == 0
@@ -126,8 +126,8 @@ methods
     x = out.x;
   end
 
-  % Performs inside integration
   function [c, h, g, x] = insideIntegration(this, csi, p, element)
+  % Performs inside integration
     out = this.initResults(element);
     region = QuadRegion.default;
     if this.minRatio == 0
@@ -151,8 +151,8 @@ methods (Access = protected)
     [U, T] = Kelvin3.eval(r, d, N, this.material);
   end
 
-  % Integrates a regular region using nu x nv Gauss points
   function out = integrateRegion(this, p, element, region, nu, nv, out)
+  % Integrates a regular region using nu x nv Gauss points
     [xgu, wgu] = this.gp.get(nu);
     [xgv, wgv] = this.gp.get(nv);
     rJ = region.jacobian;
@@ -179,8 +179,8 @@ methods (Access = protected)
     out.x = temp;
   end
 
-  % Integrates a regular region with adaptive subdivision
   function out = evalRegion(this, p, element, region, out)
+  % Integrates a regular region with adaptive subdivision
     splitDepth = this.maxDepth - region.depth;
     stack = Stack(QuadRegion, 3 * splitDepth + 1);
     stack.push(region);
@@ -215,8 +215,8 @@ methods (Access = protected)
     end
   end
 
-  % Integrates a triangle (degenerated quad) using n x n Gauss points
   function out = integrateTriangle(this, p, element, v, n, out)
+  % Integrates a triangle (degenerated quad) using n x n Gauss points
     triangle = QuadTriangle(v(1, :), v(2, :), v(3, :));
     [xg, wg] = this.gp.get(n);
     % Spatial position of the Gauss points
@@ -243,8 +243,8 @@ methods (Access = protected)
     out.x = temp;
   end
 
-  % Integrates a singular region with subdivision into triangles
   function out = evalSingularRegion4T(this, csi, p, element, region, out)
+  % Integrates a singular region with subdivision into triangles
     o = region.o;
     c = region.s + o;
     n = this.triGaussRule;
@@ -262,9 +262,9 @@ methods (Access = protected)
     end
   end
 
+  function out = evalSingularRegionTR(this, csi, p, element, region, out)
   % Integrates a singular region with subdivision into triangles and
   % quad subregions
-  function out = evalSingularRegionTR(this, csi, p, element, region, out)
     o = region.o;
     s = region.s;
     x = (csi - o) ./ s * 2 - [1 1];
@@ -297,8 +297,8 @@ methods (Access = protected)
     end
   end
 
-  % Subdivides a singular region according to its image aspect ratio
   function out = subdSingularRegion(this, csi, p, element, region, out)
+  % Subdivides a singular region according to its image aspect ratio
     depth = region.depth;
     stack = Stack(QuadRegion, 5);
     stack.push(region);

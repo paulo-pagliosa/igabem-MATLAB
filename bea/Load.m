@@ -17,8 +17,8 @@ classdef Load < BC
 
 %% Public static methods
 methods (Static)
-  % Constructs a load
   function l = New(id, element, evaluator, varargin)
+  % Constructs a load
     narginchk(3, inf);
     l = Load(id, element);
     [evaluator, dir] = Load.parseArgs(evaluator, varargin{:});
@@ -28,6 +28,7 @@ end
 
 %% Private static methods
 methods (Static, Access = {?BC, ?BCGroup})
+  function f = torque(O, D, S)
   % Compute the force corresponding to a torque
   %
   % Input
@@ -41,7 +42,6 @@ methods (Static, Access = {?BC, ?BCGroup})
   % f: function returning the force, F, corresponding to the torque
   % T=r^F=S*|r|*D, i.e., F=S*(D^r), where r=P-P', being P'=O+(p.D)D,
   % p=P-O, and P the coordinates of the application point of F
-  function f = torque(O, D, S)
     D = D ./ norm(D);
     f = @force;
 
@@ -79,8 +79,8 @@ end
 
 %% Public methods
 methods
-  % Constructs a null load
   function this = Load(id, element)
+  % Constructs a null load
     this = this@BC(id, element);
     this.dofs = [1 2 3];
     this.direction = [];

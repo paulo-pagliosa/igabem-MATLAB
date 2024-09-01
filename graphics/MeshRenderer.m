@@ -50,8 +50,8 @@ end
 
 %% Public methods
 methods
-  % Constructs a mesh renderer
   function this = MeshRenderer(axes, mesh, redraw)
+  % Constructs a mesh renderer
     assert(isa(mesh, 'Mesh'), 'Mesh expected');
     assert(~mesh.empty, 'Mesh is empty');
     this = this@Renderer(axes);
@@ -62,40 +62,40 @@ methods
     end
   end
 
-  % Redraws the mesh of this renderer
   function redraw(this)
+  % Redraws the mesh of this renderer
     this.render;
   end
 
-  % Sets the mesh node color
   function setNodeColor(this, color)
+  % Sets the mesh node color
     this.nodeProperties.color = color;
     this.flags.node = false;
     this.showNodes(true);
   end
 
-  % Sets the patch vertex color
   function setVertexColor(this, color)
+  % Sets the patch vertex color
     this.vertexProperties.color = color;
     this.flags.vertex = false;
     this.showVertices(true);
   end
 
-  % Sets the patch edge color
   function setEdgeColor(this, color)
+  % Sets the patch edge color
     this.edgeProperties.color = color;
     this.flags.edge = false;
     this.showEdges(true);
   end
 
-  % Sets the patch face color
   function setFaceColor(this, color)
+  % Sets the patch face color
     this.faceColor = color;
     set(this.meshPlot, 'FaceColor', color);
   end
 
-  % Sets the patch face color
   function setFaceAlpha(this, alpha)
+  % Sets the patch face color
     if alpha < 0
       alpha = 0;
     elseif alpha > 1
@@ -105,8 +105,8 @@ methods
     set(this.meshPlot, 'FaceAlpha', alpha);
   end
 
-  % Sets the scale of normals
   function setNormalScale(this, scale)
+  % Sets the scale of normals
     if scale == this.normalScale || scale < 0
       return;
     end
@@ -116,16 +116,16 @@ methods
     end
   end
 
-  % Sets the color of normals
   function setNormalColor(this, color)
+  % Sets the color of normals
     this.normalColor = color;
     if ~isempty(this.vertexNormalPlot)
       set(this.vertexNormalPlot, 'Color', color);
     end
   end
 
-  % Shows the patch vertices
   function showVertices(this, flag)
+  % Shows/hide patch vertices
     if nargin < 2
       flag = true;
     end
@@ -141,8 +141,8 @@ methods
     set(this.meshPlot, 'MarkerEdgeColor', color, 'MarkerFaceColor', color);
   end
 
-  % Shows the patch edges
   function showEdges(this, flag)
+  % Shows/hides patch edges
     if nargin < 2
       flag = true;
     end
@@ -158,8 +158,8 @@ methods
     set(this.meshPlot, 'EdgeColor', color);
   end
 
-  % Shows the patch normals
   function showVertexNormals(this, flag)
+  % Shows/hides patch normals
     if nargin < 2
       flag = true;
     end
@@ -170,8 +170,8 @@ methods
   this.renderVertexNormals;
   end
   
-  % Shows the mesh nodes
   function showNodes(this, flag)
+  % Shows/hides mesh nodes
     if nargin < 2
       flag = true;
     end
@@ -182,8 +182,8 @@ methods
   this.renderMeshNodes;
   end
   
-  % Shows the color map for the mesh scalars
   function showColorMap(this, flag)
+  % Shows/hides the color map for mesh scalars
     if nargin == 1
       flag = true;
     end

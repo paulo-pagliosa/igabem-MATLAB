@@ -2,7 +2,7 @@ classdef (Abstract) Solver < handle
 % Solver: generic static linear solver class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -37,6 +37,7 @@ end
 
 %% Public methods
 methods
+  % Sets the msh of this solver
   function set.mesh(obj, value)
     assert(isa(value, 'Mesh'), 'Mesh expected');
     obj.mesh = value;
@@ -44,6 +45,7 @@ methods
 end
 
 methods
+  % Performs the analysis
   function execute(this)
     fprintf('**Starting analysis...\n');
     time = tic;

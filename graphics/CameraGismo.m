@@ -2,7 +2,7 @@ classdef CameraGismo < handle
 % CameraGismo: camera gismo class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -27,26 +27,26 @@ end
 
 %% Public methods
 methods
-  % Constructs a camera gismo
   function this = CameraGismo(client)
+  % Constructs a camera gismo
     assert(isa(client, 'matlab.graphics.axis.Axes'), 'Axes expected');
     this.axes = CameraGismo.makeAxes(client);
     this.client = client;
     this.render;
   end
 
-  % Returns the view of this camera gismo
   function value = get.view(this)
+  % Returns the view of this camera gismo
     value = this.axes.View;
   end
 
-  % Sets the view of this camera gismo
   function set.view(this, value)
+  % Sets the view of this camera gismo
     this.axes.View = value;
   end
 
-  % Shows/hides this camera gismo
   function set.visible(this, value)
+  % Shows/hides this camera gismo
     set(this.axes.Children, 'Visible', value);
   end
 end
@@ -82,7 +82,7 @@ methods (Access = private)
   end
 end
 
-% Private static methods
+%% Private static methods
 methods (Static, Access = private)
   function a = makeAxes(client)
     f = client.Parent;

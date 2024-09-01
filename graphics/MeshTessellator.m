@@ -21,8 +21,8 @@ end
 
 %% Public methods
 methods
-  % Constructs a mesh tessellator
   function this = MeshTessellator(mesh, resolution)
+  % Constructs a mesh tessellator
     narginchk(1, 2);
     this.mesh = mesh;
     if nargin == 2
@@ -34,13 +34,13 @@ methods
     this.execute;
   end
 
-  % Returns the number of tessellated patches
   function n = patchCount(this)
+  % Returns the number of tessellated patches
     n = numel(this.patches);
   end
 
-  % Sets the resolution of this tessellator
   function b = setResolution(this, value)
+  % Sets the resolution of this tessellator
     b = value > 0 && value ~= this.resolution;
     if b
       this.resolution = value;
@@ -50,8 +50,8 @@ methods
     end
   end
 
-  % Flips the normals of the vertex submeshes
   function b = flipNormals(this, shell, flag)
+  % Flips vertex normals of a mesh shell
     assert(isa(shell, 'Shell'), 'Shell expected');
     if ~(shell.mesh == this.mesh)
       error('Bad shell');
@@ -77,8 +77,8 @@ methods
     b = true;
   end
 
-  % Executes the tessellation
   function execute(this, index)
+  % Executes the tessellation
     narginchk(1, 2);
     if this.mesh.triangular
       this.handleTrianguleMesh;

@@ -2,7 +2,7 @@ classdef (Abstract) ShapeFunction < handle & matlab.mixin.Heterogeneous
 % ShapeFunction: generic shape function class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -16,22 +16,22 @@ classdef (Abstract) ShapeFunction < handle & matlab.mixin.Heterogeneous
 
 %% Public methods
 methods (Abstract)
-  % Evaluates the shape functions at (U,V)
   N = eval(this, u, v);
-  % Evaluates the derivatives of the shape functions at (U,V)
+  % Evaluates the shape functions at (U,V)
   [Du, Dv] = diff(this, u, v);
+  % Evaluates the derivatives of the shape functions at (U,V)
 end
 
 methods
-  % Interpolates nodal values X at (U,V)
   function [x, N] = interpolate(this, x, u, v)
+  % Interpolates nodal values X at (U,V)
     N = this.eval(u, v);
     x = ShapeFunction.weightedSum(N, x);
   end
 
+  function [xp, xu, xv, dn] = computeNormal(this, x, u, v)
   % Computes normal at (u,v).
   % X is assumed to be nodal positions and weights
-  function [xp, xu, xv, dn] = computeNormal(this, x, u, v)
     u0 = u;
     v0 = v;
     maxIt = 10;

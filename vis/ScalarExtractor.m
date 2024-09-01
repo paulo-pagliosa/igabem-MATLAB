@@ -26,6 +26,7 @@ end
 
 %% Public methods
 methods
+  function this = ScalarExtractor(tessellator, field, varargin)
   % Constructs a scalar extractor
   %
   % Input
@@ -37,7 +38,6 @@ methods
   % array with any combination of 1, 2, and 3. VARARGIN{1}
   % defines the component(s) of the displacement or traction
   % field used to set the scalar field to be extracted
-  function this = ScalarExtractor(tessellator, field, varargin)
     this = this@FieldExtractor(tessellator);
     if nargin < 2
       this.setField('u', 'z');
@@ -46,8 +46,8 @@ methods
     end
   end
 
-  % Sets the field of this extractor
   function setField(this, field, varargin)
+  % Sets the field of this extractor
     if ischar(field)
       if nargin < 3
         dof = 'z';
@@ -59,8 +59,8 @@ methods
     setField@FieldExtractor(this, field);
   end
 
-  % Computes the field values for every point from the mesh tessellation
   function execute(this)
+  % Computes the field values for every point from the mesh tessellation
     this.minValue = +Inf;
     this.maxValue = -Inf;
     execute@FieldExtractor(this);

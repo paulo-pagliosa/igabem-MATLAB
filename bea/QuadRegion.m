@@ -2,7 +2,7 @@ classdef QuadRegion
 % QuadRegion: quadrangular region class
 %
 % Authors: M> peres and P. Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -23,8 +23,8 @@ end
 
 %% Public methods
 methods
-  % Constructs a quad region
   function this = QuadRegion(o, s, depth)
+  % Constructs a quad region
     if nargin > 0
       this.o = o;
       this.s = s;
@@ -32,28 +32,28 @@ methods
     end
   end
 
-  % Computes the Jacobian of this quad region
   function J = jacobian(this)
+  % Computes the Jacobian of this quad region
     J = this.s(1) * this.s(2) * 0.25;
   end
 
-  % Computes the domain coordinate u at CSI in [-1:1]
   function csi = u(this, csi)
+  % Computes the domain coordinate u at CSI in [-1:1]
     csi = this.o(1) + this.s(1) * (csi + 1) * 0.5;
   end
 
-  % Computes the domain coordinate v at CSI in [-1:1]
   function csi = v(this, csi)
+  % Computes the domain coordinate v at CSI in [-1:1]
     csi = this.o(2) + this.s(2) * (csi + 1) * 0.5;
   end
 
-  % Computes the center of this quad region
   function c = center(this)
+  % Computes the center of this quad region
     c = this.o + this.s * 0.5;
   end
 
-  % Splits this quad region into 2 subregions along u
   function sr = splitU(this, csi)
+  % Splits this quad region into 2 subregions along u
     assert(csi >= 0 && csi <= 1);
     o1 = this.o;
     s2 = this.s;
@@ -62,8 +62,8 @@ methods
     sr = [QuadRegion(o1, s2, d2) QuadRegion([o1(1) + s2(1), o1(2)], s2, d2)];
   end
 
-  % Splits this quad region into 2 subregions along v
   function sr = splitV(this, csi)
+  % Splits this quad region into 2 subregions along v
     assert(csi >= 0 && csi <= 1);
     o1 = this.o;
     s2 = this.s;

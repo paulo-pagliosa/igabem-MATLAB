@@ -2,7 +2,7 @@ classdef TriangleMesh < handle
 % TriangleMesh: triangle mesh class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -19,8 +19,8 @@ end
 
 %% Public methods
 methods
-  % Constructs a triangle mesh
   function this = TriangleMesh(id, vertices, faces, normals)
+  % Constructs a triangle mesh
     this.id = id;
     this.vertices = vertices;
     this.faces = faces;
@@ -29,14 +29,14 @@ methods
     end
   end
 
-  % Sets the vertex normals of this triangle mesh
   function setVertexNormals(this, normals)
+  % Sets the vertex normals of this triangle mesh
     assert(all(size(normals) == size(this.vertices)));
     this.vertexNormals = normals;
   end
 
-  % Sets the vertex scalats of this triangle mesh
   function setScalars(this, scalars)
+  % Sets the vertex scalats of this triangle mesh
     assert(numel(scalars) == size(this.vertices, 1));
     this.scalars = scalars;
   end

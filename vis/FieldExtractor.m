@@ -24,14 +24,14 @@ end
 
 %% Public methods
 methods
-  % Sets the field of this extractor
   function setField(this, field)
+  % Sets the field of this extractor
     assert(isa(field, 'Field'), 'Field expected');
     this.field = field;
   end
 
-  % Computes the field values for every point from the mesh tessellation
   function execute(this)
+  % Computes the field values for every point from the mesh tessellation
     assert(~isempty(this.field), 'Field not set');
     mesh = this.tessellator.mesh;
     ne = mesh.elementCount;

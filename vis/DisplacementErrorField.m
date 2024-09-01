@@ -19,6 +19,7 @@ end
 
 %% Public methods
 methods
+  function this = DisplacementErrorField(epp, dof, avHandle)
   % Constructs a displacement error field
   %
   % Input
@@ -35,7 +36,6 @@ methods
   % [X,Y,Z] of the point, and a reference to the element
   %
   % See also: class EPP
-  function this = DisplacementErrorField(epp, dof, avHandle)
     assert(isa(epp, 'EPP'), 'Elastostatic post-processor expected');
     assert(isa(avHandle, 'function_handle'), 'Actual values handle expected');
     dof = BC.parseDofs(dof);
@@ -56,8 +56,8 @@ methods
     end
   end
 
-  % Sets the element of this field
   function setElement(this, element)
+  % Sets the element of this field
     fprintf('Evaluating element %d/%d\n', element.id, this.eCount);
     setElement@ErrorField(this, element);
   end

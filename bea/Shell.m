@@ -2,7 +2,7 @@ classdef Shell < MeshComponent
 % Shell: shell class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -18,8 +18,8 @@ end
 
 %% Public methods
 methods
-  % Constructor
   function this = Shell(mesh, id)
+  % Constructs a mesh shell
     this = this@MeshComponent(mesh, id);
   end
 end

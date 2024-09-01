@@ -2,7 +2,7 @@ classdef (Abstract) Element < MeshComponent
 % Element: generic element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -46,33 +46,33 @@ end
 
 %% Public methods
 methods
-  % Returns the node set of this element
   function nodes = nodeSet(these)
+  % Returns the node set of this element
     nodes = NodeSet(these).nodes;
   end
 
-  % Returns the number of nodes of this element
   function n = nodeCount(this)
+  % Returns the number of nodes of this element
     n = numel(this.nodes);
   end
 
-  % Returns the node ids of this element
   function ids = nodeIds(this)
+  % Returns the node ids of this element
     ids = [this.nodes(:).id]';
   end
 
-  % Returns the node positions of this element
   function p = nodePositions(this)
+  % Returns the node positions of this element
     p = vertcat(this.nodes.position);
   end
 
-  % Returns the node displacements of this element
   function u = nodeDisplacements(this)
+  % Returns the node displacements of this element
     u = vertcat(this.nodes.u);
   end
 
-  % Returns the node traction values of this element
   function t = nodeTractions(this)
+  % Returns the node traction values of this element
     n = this.nodeCount;
     t = zeros(n, 3);
     for i = 1:n
@@ -82,19 +82,19 @@ methods
     end
   end
 
-  % Moves the nodes of this element
   function move(this, t)
+  % Moves the nodes of this element
     this.nodes.move(t);
   end
 
-  % Computing the position at (U,V)
   function [p, N] = positionAt(this, u, v)
+  % Computes the position at (U,V)
     [p, N] = this.shapeFunction.interpolate(this.nodePositions, u, v);
     p = p(1:3) / p(4);
   end
 
-  % Computing the normal at (U,V)
   function [N, J] = normalAt(this, u, v)
+  % Computing the normal at (U,V)
     [~, ~, N] = this.tangentAt(u, v);
     if this.shell.flipNormalFlag
       N = N * -1;
@@ -103,8 +103,8 @@ methods
     N = N ./ J;
   end
 
-  % Compute the tangents and normal at (U,V)
   function [su, sv, N] = tangentAt(this, u, v)
+  % Compute the tangents and normal at (U,V)
     [~, su, sv, N] = this.shapeFunction.computeNormal(this.nodePositions, ...
       u, ...
       v);

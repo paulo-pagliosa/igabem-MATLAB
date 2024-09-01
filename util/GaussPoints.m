@@ -2,7 +2,7 @@ classdef GaussPoints < handle
 % GaussPoints: Gauss points cache class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -17,6 +17,7 @@ end
 %% Public methods
 methods
   function [x, w] = get(this, n)
+  % Returns Gauss points and weights from cache
     if size(this.cache, 1) <= n || numel(this.cache{n, 1}) == 0
       [x, w] = computeGaussPoints(n, -1, 1);
       this.cache{n, 1} = x;

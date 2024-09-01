@@ -2,7 +2,7 @@ classdef LoadPoint < handle
 % LoadPoint: load point class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -23,16 +23,16 @@ end
 
 %% Public methods
 methods
-  % Constructs a load point
   function this = LoadPoint(elements, localPositions)
+  % Constructs a load point
     if nargin > 1
       this.elements = elements;
       this.localPositions = localPositions;
     end
   end
 
-  % Computes the spatial position of this load point
   function [p, N] = position(this)
+  % Computes the spatial position of this load point
     p = this.localPositions(1, :);
     [p, N] = this.elements(1).positionAt(p(1), p(2));
   end

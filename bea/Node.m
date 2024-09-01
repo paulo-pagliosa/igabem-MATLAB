@@ -2,7 +2,7 @@ classdef Node < MeshComponent
 % Node: node class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -30,14 +30,14 @@ end
 
 %% Public methods
 methods
-  % Constructs a node
   function this = Node(mesh, id, position)
+  % Constructs a node
     this = this@MeshComponent(mesh, id);
     this.position = position;
   end
 
-  % Moves a set of nodes
   function move(these, u)
+  % Moves a set of nodes
     assert(size(u, 2) == 3, '3D point expected');
     n = numel(these);
     if (size(u, 1) ~= n)

@@ -2,7 +2,7 @@ classdef ConstraintGroup < BCGroup
 % ConstraintGroup: region constraint class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -13,8 +13,8 @@ classdef ConstraintGroup < BCGroup
 
 %% Public methods
 methods
-  % Constructs a constraint group
   function this = ConstraintGroup(id, elements, dofs, evaluator, varargin)
+  % Constructs a constraint group
     narginchk(4, inf);
     this = this@BCGroup(id, elements);
     ndof = numel(dofs);

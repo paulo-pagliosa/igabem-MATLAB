@@ -31,8 +31,8 @@ end
 
 %% Public methods
 methods
-  % Sets the element of this field
   function setElement(this, element)
+  % Sets the element of this field
     assert(isa(element, 'Element'), 'Element expected');
     this.shapeFunction = element.shapeFunction;
     if ~isempty(this.nodalValuesHandle)
@@ -44,8 +44,8 @@ methods
     end
   end
 
-  % Computes the field value at a point on the element of this field
   function x = valueAt(this, u, v)
+  % Computes the field value at a point on the element of this field
     x = this.shapeFunction.interpolate(this.nodalValues, u, v);
   end
 end

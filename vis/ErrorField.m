@@ -24,6 +24,7 @@ end
 
 %% Public methods
 methods
+  function this = ErrorField(handle)
   % Constructs an error field
   %
   % Input
@@ -33,26 +34,25 @@ methods
   % as input paramaters the parametric coordinates [U,V] of a point on
   % an element at which the values are evaluated, the spatial position
   % [X,Y,Z] of the point, and a reference to the element
-  function this = ErrorField(handle)
     assert(isa(handle, 'function_handle'), 'Function handle expected');
     this.valuesHandle = handle;
   end
 
-  % Sets the error type of this field
   function setErrorType(this, errorType)
+  % Sets the error type of this field
     if errorType ~= this.errorType
       this.errorType = errorType;
       this.handleErrorTypeChange;
     end
   end
 
-  % Sets the element of this field
   function setElement(this, element)
+  % Sets the element of this field
     this.element = element;
   end
 
-  % Computes the field value at a point on the element of this field
   function x = valueAt(this, u, v)
+  % Computes the field value at a point on the element of this field
     p = this.element.positionAt(u, v);
     [mv, av] = this.valuesHandle([u, v], p, this.element);
     x = abs(mv - av);

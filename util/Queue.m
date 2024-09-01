@@ -2,7 +2,7 @@ classdef Queue < handle
 % Queue: queue class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -23,9 +23,9 @@ end
 
 %% Public methods
 methods
-  % Constructs a queue. The parameter 'capacity' defines the
-  % initial capacity of the queue
   function this = Queue(capacity)
+  % Constructs a queue. The input parameter CAPACITY defines the
+  % initial capacity of the queue
     if nargin < 1 || capacity < this.DEFAULT_SIZE
       capacity = this.DEFAULT_SIZE;
     end
@@ -33,8 +33,8 @@ methods
     this.size = 0;
   end
 
-  % Adds a value at the tail of this queue
   function add(this, value)
+  % Adds a value at the tail of this queue
     n = length(value);
     s = this.size - length(this.data) + n;
     if s > 0
@@ -46,13 +46,13 @@ methods
     this.data(s : this.size) = value;
   end
 
-  % Transforms this queue into an array
   function d = toArray(this)
+  % Transforms this queue into an array
     d = this.data(1 : this.size);
   end
 
-  % Removes the value from the head of this queue
   function head = remove(this)
+  % Removes the value from the head of this queue
     if this.size == 0
       error('Empty queue');
     end
@@ -62,8 +62,8 @@ methods
     this.data(1 : this.size) = this.data(2 : last);
   end
 
-  % Is this empty empty?
   function b = isEmpty(this)
+  % Is this empty empty?
     b = this.size == 0;
   end
 end

@@ -16,6 +16,7 @@ end
 
 %% Public methods
 methods
+  function this = VectorField(handle, label)
   % Constructs a vector field
   %
   % Input
@@ -26,7 +27,6 @@ methods
   % In this case, the vectors are the displacements or tractions of the
   % element's nodes, respectively
   % LABEL: field label
-  function this = VectorField(handle, label)
     if ischar(handle)
       switch handle
         case 'u'

@@ -2,7 +2,7 @@ classdef NodeSet < handle
 % NodeSet: node set class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -18,8 +18,8 @@ end
 
 %% Public methods
 methods
-  % Contructs a node set from a set of elements
   function this = NodeSet(element)
+  % Contructs a node set from a set of elements
     this.nodes = element.nodes;
     n = numel(element);
     if n > 1
@@ -35,13 +35,13 @@ methods
     end
   end
 
-  % Returns the number of nodes in this node set
   function n = size(this)
+  % Returns the number of nodes in this node set
     n = numel(this.nodes);
   end
 
-  % Returns the index of the nodes in this node set
   function index = index(this, node)
+  % Returns the index of the nodes in this node set
     n = numel(node);
     index = zeros(n, 1, 'int32');
     for k = 1:n

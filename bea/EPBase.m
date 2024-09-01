@@ -2,7 +2,7 @@ classdef (Abstract) EPBase < handle
 % EPBase: base class for elastostatic processors
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -28,14 +28,14 @@ end
 
 %% Public methods
 methods
-  % Sets the material of this object
   function set.material(obj, value)
+  % Sets the material of this object
     assert(isa(value, 'Material'), 'Material expected');
     obj.material = value;
   end
   
-  % Sets properties of the integrator of this object
   function set(this, varargin)
+  % Sets properties of the integrator of this object
     n = nargin - 1;
     assert(rem(n, 2) == 0, 'Pair property name/value missing');
     for i = 1:2:n
@@ -43,8 +43,8 @@ methods
     end
   end
 
-  % Returns the value of a property of the integrator of this object
   function value = get(this, name)
+  % Returns the value of a property of the integrator of this object
     value = this.integrator.get(name);
   end
 end

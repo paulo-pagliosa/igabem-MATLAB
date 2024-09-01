@@ -14,13 +14,13 @@ classdef VectorExtractor < FieldExtractor
 
 %% Public methods
 methods
+  function this = VectorExtractor(tessellator, field)
   % Constructs a vector extractor
   %
   % Input
   % =====
   % TESSELLATOR: tesselattor object
   % FIELD: vector field object or 'u' or 't'
-  function this = VectorExtractor(tessellator, field)
     this = this@FieldExtractor(tessellator);
     if nargin < 2
       field = 'u';
@@ -28,8 +28,8 @@ methods
     this.setField(field);
   end
 
-  % Sets the field of this extractor
   function setField(this, field)
+  % Sets the field of this extractor
     if ischar(field)
       field = VectorField(field);
     end

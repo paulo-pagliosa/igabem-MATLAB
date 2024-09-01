@@ -2,7 +2,7 @@ classdef LinearTriangle < Element
 % LinearTriangla: 3D linear triangle element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -13,8 +13,8 @@ classdef LinearTriangle < Element
 
 %% Public methods
 methods
-  % Constructs a linear triangle
   function this = LinearTriangle(mesh, id, nodeIds)
+  % Constructs a linear triangle
     assert(numel(nodeIds) == 3, 'Bad triangle node ids');
     this = this@Element(mesh, id, nodeIds);
     this.shapeFunction = LinearTriangleShapeFunction;

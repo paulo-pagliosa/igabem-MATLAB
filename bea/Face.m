@@ -2,7 +2,7 @@ classdef Face < handle
 % Face: control mesh face class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 31/08/2024
 %
 % Description
 % ===========
@@ -18,6 +18,7 @@ end
 %% Public methods
 methods
   function this = Face(mesh, nodeIds)
+  % Constructs a face
     if nargin > 0
       if numel(nodeIds) ~= 4
         error('Four face node ids expected');
