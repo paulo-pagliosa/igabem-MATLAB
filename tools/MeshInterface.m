@@ -411,44 +411,83 @@ methods
     end
   end
   
-  %TODO: optimize (Peres)
-  function selectRegions(this)
-    Nids = [];
-    Rids = [];
-    Eids = [];
-    processedNids = [];
-    % Selected elements define the regions that will be selected
-    E = this.selectedElements;
-    for i = 1:numel(E)
-      elem = E(i);
-      Nids = [Nids elem.nodes.id];
-      Rids = [Rids; elem.nodeRegions];
-    end
-    i=1;
-    while i < numel(Nids)
-      nId = Nids(i);
-      rId = Rids(i);
-      i = i + 1;
-      if numel(find(ismember(processedNids, nId))) > 0
-        continue;
+  function selectRegions(this, eids)
+  % Selects element regions
+  %
+  % Input
+  % =====
+  % THIS: reference to a MeshInterface object
+  % EIDS: optional array of element IDs
+  %
+  % Description
+  % ===========
+  % Selects all elements belonging to the regions containing a set
+  % of elements, E. The input parameter EIDS provides the IDs of
+  % the elements in E. If EIDS is omitted, E is given by the current
+  % selected elements. The algorithm uses a stack of node IDs e node
+  % regions. For each element in E:
+  % - Push onto the stack the node IDs and node regions of all
+  %   unvisited element nodes
+  % - While the stack is not empty:
+  %   - Pop from the stack the ID (NID) and region (RID) of a node
+  %   - For each unselected element influeced by the node:
+  %     - If the region of the element node (whose ID is) NID is
+  %       equal to RID, then:
+  %       - Select the element
+  %       - Push onto the stack the node IDs and node regions of
+  %         all unvisited element nodes
+    if nargin > 1 && ~isempty(eids)
+      if any(eids < 1) || any(eids > this.mesh.elementCount)
+        fprintf('Invalid element index');
+        return;
       end
-      processedNids = [processedNids nId];
-      nodeElemIdAll = this.mesh.nodeElements{nId};
-      nodeElemIdRegion = [];
-      for j = 1:numel(nodeElemIdAll)
-        eId = nodeElemIdAll(j);
-        elem = this.mesh.elements(eId);
-        nIndexElem = ismember([elem.nodes.id],nId);
-        if(numel(find(ismember(Eids,eId))) == 0 && ...
-            rId == elem.nodeRegions(nIndexElem))
-          nodeElemIdRegion = union(nodeElemIdRegion, eId);
-          Nids = [Nids elem.nodes.id];
-          Rids = [Rids; elem.nodeRegions];
-        end
-      end 
-      Eids = union(Eids, nodeElemIdRegion);
+      this.deselectAllElements;
+      E = this.mesh.elements(unique(eids, 'stable'));
+    else
+      % Selected elements define the regions to be selected
+      E = this.selectedElements;
+      if isempty(E)
+        fprintf('No selected element');
+        return;
+      end
     end
-    this.selectElements(Eids);
+    pushedNodeFlag = zeros(this.mesh.nodeCount, 1, 'logical');
+    nidStack = Stack(0);
+    ridStack = Stack(0);
+    eids = [];
+    for e = 1:numel(E)
+      pushNodes(E(e));
+      while ~nidStack.isEmpty
+        nid = nidStack.pop;
+        rid = ridStack.pop;
+        nodeElements = this.mesh.nodeElements{nid};
+        for k = 1:numel(nodeElements)
+          eid = nodeElements(k);
+          if ~ismember(eid, eids)
+            element = this.mesh.elements(eid);
+            nids = element.nodeIds;
+            [~, nidx] = ismember(nid, nids);
+            if rid == element.nodeRegions(nidx)
+              eids = union(eids, eid);
+              pushNodes(element);
+            end
+          end
+        end
+      end
+    end
+    this.selectElements(eids);
+
+    function pushNodes(element)
+      nodes = element.nodes;
+      for i = 1:numel(nodes)
+        id = nodes(i).id;
+        if ~pushedNodeFlag(id)
+          nidStack.push(id);
+          ridStack.push(element.nodeRegions(i));
+          pushedNodeFlag(id) = true;
+        end
+      end
+    end
   end
 
   function selectAllElements(this)

@@ -53,8 +53,13 @@ methods
   end
 
   function b = isEmpty(this)
-  % Is this stack empty?
+  % Returns true if this stack is empty
     b = this.size == 0;
+  end
+
+  function d = toArray(this)
+  % Transforms this stack into an array
+    d = this.data(1:this.size);
   end
 end
 
