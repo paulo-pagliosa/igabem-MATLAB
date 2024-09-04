@@ -307,7 +307,7 @@ methods
     this.showColorMap(flag);
   end
 
-  function setScalar(this, field, varargin)
+  function setScalars(this, field, varargin)
     this.scalarExtractor.setField(field, varargin{:});
     this.updateColorMap;
   end
