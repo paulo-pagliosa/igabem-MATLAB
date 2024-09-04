@@ -2,7 +2,7 @@ classdef DisplacementErrorField < ErrorField
 % DisplacementErrorField: displacement error field class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 04/09/2024
 %
 % Description
 % ===========
@@ -58,7 +58,7 @@ methods
 
   function setElement(this, element)
   % Sets the element of this field
-    fprintf('Evaluating element %d/%d\n', element.id, this.eCount);
+    fprintf('Evaluating errors on element %d/%d\n', element.id, this.eCount);
     setElement@ErrorField(this, element);
   end
 end

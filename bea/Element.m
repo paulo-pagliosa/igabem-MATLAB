@@ -2,7 +2,7 @@ classdef (Abstract) Element < MeshComponent
 % Element: generic element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 04/09/2024
 %
 % Description
 % ===========
@@ -103,9 +103,9 @@ methods
     N = N ./ J;
   end
 
-  function [su, sv, N] = tangentAt(this, u, v)
+  function [Su, Sv, N, p] = tangentAt(this, u, v)
   % Compute the tangents and normal at (U,V)
-    [~, su, sv, N] = this.shapeFunction.computeNormal(this.nodePositions, ...
+    [N, Su, Sv, p] = this.shapeFunction.computeNormal(this.nodePositions, ...
       u, ...
       v);
   end

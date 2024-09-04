@@ -2,7 +2,7 @@ classdef LinearTriangleShapeFunction < ShapeFunction
 % LinearTriangleShapeFunction: 3D linear triangle shape function class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 04/09/2024
 
 %% Public methods
 methods
@@ -14,10 +14,13 @@ methods
     N = [u, v, 1 - (u + v)];
   end
 
-  function [Du, Dv] = diff(~, ~, ~)
+  function [Du, Dv, N] = diff(this, u, v)
   % Evaluates the derivatives of the shape functions
     Du = [1, 0, -1];
     Dv = [0, 1, -1];
+    if nargout > 2
+      N = this.eval(u, v);
+    end
   end
 end
 

@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 04/09/2024
 %
 % Description
 % ===========
@@ -266,6 +266,14 @@ methods
       delete(this.colorBar);
       this.colorBar = [];
       this.toolButtons(end).State = 'off';
+    end
+  end
+
+  function setColorTable(this, colors)
+    if size(colors, 2) ~= 3
+      fprintf('Bad color table dimension');
+    else
+      this.axes.Colormap = colors;
     end
   end
 

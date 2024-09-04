@@ -2,7 +2,7 @@ classdef BezierShapeFunction < ShapeFunction
 % BezierShapeFunction: Bezier shape function class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 04/09/2024
 %
 % Description
 % ===========
@@ -42,10 +42,13 @@ methods
     N = this.C * reshape(this.basis(u, v)', [], 1);
   end
 
-  function [Du, Dv] = diff(this, u, v)
+  function [Du, Dv, N] = diff(this, u, v)
   % Evaluates the derivatives of the shape functions at (U,V)
     Du = this.C * reshape(this.derivativeU(u, v)', [], 1);
     Dv = this.C * reshape(this.derivativeV(u, v)', [], 1);
+    if nargout > 2
+      N = this.eval(u, v);
+    end
   end
 end
 
