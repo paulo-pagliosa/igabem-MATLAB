@@ -2,7 +2,7 @@ classdef Mesh < handle
 % Mesh: BEA model class
 %
 % Authors: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 05/09/2024
 %
 % Description
 % ===========
@@ -46,7 +46,52 @@ end
 
 %% Public methods
 methods
-  function b = empty(this)
+  function s = saveobj(this)
+    % Save mesh name
+    s.name = this.name;
+    % Save plain node properties
+    s.nodes = this.nodes;
+    % Save plain mesh shell properties
+    s.shells = this.shells;
+    % Save plain element properties
+    s.elements = this.elements;
+    n = numel(s.elements);
+    s.elementFaces = zeros(n, 4);
+    s.elementShells = zeros(n, 1);
+    s.elementNodes = cell(n, 1);
+    for i = 1:n
+      element = this.elements(i);
+      face = element.face;
+      if ~face.isEmpty
+        for k = 1:4
+          if ~isempty(face.nodes(k))
+            s.elementFaces(i, k) = face.nodes(k).id;
+          end
+        end
+      end
+      s.elementShells(i) = element.shell.id;
+      s.elementNodes{i} = [element.nodes.id];
+    end
+    % Save plain load point properties
+    n = numel(s.nodes);
+    s.loadPoints = LoadPoint.empty(0, n);
+    s.loadPointElements = cell(n, 1);
+    for i = 1:n
+      lp = s.nodes(i).loadPoint;
+      s.loadPoints(i) = lp;
+      s.loadPointElements{i} = [lp.elements.id];
+    end
+    % Save other mesh properties
+    s.nodeElements = this.nodeElements;
+    s.triangular = this.triangular;
+    s.nextConstraintId = this.nextConstraintId;
+    s.nextLoadId = this.nextLoadId;
+    s.warpingScale = this.warpingScale;
+    s.dirtyFlags = this.dirtyFlags;
+    s.elementCtor = this.elementCtor;
+  end
+
+  function b = isEmpty(this)
     b = isempty(this.nodes) || isempty(this.elements);
   end
 
@@ -124,14 +169,18 @@ methods
   end
 
   function setElementType(this, className)
-    this.elementCtor = this.findElementConstructor(className);
+    this.elementCtor = Element.findConstructor(className);
   end
 
-  function element = makeElement(this, id, degree, nodeIds, varargin)
+  function element = makeElement(this, id, nodeIds, varargin)
+    assert(~isempty(this.elementCtor), 'Unspecified element type');
     if isempty(this.shells)
       this.shells = Shell(this, 1);
     end
-    element = this.createElement(id, degree, nodeIds, varargin);
+    element = Element.create(this.elementCtor, this, id, varargin);
+    nn = this.setElementNodes(element, nodeIds);
+    element.nodeRegions = ones(nn, 1);
+    element.shell = this.outerShell;
     this.setTriangular(isa(element, 'LinearTriangle'));
     this.elements(end + 1, 1) = element;
     this.dirtyFlags(2) = true;
@@ -364,8 +413,7 @@ methods
     for i = 1:n
       element = mesh.elements(i);
       element.mesh = this;
-      ids = element.nodeIds;
-      element.nodes = meshNodes(ids);
+      element.nodes = meshNodes(element.nodeIds);
       element.nodeRegions = [element.nodes(:).multiplicity];
       element.shell = this.shells(1);
     end
@@ -401,6 +449,51 @@ end
 
 %% Public static methods
 methods (Static)
+  function this = loadobj(s)
+    % Load plain mesh data
+    this = Mesh;
+    % Restore mesh name
+    this.name = s.name;
+    % Restore nodes
+    [s.nodes.mesh] = deal(this);
+    this.nodes = s.nodes;
+    % Restore mesh shells
+    [s.shells.mesh] = deal(this);
+    this.shells = s.shells;
+    % Restore elements
+    n = numel(s.elements);
+    for i = 1:n
+      element = s.elements(i);
+      element.mesh = this;
+      face = Face; % create a new face
+      for k = 1:4
+        fnid = s.elementFaces(i, k);
+        if fnid > 0
+          face.nodes(k) = s.nodes(fnid);
+        end
+      end
+      element.face = face;
+      element.shell = s.shells(s.elementShells(i));
+      element.nodes = s.nodes(s.elementNodes{i});
+    end
+    this.elements = s.elements;
+    % Restore load points
+    n = numel(s.nodes);
+    for i = 1:n
+      lp = s.loadPoints(i);
+      lp.elements = s.elements(s.loadPointElements{i});
+      s.nodes(i).loadPoint = lp;
+    end
+    % Restore other mesh properties
+    this.nodeElements = s.nodeElements;
+    this.triangular = s.triangular;
+    this.nextConstraintId = s.nextConstraintId;
+    this.nextLoadId = s.nextLoadId;
+    this.warpingScale = s.warpingScale;
+    this.dirtyFlags = s.dirtyFlags;
+    this.elementCtor = s.elementCtor;
+  end
+
   function setNodeRegions(element, nodeRegions)
     n = numel(nodeRegions);
     assert(n == element.nodeCount, 'Bad node region size');
@@ -409,6 +502,26 @@ methods (Static)
     m = [element.nodes(:).multiplicity];
     m = num2cell(max(m, nodeRegions));
     [element.nodes(:).multiplicity] = deal(m{:});
+  end
+end
+
+%% Private methods
+methods (Access = private)
+  function nn = setElementNodes(this, element, nodeIds)
+    element.nodes = this.findNode(nodeIds);
+    nn = numel(element.nodes);
+    if nn ~= numel(nodeIds)
+      error('Undefined node(s) in element %d', element.id);
+    end
+    element.checkNodes;
+  end
+
+  function setTriangular(this, flag)
+    if numel(this.elements) == 0
+      this.triangular = flag;
+    else
+      this.triangular = this.triangular && flag;
+    end
   end
 end
 
@@ -421,24 +534,6 @@ methods (Static, Access = private)
     assert(~isempty(s), '%s is not derived from Element', className);
     ctor = findobj(c.MethodList, 'Name', className, 'Access', 'public');
     assert(~isempty(ctor), 'No public constructor in class %s', className);
-  end
-end
-
-%% Piivate methods
-methods (Access = private)
-  function element = createElement(this, id, degree, nodeIds, varargin)
-    ctor = this.elementCtor;
-    assert(~isempty(ctor), 'Unspecified element type');
-    args = horzcat({this, id, degree, nodeIds}, varargin{:});
-    element = feval(ctor.Name, args{:});
-  end
-
-  function setTriangular(this, flag)
-    if numel(this.elements) == 0
-      this.triangular = flag;
-    else
-      this.triangular = this.triangular && flag;
-    end
   end
 end
 

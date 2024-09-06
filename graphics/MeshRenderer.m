@@ -1,8 +1,8 @@
 classdef MeshRenderer < Renderer
 % MeshRenderer: mesh renderer class
 %
-% Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Author: Paulo Pag31liosa
+% Last revision: 05/09/2024
 %
 % Description
 % ===========
@@ -53,7 +53,7 @@ methods
   function this = MeshRenderer(axes, mesh, redraw)
   % Constructs a mesh renderer
     assert(isa(mesh, 'Mesh'), 'Mesh expected');
-    assert(~mesh.empty, 'Mesh is empty');
+    assert(~mesh.isEmpty, 'Mesh is empty');
     this = this@Renderer(axes);
     this.tessellator = MeshTessellator(mesh, 4);
     this.mesh = mesh;

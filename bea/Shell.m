@@ -2,7 +2,7 @@ classdef Shell < MeshComponent
 % Shell: shell class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 05/09/2024
 %
 % Description
 % ===========
@@ -21,6 +21,21 @@ methods
   function this = Shell(mesh, id)
   % Constructs a mesh shell
     this = this@MeshComponent(mesh, id);
+  end
+
+  function s = saveobj(this)
+  % Saves this mesh shell
+    s = saveobj@MeshComponent(this);
+    s.flipNormalFlag = this.flipNormalFlag;
+  end
+end
+
+%% Public static methods
+methods (Static)
+  function this = loadobj(s)
+  % Loads a mesh shell
+    this = Shell(Mesh.empty, s.id);
+    this.flipNormalFlag = s.flipNormalFlag;
   end
 end
 

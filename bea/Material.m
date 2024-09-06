@@ -2,7 +2,7 @@ classdef Material < handle
 % Material: elastic material class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 05/09/2024
 %
 % Description
 % ===========
@@ -25,7 +25,7 @@ end
 methods
   function this = Material(E, mu)
   % Constructs a material
-    if nargin > 1
+    if nargin > 0
       this.set(E, mu);
     else
       this.initDefaultMaterial();

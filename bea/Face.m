@@ -2,16 +2,17 @@ classdef Face < handle
 % Face: control mesh face class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 05/09/2024
 %
 % Description
 % ===========
 % An object of the class Face represents a quadrilateral face of the
 % control mesh of a piecewise parametric surface. A face is defined by
-% the nodes corresponding to its four vertices.
+% the nodes corresponding to its four vertices. The face node of a
+% virtual vertex is empty.
 
 %% Public read-only properties
-properties (SetAccess = private)
+properties (SetAccess = {?Face, ?Mesh})
   nodes (:, 1) Node;
 end
 
@@ -29,6 +30,11 @@ methods
       end
       this.nodes = temp;
     end
+  end
+
+  function b = isEmpty(this)
+  % Returns true if this face is empty
+    b = isempty(this.nodes);
   end
 end
 

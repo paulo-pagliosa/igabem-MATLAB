@@ -2,7 +2,7 @@ classdef BezierElement < Element
 % BezierElement: Bezier element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 05/09/2024
 %
 % Description
 % ===========
@@ -13,10 +13,20 @@ classdef BezierElement < Element
 
 %% Public methods
 methods
-  function this = BezierElement(mesh, id, degree, nodeIds, C)
+  function this = BezierElement(mesh, id, degree, C)
   % Constructs a Bezier element
-    this = this@Element(mesh, id, nodeIds);
-    this.shapeFunction = BezierShapeFunction(degree, C);
+    this = this@Element(mesh, id);
+    if ~isempty(mesh) && nargin > 2
+      this.shapeFunction = BezierShapeFunction(degree, C);
+    end
+  end
+end
+
+%% Public static methods
+methods (Static)
+  function this = loadobj(s)
+  % Loads a Bezier element
+    this = Element.load(@BezierElement, s);
   end
 end
 

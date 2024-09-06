@@ -2,7 +2,7 @@ function mesh = computeLoadPoints(mesh, eps, dlp)
 % Computes the load points from a mesh with no LTHs
 %
 % Author: Paulo Pagliosa
-% Last revision: 04/09/2024
+% Last revision: 05/09/2024
 %
 % Input
 % =====
@@ -46,7 +46,7 @@ function mesh = computeLoadPoints(mesh, eps, dlp)
   for e = 1:ne
     element = mesh.elements(e);
     face = element.face;
-    emptyFace = isempty(face) || isempty(face.nodes);
+    emptyFace = face.isEmpty;
     for k = 1:4
       lp = c_lc(k, :);
       p = element.positionAt(lp(1), lp(2));
@@ -57,7 +57,7 @@ function mesh = computeLoadPoints(mesh, eps, dlp)
         lp_element{ip} = element;
         lp_lpk{ip} = k;
         element_pidx(e, k) = ip;
-        if ~emptyFace
+        if ~emptyFace && ~isempty(face.nodes(k))
           lp_nid(ip) = face.nodes(k).id;
         else
           lp_nid(ip) = ip;

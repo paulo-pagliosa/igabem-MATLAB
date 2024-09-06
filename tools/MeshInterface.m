@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 04/09/2024
+% Last revision: 05/09/2024
 %
 % Description
 % ===========
@@ -236,7 +236,14 @@ methods
       return;
     end
     this.flags.patchEdge = flag;
-    this.renderPatchEdges;
+    if flag
+      this.renderPatchEdges;
+    elseif ~isempty(this.meshPlots.edges)
+      set(this.meshPlots.edges, 'Visible', false);
+      for i = 1:numel(this.meshPlots.regionEdges)
+        set(this.meshPlots.regionEdges{i}, 'Visible', false);
+      end
+    end
   end
 
   function showNodeElements(this, flag)
@@ -612,7 +619,7 @@ methods
       this.meshPlots.undeformed.mesh = h;
       if ~isempty(this.meshPlots.regionEdges)
         h = copyobj(cell2mat(this.meshPlots.regionEdges), this.axes);
-        set(h, 'Color', [0.2 0.2 0.2], 'LineWidth', 1);
+        set(h, 'Color', [0.2 0.2 0.2], 'LineWidth', 1, 'Visible', true);
         this.meshPlots.undeformed.regionEdges = h;
       end
     end
@@ -784,28 +791,29 @@ methods (Access = private)
     if ~this.flags.patchEdge || isempty(this.tessellator.patchEdges)
       return;
     end
-    n = this.tessellator.patchCount;
-    he = zeros(n, 1);
-    hc = cell(n, 1);
-    for i = 1:n
+    np = this.tessellator.patchCount;
+    he = zeros(np, 1);
+    hc = cell(np, 1);
+    for i = 1:np
       p = this.tessellator.patchEdges{i};
       isVisible = ~this.hiddenPatchFlag(i);
       he(i) = drawPatchEdges(p, 1, isVisible);
       face = this.mesh.elements(i).face;
-      if ~isempty(face)
+      if ~face.isEmpty
         hfc = zeros(4, 1);
         c = face.nodes;
-        if ~isempty(c)
-          sidx = 1;
-          for k = 1:4
-            eidx = sidx + this.tessellator.resolution;
-            if c(k).multiplicity > 1 && c(rem(k, 4) + 1).multiplicity > 1
+        sidx = 1;
+        for k = 1:4
+          eidx = sidx + this.tessellator.resolution;
+          if ~isempty(c(k)) && c(k).multiplicity > 1
+            cn = c(rem(k, 4) + 1);
+            if ~isempty(cn) && cn.multiplicity > 1
               hfc(k) = drawPatchEdges(p(sidx:eidx, :), 2, isVisible);
             end
-            sidx = eidx;
           end
-          hc{i} = hfc(hfc > 0);
+          sidx = eidx;
         end
+        hc{i} = hfc(hfc > 0);
       end
     end
     this.meshPlots.edges = he;

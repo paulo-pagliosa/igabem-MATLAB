@@ -2,7 +2,7 @@ classdef Node < MeshComponent
 % Node: node class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 05/09/2024
 %
 % Description
 % ===========
@@ -36,6 +36,16 @@ methods
     this.position = position;
   end
 
+  function s = saveobj(this)
+    % Saves this node
+    s = saveobj@MeshComponent(this);
+    s.position = this.position;
+    s.multiplicity = this.multiplicity;
+    s.dofs = this.dofs;
+    s.u = this.u;
+    s.t = this.t;
+  end
+
   function move(these, u)
   % Moves a set of nodes
     assert(size(u, 2) == 3, '3D point expected');
@@ -48,6 +58,18 @@ methods
     for i = 1:n
       these(i).position = p(i, :);
     end
+  end
+end
+
+%% Public static methods
+methods (Static)
+  function this = loadobj(s)
+  % Loads a node
+    this = Node(Mesh.empty, s.id, s.position);
+    this.multiplicity = s.multiplicity;
+    this.dofs = s.dofs;
+    this.u = s.u;
+    this.t = s.t;
   end
 end
 

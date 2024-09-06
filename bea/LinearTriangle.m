@@ -2,7 +2,7 @@ classdef LinearTriangle < Element
 % LinearTriangla: 3D linear triangle element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 05/09/2024
 %
 % Description
 % ===========
@@ -13,11 +13,27 @@ classdef LinearTriangle < Element
 
 %% Public methods
 methods
-  function this = LinearTriangle(mesh, id, nodeIds)
+  function this = LinearTriangle(mesh, id)
   % Constructs a linear triangle
-    assert(numel(nodeIds) == 3, 'Bad triangle node ids');
-    this = this@Element(mesh, id, nodeIds);
-    this.shapeFunction = LinearTriangleShapeFunction;
+    this = this@Element(mesh, id);
+    if ~isempty(mesh)
+      this.shapeFunction = LinearTriangleShapeFunction;
+    end
+  end
+end
+
+%% Public static methods
+methods (Static)
+  function this = loadobj(s)
+  % Loads a linear triangle
+    this = Element.load(@LinearTriangle, s);
+  end
+end
+
+%% Protected methods
+methods (Access = {?Element, ?Mesh})
+  function checkNodes(this)
+    assert(numel(this.nodes) == 3, 'Bad triangle nodes');
   end
 end
 

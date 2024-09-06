@@ -2,7 +2,7 @@ classdef (Abstract) Element < MeshComponent
 % Element: generic element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 04/09/2024
+% Last revision: 05/09/2024
 %
 % Description
 % ===========
@@ -24,28 +24,21 @@ end
 
 %% Public read-only properties
 properties (SetAccess = {?Element, ?Mesh})
-  shell (1, 1);
+  shell Shell;
   nodes (:, 1) Node;
   nodeRegions (:, 1) int32;
   shapeFunction (1, 1);
 end
 
-%% Protected methods
-methods (Access = protected)
-  function this = Element(mesh, id, nodeIds)
-    this = this@MeshComponent(mesh, id);
-    this.nodes = mesh.findNode(nodeIds);
-    nn = numel(this.nodes);
-    if nn ~= numel(nodeIds)
-      error('Undefined node(s) in element %d', id);
-    end
-    this.shell = mesh.outerShell;
-    this.nodeRegions = ones(nn, 1);
-  end
-end
-
 %% Public methods
 methods
+  function s = saveobj(this)
+  % Saves this element
+    s = saveobj@MeshComponent(this);
+    s.nodeRegions = this.nodeRegions;
+    s.shapeFunction = this.shapeFunction;
+  end
+
   function nodes = nodeSet(these)
   % Returns the node set of this element
     nodes = NodeSet(these).nodes;
@@ -108,6 +101,37 @@ methods
     [N, Su, Sv, p] = this.shapeFunction.computeNormal(this.nodePositions, ...
       u, ...
       v);
+  end
+end
+
+%% Protected methods
+methods (Access = {?Element, ?Mesh})
+  function checkNodes(~)
+    % do nothing
+  end
+end
+
+%% Protected static methods
+methods (Static, Access = {?Element, ?Mesh})
+  function ctor = findConstructor(className)
+    c = meta.class.fromName(className);
+    assert(~isempty(c), 'Unable to find class %s', className);
+    s = findobj(c.SuperclassList, 'Name', 'Element');
+    assert(~isempty(s), '%s is not derived from Element', className);
+    ctor = findobj(c.MethodList, 'Name', className, 'Access', 'public');
+    assert(~isempty(ctor), 'No public constructor in class %s', className);
+    ctor = ctor.Name;
+  end
+
+  function element = create(ctor, mesh, id, varargin)
+    args = horzcat({mesh, id}, varargin{:});
+    element = feval(ctor, args{:});
+  end
+
+  function element = load(ctor, s)
+    element = Element.create(ctor, Mesh.empty, s.id);
+    element.nodeRegions = s.nodeRegions;
+    element.shapeFunction = s.shapeFunction;
   end
 end
 
