@@ -2,7 +2,7 @@ classdef Load < BC
 % Load: element load class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 06/09/2024
 %
 % Description
 % ===========
@@ -17,17 +17,46 @@ classdef Load < BC
 
 %% Public static methods
 methods (Static)
-  function l = New(id, element, evaluator, varargin)
+  function this = New(id, element, evaluator, varargin)
   % Constructs a load
     narginchk(3, inf);
-    l = Load(id, element);
+    assert(isa(element, 'Element'), 'Element expected');
+    this = Load(element.mesh, id, element);
     [evaluator, dir] = Load.parseArgs(evaluator, varargin{:});
-    l.setProps(3, evaluator, dir);
+    this.setProps(3, evaluator, dir);
+  end
+
+  function this = loadBase(ctor, s)
+  % Loads a load
+    this = BC.loadBase(ctor, s);
   end
 end
 
-%% Private static methods
-methods (Static, Access = {?BC, ?BCGroup})
+%% Protected methods
+methods (Access = protected)
+  function setValues(this, t)
+    regions = this.element.nodeRegions;
+    m = this.element.nodeCount;
+    for i = 1:m
+      node = this.element.nodes(i);
+      node.t(regions(i), :) = t(i, :); % TODO
+    end
+  end
+end
+
+methods (Access = {?Load, ?LoadGroup, ?Mesh})
+  function this = Load(mesh, id, element)
+  % Constructs a null load
+    this = this@BC(mesh, id);
+    if nargin > 2
+      this.element = element;
+      this.dofs = [1 2 3];
+    end
+  end
+end
+
+%% Protected static methods
+methods (Static, Access = {?Load, ?LoadGroup})
   function f = torque(O, D, S)
   % Compute the force corresponding to a torque
   %
@@ -73,28 +102,6 @@ methods (Static, Access = {?BC, ?BCGroup})
       end
     else
       [evaluator, dir] = BC.parseArgs(evaluator, varargin{:});
-    end
-  end
-end
-
-%% Public methods
-methods
-  function this = Load(id, element)
-  % Constructs a null load
-    this = this@BC(id, element);
-    this.dofs = [1 2 3];
-    this.direction = [];
-  end
-end
-
-%% Protected methods
-methods (Access = protected)
-  function setValues(this, t)
-    regions = this.element.nodeRegions;
-    m = this.element.nodeCount;
-    for i = 1:m
-      node = this.element.nodes(i);
-      node.t(regions(i), :) = t(i, :); % TODO
     end
   end
 end

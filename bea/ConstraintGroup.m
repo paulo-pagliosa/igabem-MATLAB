@@ -2,7 +2,7 @@ classdef ConstraintGroup < BCGroup
 % ConstraintGroup: region constraint class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 06/09/2024
 %
 % Description
 % ===========
@@ -11,30 +11,36 @@ classdef ConstraintGroup < BCGroup
 %
 % See also: class Constraint
 
-%% Public methods
-methods
-  function this = ConstraintGroup(id, elements, dofs, evaluator, varargin)
+%% Public static methods
+methods (Static)
+  function this = New(id, elements, dofs, evaluator, varargin)
   % Constructs a constraint group
     narginchk(4, inf);
-    this = this@BCGroup(id, elements);
+    assert(isa(elements, 'Element'), 'Element expected');
     ndof = numel(dofs);
     dofs = BC.parseDofs(dofs);
     [evaluator, dir] = BC.parseArgs(evaluator, varargin{:});
-    id = id * 1000;
-    ne = numel(elements);
-    this.bcs = Constraint.empty(0, ne);
-    for i = 1:ne
-      id = id + 1;
-      cg = Constraint(id, elements(i), dofs);
-      cg.setProps(ndof, evaluator, dir);
-      if isnumeric(cg.evaluator)
-        nd = [0 0 0];
-        nd(dofs > 0) = cg.evaluator;
-        cg.direction = nd;
-        cg.evaluator = BCFunction.constant(1);
+    cid = id * 1000;
+    n = numel(elements);
+    bcs = BC.empty(0, n);
+    for i = 1:n
+      cid = cid + 1;
+      bc = Constraint(elements(i).mesh, cid, elements(i), dofs);
+      bc.setProps(ndof, evaluator, dir);
+      if isnumeric(bc.evaluator)
+        cd = [0 0 0];
+        cd(dofs > 0) = bc.evaluator;
+        bc.direction = cd;
+        bc.evaluator = BCFunction.constant(1);
       end
-      this.bcs(i) = cg;
+      bcs(i) = bc;
     end
+    this = ConstraintGroup(elements(1).mesh, id, bcs);
+  end
+
+  function this = loadobj(s)
+  % Loads a constraint group
+    this = BCGroup.loadBase(@ConstraintGroup, s);
   end
 end
 

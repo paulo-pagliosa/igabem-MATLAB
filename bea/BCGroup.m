@@ -2,7 +2,7 @@ classdef (Abstract) BCGroup < MeshComponent
 % BCGroup: generic region boundary condition class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 06/09/2024
 %
 % Description
 % ===========
@@ -12,50 +12,35 @@ classdef (Abstract) BCGroup < MeshComponent
 %
 % See also: class Element, class BC
 
+%% Publc properties
+properties
+  resolution = 10;
+end
+
 %% Public read-only properties
 properties (SetAccess = protected)
   elements (:, 1) Element = Element.empty;
   bcs BC = BC.empty;
 end
 
-%% Protected methods
-methods (Access = protected)
-  function this = BCGroup(id, elements)
-    assert(isa(elements, 'Element'), 'Mesh element expected');
-    mesh = elements(1).mesh;
-    for i = 2:numel(elements)
-      assert(elements(i).mesh == mesh, 'Bad elements');
-    end
-    this = this@MeshComponent(mesh, id);
-    this.elements = elements;
-  end
-
-  function nodeRegion = nodeRegion(this, node)
-    nodeRegion = 0;
-    n = numel(this.elements);
-    for i = 1:n
-      element = this.elements(i);
-      m = element.nodeCount;
-      for k = 1:m
-        if element.nodes(k) == node
-          r = element.nodeRegions(k);
-          if nodeRegion == 0
-            nodeRegion = r;
-          elseif r ~= nodeRegion
-            error('Multiple BC regions at node %d', node.id);
-          end
-        end
-      end
-    end
-  end
-end
-
-methods (Abstract, Access = protected)
-  setValues(this, nodes, regions, x);
-end
-
 %% Public methods
 methods
+  function s = saveobj(this)
+    % Saves this BC group
+    s = saveobj@MeshComponent(this);
+    s.bcs = this.bcs;
+    s.resolution = this.resolution;
+  end
+
+  function set.resolution(this, value)
+  % Sets the number of samples in U and V to evaluate this BC group
+    if value < 5 || value > 20
+      fprintf("'resolution' must be in range [5,20]\n");
+    else
+      this.resolution = value;
+    end
+  end
+
   function dofs = dofs(this)
   % Returns the dofs of this BC group
     dofs = this.bcs(1).dofs;
@@ -70,16 +55,14 @@ methods
     if this.mesh ~= group.mesh || any(this.dofs ~= group.dofs)
       error('Mismatch BC groups');
     end
-    % TODO: check for duplicate elements
-    this.elements = [this.elements; group.elements];
-    this.bcs = [this.bcs; group.bcs];
-    group.elements = Element.empty;
+    this.setBCs([this.bcs; group.bcs]);
     group.bcs = BC.empty;
+    group.elements = Element.empty;
   end
 
   function x = apply(this)
   % Applies the BCs in this BC group to the node set of its elements
-    n = 10; % TODO
+    n = this.resolution;
     p = gridSpace(n);
     nodes = NodeSet(this.elements);
     n = nodes.size;
@@ -87,7 +70,7 @@ methods
     for i = 1:n
       regions(i) = this.nodeRegion(nodes.nodes(i));
     end
-    m = numel(this.elements);
+    m = numel(this.bcs);
     s = size(p, 1);
     r = m * s;
     A = zeros(r, n);
@@ -96,8 +79,9 @@ methods
     b = zeros(r, numel(dofs));
     rows = 1:s;
     for i = 1:m
-      [Ai, bi] = this.bcs(i).assemblyLS(p, dofs);
-      cols = nodes.index(this.elements(i).nodes);
+      bc = this.bcs(i);
+      [Ai, bi] = bc.assemblyLS(p, dofs);
+      cols = nodes.index(bc.element.nodes);
       A(rows, cols) = Ai;
       b(rows, :) = bi;
       rows = rows + s;
@@ -106,6 +90,57 @@ methods
     x = zeros(n, 3);
     x(:, dofs) = A \ b;
     this.setValues(nodes.nodes, regions, x);
+  end
+end
+
+%% Protected methods
+methods (Access = {?BCGroup, ?Mesh})
+  function this = BCGroup(mesh, id, bcs)
+    this = this@MeshComponent(mesh, id);
+    if ~isempty(mesh) && ~isempty(bcs)
+      assert(isa(bcs, 'BC'), 'BC expected');
+      for i = 1:numel(bcs)
+        assert(this.mesh == bcs(i).mesh, 'Bad BC');
+      end
+      this.setBCs(bcs);
+    end
+  end
+
+  function setBCs(this, bcs)
+    this.elements = unique([bcs.element]);
+    this.bcs = bcs;
+  end
+
+  function region = nodeRegion(this, node)
+    region = 0;
+    n = numel(this.elements);
+    for i = 1:n
+      element = this.elements(i);
+      m = element.nodeCount;
+      for k = 1:m
+        if element.nodes(k) == node
+          r = element.nodeRegions(k);
+          if region == 0
+            region = r;
+          elseif r ~= region
+            error('Multiple BC regions at node %d', node.id);
+          end
+        end
+      end
+    end
+  end
+end
+
+methods (Abstract, Access = protected)
+  setValues(this, nodes, regions, x);
+end
+
+%% Protected static methods
+methods (Static, Access = {?BCGroup, ?Mesh})
+  function this = loadBase(ctor, s)
+    this = ctor(Mesh.empty, s.id, BC.empty);
+    this.bcs = s.bcs;
+    this.resolution = s.resolution;
   end
 end
 

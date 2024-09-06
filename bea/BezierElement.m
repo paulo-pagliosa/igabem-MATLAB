@@ -2,7 +2,7 @@ classdef BezierElement < Element
 % BezierElement: Bezier element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 05/09/2024
+% Last revision: 06/09/2024
 %
 % Description
 % ===========
@@ -26,7 +26,7 @@ end
 methods (Static)
   function this = loadobj(s)
   % Loads a Bezier element
-    this = Element.load(@BezierElement, s);
+    this = Element.loadBase(@BezierElement, s);
   end
 end
 

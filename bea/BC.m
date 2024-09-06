@@ -2,7 +2,7 @@ classdef (Abstract) BC < MeshComponent
 % BC: generic element boundary condition class
 %
 % Author: Paulo Pagliosa
-% Last revision: 04/09/2024
+% Last revision: 06/09/2024
 %
 % Description
 % ===========
@@ -18,18 +18,89 @@ classdef (Abstract) BC < MeshComponent
 
 %% Public read-only properties
 properties (SetAccess = {?BC, ?BCGroup})
-  element (1, 1);
+  element Element;
   dofs (1, 3);
   evaluator;
   direction;
 end
 
+%% Public methods
+methods
+  function s = saveobj(this)
+  % Saves this boundary condition
+    s = saveobj@MeshComponent(this);
+    s.dofs = this.dofs;
+    s.evaluator = this.evaluator;
+    s.direction = this.direction;
+  end
+
+  function x = apply(this, p)
+  % Applies this boundary condition to the nodes of its element
+    n = this.element.nodeCount;
+    idx = this.dofs(this.dofs > 0);
+    if isnumeric(this.evaluator)
+      c = repmat(this.evaluator, n, 1);
+    else
+      [A, b] = this.assemblyLS(p, idx);
+      c = A \ b;
+    end
+    x = zeros(n, 3);
+    x(:, idx) = c;
+    % save(strcat('x', num2str(this.element.id)), 'x');
+    this.setValues(x);
+  end
+end
+
+%% Public static methods
+methods (Static)
+  function dof = parseDof(dof)
+  % Parses a dof
+    if ischar(dof)
+      switch dof
+        case 'x'
+          dof = 1;
+        case 'y'
+          dof = 2;
+        case 'z'
+          dof = 3;
+      end
+    end
+    if ~isscalar(dof) || dof < 1 || dof > 3
+      error('Invalid dof');
+    end
+  end
+
+  function dofs = parseDofs(dofs)
+  % Parses XYZ dofs
+    n = numel(dofs);
+    assert(n > 0 && n < 4, 'Bad dof dimension');
+    temp = dofs;
+    dofs = [0 0 0];
+    for i = 1:n
+      dof = BC.parseDof(temp(i));
+      if dofs(dof) > 0
+        error('Bad dof array');
+      end
+      dofs(dof) = dof;
+    end
+  end
+end
+
 %% Protected methods
 methods (Access = protected)
-  function this = BC(id, element)
-    assert(isa(element, 'Element'), 'Mesh element expected');
-    this = this@MeshComponent(element.mesh, id);
-    this.element = element;
+  function this = BC(mesh, id, element)
+    this = this@MeshComponent(mesh, id);
+    if ~isempty(mesh) && nargin > 2
+      if isa(element, 'Element')
+        assert(mesh == element.mesh, 'Bad element');
+        this.element = element;
+      else
+        this.element = mesh.findElement(element);
+        if isempty(this.element)
+          error('Undefined element %d', element);
+        end
+      end
+    end
   end
 end
 
@@ -37,7 +108,6 @@ methods (Abstract, Access = protected)
   setValues(this, x);
 end
 
-%% Private methods
 methods (Access = {?BC, ?BCGroup})
   function setProps(this, dim, evaluator, direction)
     if any(direction ~= 0)
@@ -92,62 +162,15 @@ methods (Access = {?BC, ?BCGroup})
   end
 end
 
-%% Public methods
-methods
-  function x = apply(this, p)
-  % Applies this boundary condition to the nodes of its element
-    n = this.element.nodeCount;
-    idx = this.dofs(this.dofs > 0);
-    if isnumeric(this.evaluator)
-      c = repmat(this.evaluator, n, 1);
-    else
-      [A, b] = this.assemblyLS(p, idx);
-      c = A \ b;
-    end
-    x = zeros(n, 3);
-    x(:, idx) = c;
-    % save(strcat('x', num2str(this.element.id)), 'x');
-    this.setValues(x);
-  end
-end
-
-%% Public static methods
-methods (Static)
-  function dof = parseDof(dof)
-  % Parses a dof
-    if ischar(dof)
-      switch dof
-        case 'x'
-          dof = 1;
-        case 'y'
-          dof = 2;
-        case 'z'
-          dof = 3;
-      end
-    end
-    if ~isscalar(dof) || dof < 1 || dof > 3
-      error('Invalid dof');
-    end
-  end
-
-  function dofs = parseDofs(dofs)
-  % Parses XYZ dofs
-    n = numel(dofs);
-    assert(n > 0 && n < 4, 'Bad dof dimension');
-    temp = dofs;
-    dofs = [0 0 0];
-    for i = 1:n
-      dof = BC.parseDof(temp(i));
-      if dofs(dof) > 0
-        error('Bad dof array');
-      end
-      dofs(dof) = dof;
-    end
-  end
-end
-
-%% Private static methods
+%% Protected static methods
 methods (Static, Access = {?BC, ?BCGroup})
+  function this = loadBase(ctor, s)
+    this = ctor(Mesh.empty, s.id);
+    this.dofs = s.dofs;
+    this.evaluator = s.evaluator;
+    this.direction = s.direction;
+  end
+
   function [direction, nargs] = parseDirection(varargin)
     direction = [0 0 0];
     nargs = 0;

@@ -2,7 +2,7 @@ classdef (Abstract) Element < MeshComponent
 % Element: generic element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 05/09/2024
+% Last revision: 06/09/2024
 %
 % Description
 % ===========
@@ -123,15 +123,15 @@ methods (Static, Access = {?Element, ?Mesh})
     ctor = ctor.Name;
   end
 
-  function element = create(ctor, mesh, id, varargin)
+  function this = create(ctor, mesh, id, varargin)
     args = horzcat({mesh, id}, varargin{:});
-    element = feval(ctor, args{:});
+    this = feval(ctor, args{:});
   end
 
-  function element = load(ctor, s)
-    element = Element.create(ctor, Mesh.empty, s.id);
-    element.nodeRegions = s.nodeRegions;
-    element.shapeFunction = s.shapeFunction;
+  function this = loadBase(ctor, s)
+    this = ctor(Mesh.empty, s.id);
+    this.nodeRegions = s.nodeRegions;
+    this.shapeFunction = s.shapeFunction;
   end
 end
 

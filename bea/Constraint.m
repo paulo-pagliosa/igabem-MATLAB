@@ -2,7 +2,7 @@ classdef Constraint < BC
 % Constraint: element constraint class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 06/09/2024
 %
 % Description
 % ===========
@@ -21,20 +21,17 @@ end
 
 %% Public static methods
 methods (Static)
-  function c = New(id, element, dofs, evaluator, varargin)
+  function this = New(id, element, dofs, evaluator, varargin)
   % Constructs a constraint
     narginchk(4, inf);
-    c = Constraint(id, element, BC.parseDofs(dofs));
-    BC.parseProps(c, numel(dofs), evaluator, varargin{:});
+    assert(isa(element, 'Element'), 'Element expected');
+    this = Constraint(element.mesh, id, element, BC.parseDofs(dofs));
+    BC.parseProps(this, numel(dofs), evaluator, varargin{:});
   end
-end
 
-%% Private methods
-methods (Access = {?Constraint, ?ConstraintGroup})
-  function this = Constraint(id, element, dofs)
-    this = this@BC(id, element);
-    this.dofs = dofs;
-    this.direction = [];
+  function this = loadobj(s)
+  % Loads a constraint
+    this = BC.loadBase(@Constraint, s);
   end
 end
 
@@ -64,7 +61,17 @@ methods (Access = protected)
   end
 end
 
-%% Private static methods
+methods (Access = {?Constraint, ?ConstraintGroup, ?Mesh})
+  function this = Constraint(mesh, id, element, dofs)
+    this = this@BC(mesh, id);
+    if nargin > 2
+      this.element = element;
+      this.dofs = dofs;
+    end
+  end
+end
+
+%% Protected static methods
 methods (Static, Access = {?Constraint, ?ConstraintGroup, ?Mesh})
   function checkDof(dof, node, regions, u, i)
     if node.dofs(dof, 1) == 0

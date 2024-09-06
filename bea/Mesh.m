@@ -2,7 +2,7 @@ classdef Mesh < handle
 % Mesh: BEA model class
 %
 % Authors: Paulo Pagliosa
-% Last revision: 05/09/2024
+% Last revision: 06/09/2024
 %
 % Description
 % ===========
@@ -235,7 +235,7 @@ methods
       element = this.elements(element);
     end
     cid = this.nextConstraintId;
-    c = ConstraintGroup(cid, element, dofs, evaluator, varargin{:});
+    c = ConstraintGroup.New(cid, element, dofs, evaluator, varargin{:});
     u = c.apply;
     this.constraints(end + 1, 1) = c;
     this.nextConstraintId = cid + 1;
@@ -279,7 +279,7 @@ methods
       element = this.elements(element);
     end
     lid = this.nextLoadId;
-    l = LoadGroup(lid, element, evaluator, varargin{:});
+    l = LoadGroup.New(lid, element, evaluator, varargin{:});
     t = l.apply;
     this.loads(end + 1, 1) = l;
     this.nextLoadId = lid + 1;

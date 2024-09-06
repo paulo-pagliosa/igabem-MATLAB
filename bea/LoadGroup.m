@@ -2,7 +2,7 @@ classdef LoadGroup < BCGroup
 % LoadGroup: region load class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 06/09/2024
 %
 % Description
 % ===========
@@ -13,24 +13,42 @@ classdef LoadGroup < BCGroup
 
 %% Public methods
 methods
-  function this = LoadGroup(id, elements, evaluator, varargin)
+  function s = saveobj(this)
+    % Saves this load group object
+    s = saveobj@BCGroup(this);
+    s.regions = this.regions;
+    s.t = this.t;
+  end
+end
+
+%% Public static methods
+methods (Static)
+  function lg = New(id, elements, evaluator, varargin)
   % Constructs a load group
     narginchk(3, inf);
-    this = this@BCGroup(id, elements);
+    assert(isa(elements, 'Element'), 'Element expected');
     [evaluator, dir] = Load.parseArgs(evaluator, varargin{:});
-    id = id * 1000;
-    ne = numel(elements);
-    this.bcs = Load.empty(0, ne);
-    for i = 1:ne
-      id = id + 1;
-      lg = Load(id, elements(i));
-      lg.setProps(3, evaluator, dir);
-      if isnumeric(lg.evaluator)
-        lg.direction = lg.evaluator;
-        lg.evaluator = BCFunction.constant(1);
+    lid = id * 1000;
+    n = numel(elements);
+    bcs = Load.empty(0, n);
+    for i = 1:n
+      lid = lid + 1;
+      bc = Load(elements(i).mesh, lid, elements(i));
+      bc.setProps(3, evaluator, dir);
+      if isnumeric(bc.evaluator)
+        bc.direction = bc.evaluator;
+        bc.evaluator = BCFunction.constant(1);
       end
-      this.bcs(i) = lg;
+      bcs(i) = bc;
     end
+    lg = LoadGroup(elements(1).mesh, id, bcs);
+  end
+
+  function this = loadobj(s)
+  % Loads a load group
+    this = BCGroup.loadBase(@LoadGroup, s);
+    this.regions = s.regions;
+    this.t = s.t;
   end
 end
 
@@ -55,7 +73,6 @@ methods (Access = protected)
   end
 end
 
-%% Private methods
 methods (Access = {?LoadGroup, ?Mesh})
   function unload(this)
     nodes = this.elements.nodeSet;

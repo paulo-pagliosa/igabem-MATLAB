@@ -2,7 +2,7 @@ classdef LinearTriangle < Element
 % LinearTriangla: 3D linear triangle element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 05/09/2024
+% Last revision: 06/09/2024
 %
 % Description
 % ===========
@@ -26,7 +26,7 @@ end
 methods (Static)
   function this = loadobj(s)
   % Loads a linear triangle
-    this = Element.load(@LinearTriangle, s);
+    this = Element.loadBase(@LinearTriangle, s);
   end
 end
 
