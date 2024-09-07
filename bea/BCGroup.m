@@ -18,9 +18,9 @@ properties
 end
 
 %% Public read-only properties
-properties (SetAccess = protected)
+properties (SetAccess = {?BCGroup, ?Mesh})
   elements (:, 1) Element = Element.empty;
-  bcs BC = BC.empty;
+  bcs (:, 1) BC = BC.empty;
 end
 
 %% Public methods

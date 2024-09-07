@@ -61,6 +61,8 @@ methods
     s.elementNodes = cell(n, 1);
     for i = 1:n
       element = this.elements(i);
+      s.elementShells(i) = element.shell.id;
+      s.elementNodes{i} = [element.nodes.id];
       face = element.face;
       if ~face.isEmpty
         for k = 1:4
@@ -69,8 +71,6 @@ methods
           end
         end
       end
-      s.elementShells(i) = element.shell.id;
-      s.elementNodes{i} = [element.nodes.id];
     end
     % Save plain load point properties
     n = numel(s.nodes);
@@ -80,6 +80,22 @@ methods
       lp = s.nodes(i).loadPoint;
       s.loadPoints(i) = lp;
       s.loadPointElements{i} = [lp.elements.id];
+    end
+    % Save plain constraint properties
+    s.constraints = this.constraints;
+    n = numel(s.constraints);
+    s.constraintElements = cell(n, 1);
+    for i = 1:n
+      bces = [s.constraints(i).bcs.element];
+      s.constraintElements{i} = [bces.id];
+    end
+    % Save plain load properties
+    s.loads = this.loads;
+    n = numel(s.loads);
+    s.loadElements = cell(n, 1);
+    for i = 1:n
+      bces = [s.loads(i).bcs.element];
+      s.loadElements{i} = [bces.id];
     end
     % Save other mesh properties
     s.nodeElements = this.nodeElements;
@@ -464,7 +480,8 @@ methods (Static)
     n = numel(s.elements);
     for i = 1:n
       element = s.elements(i);
-      element.mesh = this;
+      element.shell = s.shells(s.elementShells(i));
+      element.nodes = s.nodes(s.elementNodes{i});
       face = Face; % create a new face
       for k = 1:4
         fnid = s.elementFaces(i, k);
@@ -473,8 +490,7 @@ methods (Static)
         end
       end
       element.face = face;
-      element.shell = s.shells(s.elementShells(i));
-      element.nodes = s.nodes(s.elementNodes{i});
+      element.mesh = this;
     end
     this.elements = s.elements;
     % Restore load points
@@ -484,6 +500,20 @@ methods (Static)
       lp.elements = s.elements(s.loadPointElements{i});
       s.nodes(i).loadPoint = lp;
     end
+    % Restore constraints
+    [s.constraints.mesh] = deal(this);
+    n = numel(s.constraints);
+    for i = 1:n
+      restoreBCs(s.constraints, i, s.constraintElements{i});
+    end
+    this.constraints = s.constraints;
+    % Restore loads
+    [s.loads.mesh] = deal(this);
+    n = numel(s.loads);
+    for i = 1:n
+      restoreBCs(s.loads, i, s.loadsElements{i});
+    end
+    this.loads = s.loads;
     % Restore other mesh properties
     this.nodeElements = s.nodeElements;
     this.triangular = s.triangular;
@@ -492,6 +522,16 @@ methods (Static)
     this.warpingScale = s.warpingScale;
     this.dirtyFlags = s.dirtyFlags;
     this.elementCtor = s.elementCtor;
+
+    function restoreBCs(bcGroup, bcid, eids)
+      bcElements = this.elements(eids);
+      bcGroup.elements = unique(bcElements);
+      bcs = bcGroup(bcid).bcs;
+      for b = 1:numel(bcs)
+        bcs(b).mesh = this;
+        bcs(b).element = bcElements(b);
+      end
+    end
   end
 
   function setNodeRegions(element, nodeRegions)

@@ -17,7 +17,7 @@ classdef (Abstract) BC < MeshComponent
 % See also: class Element, class BCGroup
 
 %% Public read-only properties
-properties (SetAccess = {?BC, ?BCGroup})
+properties (SetAccess = {?BC, ?BCGroup, ?Mesh})
   element Element;
   dofs (1, 3);
   evaluator;
