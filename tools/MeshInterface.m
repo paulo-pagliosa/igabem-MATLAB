@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 05/09/2024
+% Last revision: 09/09/2024
 %
 % Description
 % ===========
@@ -278,7 +278,7 @@ methods
 
   function setColorTable(this, colors)
     if size(colors, 2) ~= 3
-      fprintf('Bad color table dimension');
+      fprintf('Bad color table dimension\n');
     else
       this.axes.Colormap = colors;
     end
@@ -328,21 +328,34 @@ methods
     end
   end
 
-  function flipVertexNormals(this, flag)
-    if nargin == 1
+  function flipVertexNormals(this, flag, sid)
+    if nargin < 2
       flag = true;
     end
-    elements = this.selectedElements;
-    ne = numel(elements);
-    if ne == 0
-      invalid = this.tessellator.flipNormals(this.mesh.outerShell, flag);
+    if nargin < 3
+      shell = Shell.empty;
+    elseif sid < 1 || sid > this.mesh.shellCount
+      fprintf('Invalid shell index: %d\n', sid);
+      return;
     else
-      invalid = false;
-      for i = 1:ne
-        if this.tessellator.flipNormals(elements(i).shell, flag)
-          invalid = true;
+      shell = this.mesh.shells(sid);
+    end
+    if isempty(shell)
+      elements = this.selectedElements;
+      if isempty(elements)
+        shell = this.mesh.outerShell;
+      else
+        invalid = false;
+        for i = 1:numel(elements)
+          if this.tessellator.flipNormals(elements(i).shell, flag)
+            invalid = true;
+          end
         end
       end
+    end
+    if ~isempty(shell)
+      invalid = this.tessellator.flipNormals(shell, flag);
+    else
     end
     if invalid
       this.redraw;
@@ -359,7 +372,7 @@ methods
 
   function selectNode(this, i)
     if i < 1 || i > this.mesh.nodeCount
-      fprintf('Invalid node index');
+      fprintf('Invalid node index: %d\n', i);
     elseif ~(this.selectedNodeIndex == i)
       this.selectedNodeIndex = i;
       this.redrawSelectedNode;
@@ -385,7 +398,7 @@ methods
 
   function selectElement(this, i, mode)
     if i < 1 || i > this.mesh.elementCount
-      fprintf('Invalid element index');
+      fprintf('Invalid element index: %d\n', i);
       return;
     end
     if nargin == 2
@@ -418,7 +431,7 @@ methods
 
   function selectElements(this, i)
     if any(i < 1) || any(i > this.mesh.elementCount)
-      fprintf('Invalid element index');
+      fprintf('Invalid element index\n');
     else
       this.showNodeElements(false);
       this.selectedElementFlag(i) = true;
@@ -453,7 +466,7 @@ methods
   %         all unvisited element nodes
     if nargin > 1 && ~isempty(eids)
       if any(eids < 1) || any(eids > this.mesh.elementCount)
-        fprintf('Invalid element index');
+        fprintf('Invalid element index\n');
         return;
       end
       this.deselectAllElements;
@@ -462,7 +475,7 @@ methods
       % Selected elements define the regions to be selected
       E = this.selectedElements;
       if isempty(E)
-        fprintf('No selected element');
+        fprintf('No selected element\n');
         return;
       end
     end
@@ -502,6 +515,30 @@ methods
           pushedNodeFlag(id) = true;
         end
       end
+    end
+  end
+
+  function selectShell(this, sid)
+    if nargin > 1
+      if sid < 1 || sid > this.mesh.shellCount
+        fprintf('Invalid shell index: %d\n', sid);
+        return;
+      end
+      this.deselectAllElements;
+      shell = this.mesh.shells(sid);
+    else
+      elements = this.selectedElements;
+      if isempty(elements)
+        fprintf('No selected element\n');
+        return;
+      end
+      shell = elements(1).shell;
+    end
+    if this.mesh.shellCount == 1
+      this.selectAllElements;
+    else
+      elements = findobj(this.mesh.elements, 'shell', shell);
+      this.selectElements([elements.id]);
     end
   end
 

@@ -2,7 +2,7 @@ classdef Mesh < handle
 % Mesh: BEA model class
 %
 % Authors: Paulo Pagliosa
-% Last revision: 06/09/2024
+% Last revision: 09/09/2024
 %
 % Description
 % ===========
@@ -404,11 +404,14 @@ methods
   end
 
   function this = glue(this, mesh, eps)
+    assert(isa(mesh, 'Mesh'), 'Mesh expected');
     if mesh == this
       return;
     end
-    assert(isa(mesh, 'Mesh'), 'Mesh expected');
-    assert(mesh.shellCount == 1, 'Unable to glue multiple shells');
+    if this.shellCount > 1 || mesh.shellCount > 1
+      fprintf('Unable to glue multiple shells');
+      return;
+    end
     n = mesh.elementCount;
     if n == 0
       fprintf('No elements to glue\n');
@@ -525,7 +528,7 @@ methods (Static)
 
     function restoreBCs(bcGroup, bcid, eids)
       bcElements = this.elements(eids);
-      bcGroup.elements = unique(bcElements);
+      bcGroup.elements = unique(bcElements, 'stable');
       bcs = bcGroup(bcid).bcs;
       for b = 1:numel(bcs)
         bcs(b).mesh = this;

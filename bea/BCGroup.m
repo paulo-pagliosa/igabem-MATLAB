@@ -2,7 +2,7 @@ classdef (Abstract) BCGroup < MeshComponent
 % BCGroup: generic region boundary condition class
 %
 % Author: Paulo Pagliosa
-% Last revision: 06/09/2024
+% Last revision: 09/09/2024
 %
 % Description
 % ===========
@@ -107,7 +107,7 @@ methods (Access = {?BCGroup, ?Mesh})
   end
 
   function setBCs(this, bcs)
-    this.elements = unique([bcs.element]);
+    this.elements = unique([bcs.element], 'stable');
     this.bcs = bcs;
   end
 
