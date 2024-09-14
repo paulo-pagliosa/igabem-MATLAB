@@ -2,7 +2,7 @@ classdef Face < handle
 % Face: control mesh face class
 %
 % Author: Paulo Pagliosa
-% Last revision: 06/09/2024
+% Last revision: 14/09/2024
 %
 % Description
 % ===========
@@ -25,12 +25,12 @@ methods
         error('Four face node ids expected');
       end
       for i = 1:4
-        node = Node.empty;
+        node = Node.virtual;
         nid = nodeIds(i);
         if nid >= 0
           node = mesh.findNode(nid);
           if isempty(node)
-            error('Undefined node %d', nid);
+            error('Undefined face node %d', nid);
           end
         end
         this.nodes(i) = node;

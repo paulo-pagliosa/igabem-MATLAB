@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 09/09/2024
+% Last revision: 14/09/2024
 %
 % Description
 % ===========
@@ -842,9 +842,9 @@ methods (Access = private)
         sidx = 1;
         for k = 1:4
           eidx = sidx + this.tessellator.resolution;
-          if ~isempty(c(k)) && c(k).multiplicity > 1
+          if ~c(k).isVirtual && c(k).multiplicity > 1
             cn = c(rem(k, 4) + 1);
-            if ~isempty(cn) && cn.multiplicity > 1
+            if ~cn.isVirtual && cn.multiplicity > 1
               hfc(k) = drawPatchEdges(p(sidx:eidx, :), 2, isVisible);
             end
           end

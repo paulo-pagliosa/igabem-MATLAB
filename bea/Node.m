@@ -2,7 +2,7 @@ classdef Node < MeshComponent
 % Node: node class
 %
 % Author: Paulo Pagliosa
-% Last revision: 05/09/2024
+% Last revision: 14/09/2024
 %
 % Description
 % ===========
@@ -28,6 +28,11 @@ properties (SetAccess = {?Mesh, ?BC, ?BCGroup, ?Solver})
   t (:, 3) double = [0 0 0];  
 end
 
+%% Public constant properties
+properties (Constant)
+  virtual = Node(Mesh.empty, -1, [0 0 0 0]);
+end
+
 %% Public methods
 methods
   function this = Node(mesh, id, position)
@@ -44,6 +49,10 @@ methods
     s.dofs = this.dofs;
     s.u = this.u;
     s.t = this.t;
+  end
+
+  function b = isVirtual(this)
+    b = this == Node.virtual;
   end
 
   function move(these, u)
