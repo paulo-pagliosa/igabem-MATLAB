@@ -873,13 +873,23 @@ methods (Access = private)
     if ~this.flags.loadPoint
       return;
     end
-    n = this.mesh.nodeCount;
-    p = zeros(n, 3);
-    for i = 1:n
-      p(i, :) = this.mesh.nodes(i).loadPoint.position;
+    nn = this.mesh.nodeCount;
+    p = zeros(nn, 3);
+    nlp = 0;
+    for i = 1:nn
+      lp = this.mesh.nodes(i).loadPoint;
+      if isempty(lp)
+        break;
+      end
+      p(i, :) = lp.position;
+      nlp = nlp + 1;
     end
-    s = this.nodeProperties.size + 2;
-    this.meshPlots.loadPoints = this.drawPoint(p, 'red', '*', s);
+    if nlp ~= nn
+      fprintf('Missing load points\n');
+    else
+      s = this.nodeProperties.size + 2;
+      this.meshPlots.loadPoints = this.drawPoint(p, 'red', '*', s);
+    end
   end
 
   function renderVectors(this)

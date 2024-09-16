@@ -2,7 +2,7 @@ function mesh = readMesh(varargin)
 % Reads mesh data from a file
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 14/09/2024
 %
 % Input
 % =====
@@ -64,6 +64,8 @@ function mesh = readMesh(varargin)
     switch upper(ext)
       case '.BE'
         elementReader = BezierElementReader;
+      case '.SE'
+        elementReader = SplineElementReader;
       otherwise
         error('Unknown mesh file format (''%s'')', ext);
     end

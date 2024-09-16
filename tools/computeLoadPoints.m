@@ -23,7 +23,7 @@ function mesh = computeLoadPoints(mesh, eps, dlp)
 % function must be called  BEFORE using the function readMesh to
 % combine it with others. Also, it is assumed the input mesh does not
 % contain linked tangency handles or virtual vertices (in these cases,
-% the C++ pre-processor must be used to define collocation points)
+% the C++ pre-processor must be used to define collocation points).
 %
 % See also: function readMesh
   assert(isa(mesh, 'Mesh'), 'Mesh expected');
@@ -48,6 +48,14 @@ function mesh = computeLoadPoints(mesh, eps, dlp)
     face = element.face;
     emptyFace = face.isEmpty;
     for k = 1:4
+      if emptyFace
+        fnid = -1;
+      elseif face.nodes(k).isVirtual
+        continue;
+      else
+        fnid = face.nodes(k).id;
+        assert(fnid > 0); % sanity check
+      end
       lp = c_lc(k, :);
       p = element.positionAt(lp(1), lp(2));
       pidx = findPoint(p, lp_p(1:ip, :), eps);
@@ -57,8 +65,8 @@ function mesh = computeLoadPoints(mesh, eps, dlp)
         lp_element{ip} = element;
         lp_lpk{ip} = k;
         element_pidx(e, k) = ip;
-        if ~emptyFace && ~face.nodes(k).isVirtual
-          lp_nid(ip) = face.nodes(k).id;
+        if fnid > 0
+          lp_nid(ip) = fnid;
         else
           lp_nid(ip) = ip;
         end

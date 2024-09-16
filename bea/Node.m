@@ -17,7 +17,7 @@ classdef Node < MeshComponent
 %% Public properties
 properties
   position (1, 4) double;
-  loadPoint;
+  loadPoint LoadPoint;
 end
 
 %% Public read-only properties

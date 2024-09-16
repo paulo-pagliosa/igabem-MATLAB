@@ -2,14 +2,14 @@ classdef BezierShapeFunction < ShapeFunction
 % BezierShapeFunction: Bezier shape function class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 04/09/2024
+% Last revision: 14/09/2024
 %
 % Description
 % ===========
 % An object of the class BezierShapeFunction represents a set of shape
 % functions defined by a linear operator, C (resulting from the Bezier
 % extraction as described in Section 4.2 and Section 4.3 of the paper),
-% applied to Bernstein basis functions.
+% applied to the Bernstein basis functions.
 %
 % See also: class Bernstein
 
@@ -21,8 +21,8 @@ end
 
 %% Public methods
 methods
-  % Constructs a Bezier shape function
   function this = BezierShapeFunction(degree, C)
+  % Constructs a Bezier shape function
     assert(degree == 3 || degree == 4, 'Bad Bezier shape function degree');
     this.degree = degree;
     this.C = C;

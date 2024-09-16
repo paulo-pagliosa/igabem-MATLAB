@@ -2,7 +2,7 @@ classdef Mesh < handle
 % Mesh: BEA model class
 %
 % Authors: Paulo Pagliosa
-% Last revision: 09/09/2024
+% Last revision: 14/09/2024
 %
 % Description
 % ===========
@@ -66,9 +66,7 @@ methods
       face = element.face;
       if ~face.isEmpty
         for k = 1:4
-          if ~isempty(face.nodes(k))
-            s.elementFaces(i, k) = face.nodes(k).id;
-          end
+          s.elementFaces(i, k) = face.nodes(k).id;
         end
       end
     end
@@ -78,6 +76,9 @@ methods
     s.loadPointElements = cell(n, 1);
     for i = 1:n
       lp = s.nodes(i).loadPoint;
+      if isempty(lp)
+        break;
+      end
       s.loadPoints(i) = lp;
       s.loadPointElements{i} = [lp.elements.id];
     end
@@ -487,9 +488,11 @@ methods (Static)
       element.nodes = s.nodes(s.elementNodes{i});
       face = Face; % create a new face
       for k = 1:4
-        fnid = s.elementFaces(i, k);
-        if fnid > 0
-          face.nodes(k) = s.nodes(fnid);
+        nid = s.elementFaces(i, k);
+        if nid > 0
+          face.nodes(k) = s.nodes(nid);
+        else
+          face.nodes(k) = Node.virtual;
         end
       end
       element.face = face;
@@ -497,11 +500,13 @@ methods (Static)
     end
     this.elements = s.elements;
     % Restore load points
-    n = numel(s.nodes);
-    for i = 1:n
-      lp = s.loadPoints(i);
-      lp.elements = s.elements(s.loadPointElements{i});
-      s.nodes(i).loadPoint = lp;
+    if ~isempty(s.loadPoints)
+      n = numel(s.nodes);
+      for i = 1:n
+        lp = s.loadPoints(i);
+        lp.elements = s.elements(s.loadPointElements{i});
+        s.nodes(i).loadPoint = lp;
+      end
     end
     % Restore constraints
     [s.constraints.mesh] = deal(this);
