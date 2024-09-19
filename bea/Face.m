@@ -2,7 +2,7 @@ classdef Face < handle
 % Face: control mesh face class
 %
 % Author: Paulo Pagliosa
-% Last revision: 14/09/2024
+% Last revision: 19/09/2024
 %
 % Description
 % ===========
@@ -18,19 +18,20 @@ end
 
 %% Public methods
 methods
-  function this = Face(mesh, nodeIds)
+  function this = Face(element, nodeIds)
   % Constructs a face
     if nargin > 0
       if numel(nodeIds) ~= 4
         error('Four face node ids expected');
       end
+      mesh = element.mesh;
       for i = 1:4
         node = Node.virtual;
         nid = nodeIds(i);
         if nid >= 0
           node = mesh.findNode(nid);
           if isempty(node)
-            error('Undefined face node %d', nid);
+            error('Undefined face node %d for element %d', nid, element.id);
           end
         end
         this.nodes(i) = node;

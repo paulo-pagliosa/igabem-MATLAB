@@ -2,7 +2,7 @@ classdef BezierElementReader < ElementReader
 % BezierElementReader: Bezier element reader class
 %
 % Author: Paulo Pagliosa
-% Last revision: 05/09/2024
+% Last revision: 19/09/2024
 %
 % Description
 % ===========
@@ -35,7 +35,7 @@ methods
     element = this.mesh.makeElement(id, nodeIds, dg, C');
     Mesh.setNodeRegions(element, nodeRegions);
     if ~noFaces
-      element.face = Face(this.mesh, faceNodeIds);
+      element.face = Face(element, faceNodeIds);
     end
   end
 end
