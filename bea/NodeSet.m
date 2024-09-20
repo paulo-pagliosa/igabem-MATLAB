@@ -2,7 +2,7 @@ classdef NodeSet < handle
 % NodeSet: node set class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 20/09/2024
 %
 % Description
 % ===========
@@ -18,20 +18,25 @@ end
 
 %% Public methods
 methods
-  function this = NodeSet(element)
+  function this = NodeSet(elements)
   % Contructs a node set from a set of elements
-    this.nodes = element.nodes;
-    n = numel(element);
-    if n > 1
-      mesh = element(1).mesh;
-      nodeIds = element(1).nodeIds;
+    assert(isa(elements, 'Element'), 'Element expected');
+    assert(~isempty(elements), 'Empty element set');
+    n = numel(elements);
+    if n == 1
+      this.nodes = elements.nodes;
+    else
+      mesh = elements(1).mesh;
+      nids = elements(1).nodeIds;
       for i = 2:n
-        assert(element(i).mesh == mesh, ...
-          'Element is not a member of ''%s''', ...
+        element = elements(i);
+        assert(element.mesh == mesh, ...
+          'Element %d is not a member of mesh ''%s''', ...
+          element.id, ...
           mesh.name);
-        nodeIds = union(nodeIds, element(i).nodeIds);
+        nids = union(nids, element.nodeIds);
       end
-      this.nodes = mesh.findNode(nodeIds);
+      this.nodes = mesh.findNode(nids);
     end
   end
 

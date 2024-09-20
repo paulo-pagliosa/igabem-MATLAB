@@ -2,7 +2,7 @@ function p = gridSpace(n, range)
 % Generates a regular grid of NxN 2D points
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 20/09/2024
 %
 % Input
 % =====
@@ -24,4 +24,4 @@ function p = gridSpace(n, range)
       k = k + 1;
     end
   end
-end
+end % gridSpace

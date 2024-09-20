@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 14/09/2024
+% Last revision: 20/09/2024
 %
 % Description
 % ===========
@@ -29,6 +29,7 @@ properties (SetAccess = private)
   undeformedMeshColor = [0.9 0.9 0.9];
   vectorColor = [255 128 0] / 255;
   vectorScale = 3;
+  virtualPoints VirtualPointSet;
 end
 
 %% Dependent properties
@@ -73,12 +74,13 @@ methods
     material(a, 'metal');
     colormap(a.Parent, 'jet');
     this = this@MeshRenderer(a, mesh, false);
+    this.scalarExtractor = ScalarExtractor(this.tessellator);
     this.selectedElementFlag = zeros(mesh.elementCount, 1, 'logical');
     this.hiddenPatchFlag = this.selectedElementFlag;
     this.setClickPatchHandle(@this.onClickPatch);
-    this.scalarExtractor = ScalarExtractor(this.tessellator);
     this.flags.patchEdge = true;
     this.flags.loadPoint = false;
+    this.flags.virtualPoint = false;
     this.flags.vector = false;
     this.flags.ground = false;
     this.flags.nodeElement = false;
@@ -86,19 +88,24 @@ methods
     this.meshPlots.edges = [];
     this.meshPlots.regionEdges = [];
     this.meshPlots.loadPoints = [];
+    this.meshPlots.virtualPoints = [];
     this.meshPlots.vectors = [];
     this.meshPlots.undeformed.mesh = [];
     this.meshPlots.undeformed.regionEdges = [];
     this.makeEditTools;
     this.setToolbar;
     this.redraw;
-    this.lights = [camlight(a, 'left') camlight(a, 'right')];
-    color = [1 1 1];
-    this.lights(1).Color = color;
-    this.lights(2).Color = color * 0.5;
+    this.lights = makeLights(a);
     this.cameraGismo = CameraGismo(a);
     a.Parent.WindowKeyPressFcn = @this.onKeyPress;
     %this.openElementView;
+
+    function lights = makeLights(axes)
+      lights = [camlight(axes, 'left') camlight(axes, 'right')];
+      color = [1 1 1];
+      lights(1).Color = color;
+      lights(2).Color = color * 0.5;
+    end
   end
 
   function showCameraGismo(this, flag)
@@ -148,6 +155,13 @@ methods
   function set.nodeElementColor(this, value)
     this.nodeElementColor = value;
     this.redrawSelectedNodeElements;
+  end
+
+  function value = get.virtualPoints(this)
+    if isempty(this.virtualPoints)
+      this.virtualPoints = VirtualPointSet(this.mesh);
+    end
+    value = this.virtualPoints;
   end
 
   function showUndeformedMesh(this, flag)
@@ -678,6 +692,7 @@ methods
     this.redrawSelectedNodeElements;
     this.renderVectors;
     this.renderLoadPoints;
+    this.renderVirtualPoints;
     this.renderGround;
   end
 
@@ -733,6 +748,17 @@ methods
     end
     this.flags.loadPoint = flag;
     this.renderLoadPoints;
+  end
+
+  function showVirtualPoints(this, flag)
+    if nargin == 1
+      flag = true;
+    end
+    if flag == this.flags.virtualPoint
+      return;
+    end
+    this.flags.virtualPoint = flag;
+    this.renderVirtualPoints;
   end
 
   function showGround(this, flag)
@@ -890,6 +916,22 @@ methods (Access = private)
       s = this.nodeProperties.size + 2;
       this.meshPlots.loadPoints = this.drawPoint(p, 'red', '*', s);
     end
+  end
+
+  function renderVirtualPoints(this)
+    delete(this.meshPlots.virtualPoints);
+    this.meshPlots.virtualPoints = [];
+    if ~this.flags.virtualPoint
+      return;
+    end
+    p = this.virtualPoints.points;
+    if isempty(p)
+      fprintf('No virtual points\n');
+      this.flags.virtualPoint = false;
+      return;
+    end
+    s = this.nodeProperties.size;
+    this.meshPlots.virtualPoints = this.drawPoint(p, 'yellow', 'o', s);
   end
 
   function renderVectors(this)
@@ -1153,7 +1195,7 @@ methods (Access = private)
     a.Units = 'pixels';
     p = a.Position;
     a.Position(2) = p(2) + 40;
-    e = uicontrol('Style','edit');
+    e = uicontrol('Style', 'edit');
     e.Units = 'pixels';
     p(2) = p(2) - h + 40;
     p(4) = h;
