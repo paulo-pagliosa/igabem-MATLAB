@@ -2,7 +2,7 @@ classdef (Abstract) Element < MeshComponent
 % Element: generic element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 06/09/2024
+% Last revision: 23/09/2024
 %
 % Description
 % ===========
@@ -18,6 +18,10 @@ classdef (Abstract) Element < MeshComponent
 % See also: class Mesh, class Node, class NodeSet, class Face
 
 %% Public properties
+properties (Abstract)
+  typeId int32;
+end
+
 properties
   face (1, 1) Face;
 end
@@ -35,6 +39,7 @@ methods
   function s = saveobj(this)
   % Saves this element
     s = saveobj@MeshComponent(this);
+    s.typeId = this.typeId;
     s.nodeRegions = this.nodeRegions;
     s.shapeFunction = this.shapeFunction;
   end
@@ -130,6 +135,7 @@ methods (Static, Access = {?Element, ?Mesh})
 
   function this = loadBase(ctor, s)
     this = ctor(Mesh.empty, s.id);
+    this.typeId = s.typeId;
     this.nodeRegions = s.nodeRegions;
     this.shapeFunction = s.shapeFunction;
   end

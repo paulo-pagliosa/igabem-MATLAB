@@ -2,7 +2,7 @@ function saveSolverData(mesh, material, filename)
 % Saves mesh and material data to be used in the C++/CUDA C++ code
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 23/09/2024
 %
 % Input
 % =====
@@ -92,30 +92,25 @@ function saveSolverData(mesh, material, filename)
     end
     fprintf(file, '\n');
   end
-  % Compute the element location arrays
-  hMap = cell(ne, 1);
-  gMap = cell(ne, 1);
-  fprintf(file, ['\n# Several rows per element. The first row specifies\n' ...
-    '# the size (s) of the incidence list of the element.\n' ...
-    '# The next two rows contain the node ids and the node regions\n' ...
-    '# of the element, respectively. Those are followed by s rows,\n' ...
-    '# each one with 16 real numbers corresponding to a row of the\n' ...
-    '# Bezier extraction matrix of the element\n']);
+  fprintf(file, ['\n# Several rows per element. The first row specifies ' ...
+    'the\n# type id, the number of nodes (s), and the matrix flag\n', ...
+    '# of the element. The next two rows contain the node id\n' ...
+    '# and node region lists of the element, respectively.\n' ...
+    '# If f != 0, those are followed by s rows corresponding\n' ...
+    '# to the element matrix\n']);
   for i = 1:ne
     element = mesh.elements(i);
-    ids = element.nodeIds;
-    idx = 3 * ids;
-    idx = [idx - 2, idx - 1, idx]';
-    hMap{element.id} = idx(:);
-    idx = 3 * (tIdx(ids) + element.nodeRegions);
-    idx = [idx - 2, idx - 1, idx]';
-    gMap{element.id} = idx(:);
-    fprintf(file, '%d\n', element.nodeCount);
-    saveRow(file, '%d', ids - 1);
-    saveRow(file, '%d', element.nodeRegions - 1);
     C = element.shapeFunction.C;
-    for k = 1:element.nodeCount
-      saveRow(file, '%.8g', C(k, :));
+    f = ~isscalar(C);
+    fprintf(file, '%d %d %d\n', element.typeId, element.nodeCount, f);
+    saveRow(file, '%d', element.nodeIds - 1);
+    saveRow(file, '%d', element.nodeRegions - 1);
+    if ~f
+      assert(C == 1); % sanity check
+    else
+      for k = 1:element.nodeCount
+        saveRow(file, '%.8g', C(k, :));
+      end
     end
   end
   fprintf(file, ['\n# A row per load point specifying the number (n) ' ...

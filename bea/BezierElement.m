@@ -2,7 +2,7 @@ classdef BezierElement < Element
 % BezierElement: Bezier element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 06/09/2024
+% Last revision: 29/09/2024
 %
 % Description
 % ===========
@@ -10,6 +10,11 @@ classdef BezierElement < Element
 % shape function is an object of the class BezierShapeFunction.
 %
 % See also: class BezierShapeFunction
+
+%% Public properties
+properties
+  typeId = 0;
+end
 
 %% Public methods
 methods
