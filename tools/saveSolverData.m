@@ -2,7 +2,7 @@ function saveSolverData(mesh, material, filename)
 % Saves mesh and material data to be used in the C++/CUDA C++ code
 %
 % Author: Paulo Pagliosa
-% Last revision: 23/09/2024
+% Last revision: 24/09/2024
 %
 % Input
 % =====
@@ -39,13 +39,19 @@ function saveSolverData(mesh, material, filename)
   end
   ne = mesh.elementCount;
   ls = 0;
+  Cs = 0;
   for i = 1:ne
-    ls = ls + mesh.elements(i).nodeCount;
+    element = mesh.elements(i);
+    ls = ls + element.nodeCount;
+    C = element.shapeFunction.C;
+    if ~isscalar(C)
+      Cs = Cs + numel(C);
+    end
   end
-  fprintf(file, ['# A row specifying the number of nodes, elements and ' ...
-    'tractions,\n# the size of the incidence lists of all elements, ' ...
-    'and the size\n# of the load point data array\n']);
-  fprintf(file, '%d %d %d %d %d\n', nn, ne, nt, ls, ps);
+  fprintf(file, ['# A row specifying the number of nodes, elements and ', ...
+    'tractions,\n# the size of the incidence lists and matrices of all ', ...
+    'elements,\n# and the size of the load point data array\n']);
+  fprintf(file, '%d %d %d %d %d %d\n', nn, ne, nt, ls, Cs, ps);
   % Set the vectors u and t
   nt = 3 * nt;
   u = zeros(nu, 1);
