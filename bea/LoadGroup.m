@@ -2,7 +2,7 @@ classdef LoadGroup < BCGroup
 % LoadGroup: region load class
 %
 % Author: Paulo Pagliosa
-% Last revision: 06/09/2024
+% Last revision: 24/09/2024
 %
 % Description
 % ===========
@@ -27,7 +27,7 @@ methods (Static)
   % Constructs a load group
     narginchk(3, inf);
     assert(isa(elements, 'Element'), 'Element expected');
-    [evaluator, dir] = Load.parseArgs(evaluator, varargin{:});
+    [evaluator, dir] = BC.parseArgs(evaluator, varargin{:});
     lid = id * 1000;
     n = numel(elements);
     bcs = Load.empty(0, n);

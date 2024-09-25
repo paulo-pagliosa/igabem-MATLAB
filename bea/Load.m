@@ -2,7 +2,7 @@ classdef Load < BC
 % Load: element load class
 %
 % Author: Paulo Pagliosa
-% Last revision: 06/09/2024
+% Last revision: 24/09/2024
 %
 % Description
 % ===========
@@ -24,11 +24,6 @@ methods (Static)
     this = Load(element.mesh, id, element);
     [evaluator, dir] = Load.parseArgs(evaluator, varargin{:});
     this.setProps(3, evaluator, dir);
-  end
-
-  function this = loadBase(ctor, s)
-  % Loads a load
-    this = BC.loadBase(ctor, s);
   end
 end
 
@@ -56,7 +51,11 @@ methods (Access = {?Load, ?LoadGroup, ?Mesh})
 end
 
 %% Protected static methods
-methods (Static, Access = {?Load, ?LoadGroup})
+methods (Static, Access = {?BC, ?BCGroup})
+  function this = loadBase(ctor, s)
+    this = BC.loadBase(ctor, s);
+  end
+
   function f = torque(O, D, S)
   % Compute the force corresponding to a torque
   %
