@@ -2,7 +2,7 @@ function mi = testCylinder(idx)
 % Test cylinder
 %
 % Author: M. Peres
-% Last revision: 06/09/2024
+% Last revision: 25/09/2024
 %
 % Input
 % =====
@@ -46,13 +46,13 @@ u = -0.01;
 mi.selectRegions(fid(idx));
 mi.makeConstraint('xyz', u, 'direction', 'normal');
 mi.deselectAllElements;
-% Create a material
+% Create the material
 m = Material(1e5, 0);
 % Create and run the solver
 solver = ElastostaticSolver(mesh, m);
 solver.set('srMethod', 'TR');
 solver.set('minRatio', 1);
-solver.execute();
+solver.execute;
 % Save the mesh and results
 save(strcat(filename, '.mat'), 'mesh');
 % Figure 25(a) of the paper
