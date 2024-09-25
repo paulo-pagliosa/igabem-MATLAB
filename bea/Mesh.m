@@ -533,7 +533,7 @@ methods (Static)
 
     function restoreBCs(bcGroup, bcid, eids)
       bcElements = this.elements(eids);
-      bcGroup.elements = unique(bcElements, 'stable');
+      bcGroup(bcid).elements = unique(bcElements, 'stable');
       bcs = bcGroup(bcid).bcs;
       for b = 1:numel(bcs)
         bcs(b).mesh = this;
