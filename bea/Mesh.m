@@ -2,7 +2,7 @@ classdef Mesh < handle
 % Mesh: BEA model class
 %
 % Authors: Paulo Pagliosa
-% Last revision: 14/09/2024
+% Last revision: 25/09/2024
 %
 % Description
 % ===========
@@ -519,7 +519,7 @@ methods (Static)
     [s.loads.mesh] = deal(this);
     n = numel(s.loads);
     for i = 1:n
-      restoreBCs(s.loads, i, s.loadsElements{i});
+      restoreBCs(s.loads, i, s.loadElements{i});
     end
     this.loads = s.loads;
     % Restore other mesh properties
