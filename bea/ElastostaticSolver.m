@@ -2,7 +2,12 @@ classdef ElastostaticSolver < EPBase & Solver
 % ElastostaticSolver: linear elastostatic solver class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 30/09/2024
+%
+% Description
+% ==========
+% An object of the class ElastostaticSolver represents a solver for
+% the elastostatic problem.
 %
 % See also: class Mesh, class Material
 
@@ -99,10 +104,10 @@ methods (Access = protected)
   function [c, h, g] = computeHG(this, s, p, element)
     [inside, idx] = ismember(element, s.elements);
     if ~inside
-      [c, h, g, x] = this.integrator.outsideIntegration(p, element);
+      [c, h, g, x] = this.performOutsideHGIntegration(p, element);
     else
       csi = s.localPositions(idx, :);
-      [c, h, g, x] = this.integrator.insideIntegration(csi, p, element);
+      [c, h, g, x] = this.performInsideHGIntegration(csi, p, element);
     end
     temp = [this.p; x];
     this.p = temp;

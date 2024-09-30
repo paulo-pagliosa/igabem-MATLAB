@@ -2,7 +2,13 @@ classdef EPP < EPBase
 % EPP: linear elastostatic post-processor class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 30/09/2024
+%
+% Description
+% ===========
+% An object of the class EPP represents a post-processor for the
+% elastostatic problem. The class defines methods to compute the
+% displacements and stresses at boundary and domain points.
 %
 % See also: class Mesh, class Material
 
@@ -61,8 +67,7 @@ methods
         u(k, :) = u(k, :) + this.computeU(element, g, h);
         bflag = bflag || b;
         c = c + cp;
-        temp = [this.p; x];
-        this.p = temp;
+        this.p = [this.p; x];
       end
       if bflag
         u(k, :) = c^-1 * u(k, :)';
@@ -78,7 +83,9 @@ methods
     end
     fprintf('\n**DONE\n');
     fprintf('Boundary points: %d\nDomain points: %d\nGauss points: %d\n', ...
-      nb, nd, size(this.p, 1));
+      nb, ...
+      nd, ...
+      size(this.p, 1));
   end
   
   function u = computeBoundaryDisplacement(this, csi, p, element)
@@ -90,14 +97,13 @@ methods
     for i = 1:ne
       e = this.mesh.elements(i);
       if e == element
-        [cp, h, g, x] = this.integrator.insideIntegration(csi, p, e);
+        [cp, h, g, x] = this.performInsideHGIntegration(csi, p, e);
       else
         [cp, h, g, x] = this.computeHG(p, e, false);
       end
       u = u + this.computeU(e, g, h);
       c = c + cp;
-      temp = [this.p; x];
-      this.p = temp;
+      this.p = [this.p; x];
     end
     u = (c^-1 * u')';
   end
@@ -112,9 +118,9 @@ methods (Access = private)
       b = abs(d) <= this.eps;
     end
     if ~b
-      [c, h, g, x] = this.integrator.outsideIntegration(p, element);
+      [c, h, g, x] = this.perfomOutsideHGIntegration(p, element);
     else
-      [c, h, g, x] = this.integrator.insideIntegration(csi, p, element);
+      [c, h, g, x] = this.performInsideHGIntegration(csi, p, element);
     end
   end
 

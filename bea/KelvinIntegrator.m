@@ -109,42 +109,11 @@ methods
         fprintf("'srMethod' must be '4T' or 'TR'\n");
     end
   end
-
-  function [c, h, g, x] = outsideIntegration(this, p, element)
-  % Performs outside integration
-    this.initResults(element);
-    r = QuadRegion.default;
-    n = this.outGaussRule;
-    if n == 0
-      this.evalRegion(p, element, r);
-    else
-      this.integrateRegion(p, element, r, n, n);
-    end
-    c = this.out.c;
-    h = this.out.h;
-    g = this.out.g;
-    x = this.out.x;
-  end
-
-  function [c, h, g, x] = insideIntegration(this, csi, p, element)
-  % Performs inside integration
-    this.initResults(element);
-    region = QuadRegion.default;
-    if this.minRatio == 0
-      this.evalSingularRegion(csi, p, element, region);
-    else
-      this.subdSingularRegion(csi, p, element, region);
-    end
-    c = this.out.c;
-    h = this.out.h;
-    g = this.out.g;
-    x = this.out.x;
-  end
 end
 
 %% Protected methods
-methods (Access = protected)
-  function initResults(this, element)
+methods (Access = {?KelvinIntegrator, ?EPBase})
+  function initHG(this, element)
     n = 3 * element.nodeCount;
     this.out = struct('targetHandle', @this.addHG, ...
       'c', zeros(3, 3), ...
@@ -153,10 +122,39 @@ methods (Access = protected)
       'x', []);
   end
 
+  function out = performOutsideIntegration(this, p, element)
+  % Performs outside integration.
+  % A method to initialize the OUT property MUST BE invoked
+  % BEFORE invoking this method
+    region = QuadRegion.default;
+    n = this.outGaussRule;
+    if n == 0
+      this.evalRegion(p, element, region);
+    else
+      this.integrateRegion(p, element, region, n, n);
+    end
+    out = this.out;
+  end
+
+  function out = performInsideIntegration(this, csi, p, element)
+  % Performs inside integration.
+  % A method to initialize the OUT property MUST BE invoked
+  % BEFORE invoking this method
+    region = QuadRegion.default;
+    if this.minRatio == 0
+      this.evalSingularRegion(csi, p, element, region);
+    else
+      this.subdSingularRegion(csi, p, element, region);
+    end
+    out = this.out;
+  end
+end
+
+methods (Access = protected)
   function q = addHG(this, p, element, u, v, w)
     [q, S] = element.positionAt(u, v);
     [N, J] = element.normalAt(u, v);
-    [U, T] = Kelvin3.evalUT(p, q, N, this.material);
+    [U, T] = Kelvin3.computeUT(p, q, N, this.material);
     T = T * J * w;
     this.out.c = this.out.c - T;
     this.out.h = this.out.h + kron(S', T);

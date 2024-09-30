@@ -2,7 +2,7 @@ classdef (Abstract) EPBase < handle
 % EPBase: base class for elastostatic processors
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 30/09/2024
 %
 % Description
 % ===========
@@ -52,9 +52,27 @@ end
 %% Protected methods
 methods (Access = protected)
   function this = EPBase(material, varargin)
-    this.material = material;
     this.integrator = KelvinIntegrator(material);
+    this.material = material;
     this.set(varargin{:});
+  end
+
+  function [c, h, g, x] = performOutsideHGIntegration(this, p, element)
+    this.integrator.initHG(element);
+    out = this.integrator.performOutsideIntegration(p, element);
+    c = out.c;
+    h = out.h;
+    g = out.g;
+    x = out.x;
+  end
+
+  function [c, h, g, x] = performInsideHGIntegration(this, csi, p, element)
+    this.integrator.initHG(element);
+    out = this.integrator.performInsideIntegration(csi, p, element);
+    c = out.c;
+    h = out.h;
+    g = out.g;
+    x = out.x;
   end
 end
 

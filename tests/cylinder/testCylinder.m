@@ -2,7 +2,7 @@ function mi = testCylinder(idx)
 % Test cylinder
 %
 % Author: M. Peres
-% Last revision: 25/09/2024
+% Last revision: 30/09/2024
 %
 % Input
 % =====
@@ -62,7 +62,7 @@ mi.setColorTable(coolWarm);
 mi.showColorMap;
 mi.showColorBar;
 % To see the undeformed mesh, select some elements from
-% outer and inner surface and do
+% outer and inner surface and invoke the following method:
 mi.hidePatches;
 mi.showPatchEdges(false);
 

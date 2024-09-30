@@ -6,12 +6,12 @@ classdef Kelvin3 < handle
 %
 % Description
 % ===========
-% The class Kelvin3 defines a static method for computing the
-% 3D Kelvin fundamental solutions.
+% The class Kelvin3 defines a static method for computing the 3D Kelvin
+% fundamental solutions for displacements, tractions, and stresses.
 
 %% Public static methods
 methods (Static)
-  function [U, T] = evalUT(p, q, N, m)
+  function [U, T] = computeUT(p, q, N, m)
     % Computes the fundamental solutions U and T
     %
     % Input
