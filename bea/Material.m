@@ -2,7 +2,7 @@ classdef Material < handle
 % Material: elastic material class
 %
 % Author: Paulo Pagliosa
-% Last revision: 05/09/2024
+% Last revision: 30/09/2024
 %
 % Description
 % ===========
@@ -19,6 +19,8 @@ properties (SetAccess = private)
   c2;
   c3;
   c4;
+  c5;
+  c6;
 end
 
 %% Public methods
@@ -37,10 +39,16 @@ methods
     this.E = E;
     this.mu = mu;
     this.G = E / (2 * (1 + mu));
-    this.c4 = 1 - 2 * mu;
-    this.c3 = 1 / (8 * pi * (1 - mu));
-    this.c2 = 3 - 4 * mu;
+    % Constants for Kelvin fundamental solutions:
+    % U,...
     this.c1 = this.scale / (16 * pi * this.G * (1 - mu));
+    this.c2 = 3 - 4 * mu;
+    % ...T and D,...
+    this.c3 = 1 / (8 * pi * (1 - mu));
+    this.c4 = 1 - 2 * mu;
+    %...and S
+    this.c5 = this.G / (4 * pi * (1 - mu));
+    this.c6 = this.c2 - 2;
   end
 
   function setScale(this, scale)

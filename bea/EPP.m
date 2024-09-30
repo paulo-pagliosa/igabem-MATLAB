@@ -118,7 +118,7 @@ methods (Access = private)
       b = abs(d) <= this.eps;
     end
     if ~b
-      [c, h, g, x] = this.perfomOutsideHGIntegration(p, element);
+      [c, h, g, x] = this.performOutsideHGIntegration(p, element);
     else
       [c, h, g, x] = this.performInsideHGIntegration(csi, p, element);
     end
