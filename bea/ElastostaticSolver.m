@@ -26,12 +26,12 @@ methods
       'g', zeros(3, n));
     end
 
-    function updateHGData(ih, p, q, N, S, w)
-      [U, T] = Kelvin3.computeUT(p, q, N, ih.solver.material);
+    function updateHGData(handle, p, q, N, S, w)
+      [U, T] = Kelvin3.computeUT(p, q, N, handle.solver.material);
       T = T * w;
-      ih.data.c = ih.data.c - T;
-      ih.data.h = ih.data.h + kron(S', T);
-      ih.data.g = ih.data.g + kron(S', U * w);
+      handle.data.c = handle.data.c - T;
+      handle.data.h = handle.data.h + kron(S', T);
+      handle.data.g = handle.data.g + kron(S', U * w);
     end
   end
 
@@ -130,8 +130,7 @@ methods (Access = protected)
       csi = s.localPositions(idx, :);
       [c, h, g, x] = this.performInsideHGIntegration(csi, p, element);
     end
-    temp = [this.p; x];
-    this.p = temp;
+    this.p = [this.p; x];
   end
 
   function afterAssemblingLS(this)

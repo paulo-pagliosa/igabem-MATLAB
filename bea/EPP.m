@@ -25,20 +25,20 @@ methods
     this.mesh = mesh;
     this.uHandle = IntegrationHandle(this, @initUData, @updateUData);
 
-    function initUData(ih, element)
-      ih.data = struct('ue', element.nodeDisplacements, ...
+    function initUData(handle, element)
+      handle.data = struct('ue', element.nodeDisplacements, ...
         'te', element.nodeTractions, ...
         'c', zeros(3, 3), ...
         'u', zeros(1, 3));
     end
 
-    function updateUData(ih, p, q, N, S, w)
-      [U, T] = Kelvin3.computeUT(p, q, N, ih.solver.material);
+    function updateUData(handle, p, q, N, S, w)
+      [U, T] = Kelvin3.computeUT(p, q, N, handle.solver.material);
       T = T * w;
-      ih.data.c = ih.data.c - T;
-      t = weightedSum(ih.data.te, S) * U' * w;
-      u = weightedSum(ih.data.ue, S) * T'; 
-      ih.data.u = ih.data.u +  t - u;
+      handle.data.c = handle.data.c - T;
+      t = weightedSum(handle.data.te, S) * U' * w;
+      u = weightedSum(handle.data.ue, S) * T'; 
+      handle.data.u = handle.data.u +  t - u;
     end
 
     function x = weightedSum(x, w)
@@ -181,21 +181,21 @@ end
 %% Protected methods
 methods (Access = protected)
   function [c, u, x] = performOutsideUIntegration(this, p, element)
-    ih = this.uHandle;
-    ih.setElement(element);
-    this.integrator.performOutsideIntegration(p, ih);
-    c = ih.data.c;
-    u = ih.data.u;
-    x = ih.x;
+    handle = this.uHandle;
+    handle.setElement(element);
+    this.integrator.performOutsideIntegration(p, handle);
+    c = handle.data.c;
+    u = handle.data.u;
+    x = handle.x;
   end
 
   function [c, u, x] = performInsideUIntegration(this, csi, p, element)
-    ih = this.uHandle;
-    ih.setElement(element);
-    this.integrator.performInsideIntegration(csi, p, ih);
-    c = ih.data.c;
-    u = ih.data.u;
-    x = ih.x;
+    handle = this.uHandle;
+    handle.setElement(element);
+    this.integrator.performInsideIntegration(csi, p, handle);
+    c = handle.data.c;
+    u = handle.data.u;
+    x = handle.x;
   end
 
   function [c, u, x, b] = computeU(this, p, element, dflag)
