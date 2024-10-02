@@ -2,18 +2,18 @@ classdef Load < BC
 % Load: element load class
 %
 % Author: Paulo Pagliosa
-% Last revision: 24/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
-% An object of the class Load represents a load applied to an element
-% of a BEA model. A load can be a uniformely distributed load,
-% a pressure or a torque, among others.
+% An object of the class Load represents a load applied to an
+% element of a BEA model. A load can be a uniformely distributed
+% load, a pressure or a torque, among others.
 % A detailed documentation is available in
 %
 % https://github.com/paulo-pagliosa/igabem-MATLAB
 %
-% See also: class Element, class MeshInterface
+% See also: Element, MeshInterface
 
 %% Public static methods
 methods (Static)

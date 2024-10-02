@@ -2,7 +2,9 @@ function Lm = regionSize(element, region)
 % Computes the size of an element region
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 01/10/2024
+%
+% See also: Element, QuadRegion
   assert(isa(element, 'Element'), 'Element expected');
   if nargin < 2
     region = QuadRegion.default;

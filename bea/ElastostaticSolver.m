@@ -2,14 +2,14 @@ classdef ElastostaticSolver < EPBase & Solver
 % ElastostaticSolver: linear elastostatic solver class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 30/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ==========
 % An object of the class ElastostaticSolver represents a solver for
 % the elastostatic problem.
 %
-% See also: class Mesh, class Material
+% See also: Mesh, Material
 
 %% Public methods
 methods
@@ -17,6 +17,22 @@ methods
   % Constructs an elastostatic solver
     this@EPBase(material, varargin{:});
     this@Solver(mesh);
+    this.hgHandle = IntegrationHandle(this, @initHGData, @updateHGData);
+
+    function initHGData(ih, element)
+      n = 3 * element.nodeCount;
+      ih.data = struct('c', zeros(3, 3), ...
+      'h', zeros(3, n), ...
+      'g', zeros(3, n));
+    end
+
+    function updateHGData(ih, p, q, N, S, w)
+      [U, T] = Kelvin3.computeUT(p, q, N, ih.solver.material);
+      T = T * w;
+      ih.data.c = ih.data.c - T;
+      ih.data.h = ih.data.h + kron(S', T);
+      ih.data.g = ih.data.g + kron(S', U * w);
+    end
   end
 
   function testBIE(this, nids, printCFlag)
@@ -93,6 +109,11 @@ methods
   end
 end
 
+%% Protected properties
+properties (Access = protected)
+  hgHandle IntegrationHandle;
+end
+
 %% Protected methods
 methods (Access = protected)
   function initialize(this)
@@ -116,6 +137,26 @@ methods (Access = protected)
   function afterAssemblingLS(this)
     this.G = this.G / this.material.scale;
     this.material.setScale(1);
+  end
+
+  function [c, h, g, x] = performOutsideHGIntegration(this, p, element)
+    handle = this.hgHandle;
+    handle.setElement(element);
+    this.integrator.performOutsideIntegration(p, handle);
+    c = handle.data.c;
+    h = handle.data.h;
+    g = handle.data.g;
+    x = handle.x;
+  end
+
+  function [c, h, g, x] = performInsideHGIntegration(this, csi, p, element)
+    handle = this.hgHandle;
+    handle.setElement(element);
+    this.integrator.performInsideIntegration(csi, p, handle);
+    c = handle.data.c;
+    h = handle.data.h;
+    g = handle.data.g;
+    x = handle.x;
   end
 end
 

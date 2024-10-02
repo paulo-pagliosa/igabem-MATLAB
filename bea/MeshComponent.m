@@ -2,14 +2,14 @@ classdef (Abstract) MeshComponent < handle & matlab.mixin.Heterogeneous
 % MeshComponent: generic mesh component class
 %
 % Author: Paulo Pagliosa
-% Last revision: 05/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
 % The abstract class MeshComponent encapsulates the properties of a
 % generic mesh component.
 %
-% See also: class Mesh
+% See also: Mesh
 
 %% Public read-only properties
 properties (SetAccess = {?MeshComponent, ?Mesh})

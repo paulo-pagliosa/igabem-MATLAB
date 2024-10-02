@@ -2,7 +2,7 @@ classdef DisplacementErrorField < ErrorField
 % DisplacementErrorField: displacement error field class
 %
 % Author: Paulo Pagliosa
-% Last revision: 04/09/2024
+% Last revision: 30/09/2024
 %
 % Description
 % ===========
@@ -13,7 +13,6 @@ classdef DisplacementErrorField < ErrorField
 
 %% Private properties
 properties (Access = private)
-  eCount;
   uLabel;
 end
 
@@ -41,7 +40,6 @@ methods
     dof = BC.parseDofs(dof);
     dof = dof(dof > 0);
     this = this@ErrorField(@computeValues);
-    this.eCount = epp.mesh.elementCount;
     dofLabel = 'xyz';
     this.uLabel = sprintf('displacement %s', dofLabel(dof));
     this.handleErrorTypeChange;
@@ -58,7 +56,8 @@ methods
 
   function setElement(this, element)
   % Sets the element of this field
-    fprintf('Evaluating errors on element %d/%d\n', element.id, this.eCount);
+    %ne = element.mesh.elementCount;
+    %fprintf('Evaluating errors on element %d/%d\n', element.id, ne);
     setElement@ErrorField(this, element);
   end
 end

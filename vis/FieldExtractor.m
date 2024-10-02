@@ -2,7 +2,7 @@ classdef (Abstract) FieldExtractor < handle
 % FieldExtractor: generic field extractor class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
@@ -14,7 +14,7 @@ classdef (Abstract) FieldExtractor < handle
 % Field. The method for associating field values with points on an
 % element must be implemented in classes derived from FieldExtractor.
 %
-% See also: class Field, class MeshTessellator
+% See also: Field, MeshTessellator
 
 %% Public read-only properties
 properties (SetAccess = protected)

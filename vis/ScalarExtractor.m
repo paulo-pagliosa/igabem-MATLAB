@@ -2,7 +2,7 @@ classdef ScalarExtractor < FieldExtractor
 % ScalarExtractor: scalar field extractor class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
@@ -10,7 +10,7 @@ classdef ScalarExtractor < FieldExtractor
 % each point resulting from the tessellation of a mesh. The scalar
 % at a point of an element is determined by a ScalarField object.
 %
-% See also: class ScalarField
+% See also: ScalarField
 
 %% Public properties
 properties

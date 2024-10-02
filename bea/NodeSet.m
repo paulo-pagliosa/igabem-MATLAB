@@ -2,14 +2,14 @@ classdef NodeSet < handle
 % NodeSet: node set class
 %
 % Author: Paulo Pagliosa
-% Last revision: 20/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
 % An object of the class NodeSet represents a set of nodes that influence
 % a set of elements.
 %
-% See also: class Node, class Element
+% See also: Node, Element
 
 %% Public read-only properties
 properties (SetAccess = private)

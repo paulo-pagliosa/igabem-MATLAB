@@ -2,7 +2,7 @@ function eids = selectElementByFilter(mi, filter)
 % Selects elements using a filter function
 %
 % Author: Paulo Pagliosa
-% Last revision: 24/09/2024
+% Last revision: 01/10/2024
 %
 % Input
 % =====
@@ -12,6 +12,8 @@ function eids = selectElementByFilter(mi, filter)
 % Output
 % ======
 % EIDS: indices of the select elements in MI
+%
+% See also: MeshInterface
   assert(isa(mi, 'MeshInterface') && isa(filter, 'function_handle'));
   mesh = mi.mesh;
   ne = mesh.elementCount;

@@ -2,12 +2,14 @@ classdef (Abstract) ElementReader < handle
 % ElementReader: generic element reader class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
 % The abstract class ElementReader encapsulates the behavior of a generic
-% reader of element data. 
+% reader of element data.
+%
+% See also: readMesh
 
 %% Public read-only properties
 properties (SetAccess = protected)

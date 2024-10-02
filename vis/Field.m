@@ -2,7 +2,7 @@ classdef (Abstract) Field < handle
 % Field: generic field class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
@@ -10,7 +10,7 @@ classdef (Abstract) Field < handle
 % field evaluator. A field evaluator computes the value of a quantity
 % (scalar or vector) at a point on an element.
 %
-% See also: class Element
+% See also: Element
 
 %% Public properties
 properties

@@ -2,7 +2,7 @@ classdef VectorComponentErrorField < ErrorField
 % VectorComponentErrorField: vector component error field class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
@@ -10,7 +10,7 @@ classdef VectorComponentErrorField < ErrorField
 % errors on a component (e.g, 'z') or the module of the vector of two
 % or more components (e.g, 'xy' or 'xyz') of a vector field.
 %
-% See also: class VectorField
+% See also: VectorField
 
 %% Private properties
 properties (Access = private)

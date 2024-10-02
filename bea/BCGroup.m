@@ -2,15 +2,15 @@ classdef (Abstract) BCGroup < MeshComponent
 % BCGroup: generic region boundary condition class
 %
 % Author: Paulo Pagliosa
-% Last revision: 09/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
 % The abstract class BCGroup is a mesh component that encapsulates
-% the properties and behavior of a generic boundary conditions applied
-% to the elements of an element region of a BEA model.
+% the properties and behavior of a generic boundary condition (BC)
+% applied to elements of an element region of a BEA model.
 %
-% See also: class Element, class BC
+% See also: Element, BC
 
 %% Publc properties
 properties

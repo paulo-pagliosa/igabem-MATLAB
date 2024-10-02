@@ -2,14 +2,14 @@ classdef MeshTessellator < handle
 % MeshTessellator: mesh tessellator class
 %
 % Author: Paulo Pagliosa
-% Last revision: 04/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
 % An object of the class MeshTessellator transforms every element of a
 % mesh into a triangle submesh.
 %
-% See also: class Mesh
+% See also: Mesh
 
 %% Public read-only properties
 properties (SetAccess = private)

@@ -2,7 +2,7 @@ function eids = selectElementByPosition(mi, test)
 % Selects elements using a position test function
 %
 % Authors: M. Peres and P. Pagliosa
-% Last revision: 24/09/2024
+% Last revision: 01/10/2024
 %
 % Input
 % =====
@@ -12,6 +12,8 @@ function eids = selectElementByPosition(mi, test)
 % Output
 % ======
 % EIDS: indices of the select elements in MI
+%
+% See also: selectElementByFilter
   assert(isa(test, 'function_handle'));
   eids = selectElementByFilter(mi, @filter);
 

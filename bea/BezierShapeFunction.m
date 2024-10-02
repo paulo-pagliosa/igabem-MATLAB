@@ -2,7 +2,7 @@ classdef BezierShapeFunction < ShapeFunction
 % BezierShapeFunction: Bezier shape function class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 14/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
@@ -11,7 +11,7 @@ classdef BezierShapeFunction < ShapeFunction
 % extraction as described in Section 4.2 and Section 4.3 of the paper),
 % applied to the Bernstein basis functions.
 %
-% See also: class Bernstein
+% See also: Bernstein
 
 %% Public read-only properties
 properties (SetAccess = private)

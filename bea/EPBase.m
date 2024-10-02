@@ -2,36 +2,29 @@ classdef (Abstract) EPBase < handle
 % EPBase: base class for elastostatic processors
 %
 % Author: Paulo Pagliosa
-% Last revision: 30/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
 % The abstract class EPBase is a base class for elastostatic processors,
 % i.e., the elastostatic solver and its post-processor. These objects
-% relies on the integration scheme described in Section 5 for evaluating
-% the jump term and influence matrices of a given element.
+% relies on the integration scheme described in Section 5 of the paper
+% for evaluating the jump term and influence matrices of a given element.
 %
-% See also: class Material, class KelvinIntegrator, and derived classes
-% ElastostaticSolver and EPP
-% class EPP
+% See also: QuadIntegrator, ElastostaticSolver, EPP
 
 %% Public properties
 properties
-  material;
+  material Material;
   p = [];
-end
-
-%% Protected read-only properties
-properties (GetAccess = protected, SetAccess = private)
-  integrator;
 end
 
 %% Public methods
 methods
-  function set.material(obj, value)
+  function set.material(this, value)
   % Sets the material of this object
     assert(isa(value, 'Material'), 'Material expected');
-    obj.material = value;
+    this.material = value;
   end
   
   function set(this, varargin)
@@ -49,30 +42,17 @@ methods
   end
 end
 
+%% Protected properties
+properties (Access = protected)
+  integrator;
+end
+
 %% Protected methods
 methods (Access = protected)
   function this = EPBase(material, varargin)
-    this.integrator = KelvinIntegrator(material);
+    this.integrator = QuadIntegrator;
     this.material = material;
     this.set(varargin{:});
-  end
-
-  function [c, h, g, x] = performOutsideHGIntegration(this, p, element)
-    this.integrator.initHG(element);
-    out = this.integrator.performOutsideIntegration(p, element);
-    c = out.c;
-    h = out.h;
-    g = out.g;
-    x = out.x;
-  end
-
-  function [c, h, g, x] = performInsideHGIntegration(this, csi, p, element)
-    this.integrator.initHG(element);
-    out = this.integrator.performInsideIntegration(csi, p, element);
-    c = out.c;
-    h = out.h;
-    g = out.g;
-    x = out.x;
   end
 end
 

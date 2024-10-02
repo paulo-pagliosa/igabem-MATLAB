@@ -2,7 +2,7 @@ classdef LoadPoint < handle
 % LoadPoint: load point class
 %
 % Author: Paulo Pagliosa
-% Last revision: 05/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
@@ -12,7 +12,7 @@ classdef LoadPoint < handle
 % and the parametric coordinates of the load point relative to
 % the intrinsic coordinate system of its elements.
 %
-% See also: class Element, class Node
+% See also: Element, Node
 
 %% Public properties
 properties

@@ -2,7 +2,7 @@ classdef Face < handle
 % Face: control mesh face class
 %
 % Author: Paulo Pagliosa
-% Last revision: 19/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
@@ -10,6 +10,8 @@ classdef Face < handle
 % control mesh of a piecewise parametric surface. A face is defined by
 % the nodes corresponding to its four vertices. The face node of a
 % virtual vertex is empty.
+%
+% See also: Node
 
 %% Public read-only properties
 properties (SetAccess = {?Face, ?Mesh})

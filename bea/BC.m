@@ -2,19 +2,20 @@ classdef (Abstract) BC < MeshComponent
 % BC: generic element boundary condition class
 %
 % Author: Paulo Pagliosa
-% Last revision: 06/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
-% The abstract class BC is a mesh component that encapsulates the
-% properties and behavior of a generic boundary condition applied to an
-% element of a BEA model. The properties of a boundary condition are
+% The abstract class BC is a mesh component that encapsulates
+% the properties and behavior of a generic boundary condition (BC)
+% applied to an element of a BEA model. The properties of a BC are
 % the element to which the boundary condition is applied, the dofs
-% (defining which degrees of freedom have prescribed values), an evaluator
-% (for computing the prescribed values at points in the element), and
-% the direction in which the prescribed values act (if defined as scalars).
+% (specifying which degrees of freedom have prescribed values), an
+% evaluator (for computing the BC values at points in the element),
+% and the direction in which the prescribed values act (if defined
+% as scalars).
 %
-% See also: class Element, class BCGroup
+% See also: Element, BCGroup
 
 %% Public read-only properties
 properties (SetAccess = {?BC, ?BCGroup, ?Mesh})

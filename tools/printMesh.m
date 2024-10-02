@@ -2,12 +2,14 @@ function printMesh(mesh, fid)
 % Prints a mesh for debug
 %
 % Author: Paulo Pagliosa
-% Last revision: 06/09/2024
+% Last revision: 01/10/2024
 %
 % Input
 % =====
 % MESH: mesh to be saved
 % FID: file id (default: standard output)
+%
+% See also: Mesh
   assert(isa(mesh, 'Mesh'), 'Mesh expected');
   if nargin < 2
     fid = 1;

@@ -2,17 +2,18 @@ classdef (Abstract) ShapeFunction < handle & matlab.mixin.Heterogeneous
 % ShapeFunction: generic shape function class
 %
 % Author: Paulo Pagliosa
-% Last revision: 04/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
-% The abstract class ShapeFunction encapsulates the behavior of a
-% generic set of element shape functions associated with the nodes of an
-% element. The class define methods for evaluating the shape functions
-% and their derivatives given the parametric coordinates of a point,
-% interpolating nodal values at a point, and computing the normal at a point.
+% The abstract class ShapeFunction encapsulates the behavior of
+% generic shape functions associated with the nodes of an element.
+% The class define methods for evaluating the shape functions and
+% their derivatives given the parametric coordinates of a point,
+% interpolating nodal values at a point, and computing the normal
+% at a point.
 %
-% See also: class Element
+% See also: Element
 
 %% Public methods
 methods (Abstract)

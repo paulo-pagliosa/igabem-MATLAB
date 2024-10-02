@@ -2,7 +2,7 @@ classdef VirtualPointSet < handle
 % VirtualPointSet: virtual point set class
 %
 % Author: Paulo Pagliosa
-% Last revision: 20/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
@@ -12,7 +12,7 @@ classdef VirtualPointSet < handle
 % node, e.g., the end point of a T-junction face extension or a local
 % point of a subd patch.
 %
-% See also: class Node, class Face
+% See also: Node, Face
 
 %% Public read-only properties
 properties (SetAccess = private)

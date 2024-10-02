@@ -2,7 +2,7 @@ function mesh = readMesh(varargin)
 % Reads mesh data from a file
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 14/09/2024
+% Last revision: 01/10/2024
 %
 % Input
 % =====
@@ -26,6 +26,8 @@ function mesh = readMesh(varargin)
 % which results in semi-discontinuous elements. The GLUE flag is ignored if
 % only one filename is given as input argument. Each connected component of
 % the final mesh must represent a surface with no boundaries.
+%
+% See also: Mesh
   mesh = [];
   glue = true;
   noFaces = false;

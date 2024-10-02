@@ -2,17 +2,17 @@ classdef Constraint < BC
 % Constraint: element constraint class
 %
 % Author: Paulo Pagliosa
-% Last revision: 06/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
-% An object of the class Constraint represents a displacement contrainst
-% imposed to an element of a BEA model.
+% An object of the class Constraint represents a displacement
+% contrainst imposed to an element of a BEA model.
 % A detailed documentation is available in
 %
 % https://github.com/paulo-pagliosa/igabem-MATLAB
 %
-% See also: class Element, class MeshInterface
+% See also: Element, MeshInterface
 
 %% Public constants
 properties (Constant)

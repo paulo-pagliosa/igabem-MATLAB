@@ -2,11 +2,12 @@ classdef TriangleMesh < handle
 % TriangleMesh: triangle mesh class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
-% An object of the class TriangleMesh represents mesh of triangles in 3D.
+% An object of the class TriangleMesh represents a mesh of
+% triangles in 3D.
 
 %% Public read-only properties
 properties (SetAccess = private)

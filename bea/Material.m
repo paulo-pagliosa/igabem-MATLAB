@@ -13,7 +13,7 @@ classdef Material < handle
 properties (SetAccess = private)
   scale = 1;
   E;
-  mu;
+  nu;
   G;
   c1;
   c2;
@@ -25,29 +25,29 @@ end
 
 %% Public methods
 methods
-  function this = Material(E, mu)
+  function this = Material(E, nu)
   % Constructs a material
     if nargin > 0
-      this.set(E, mu);
+      this.set(E, nu);
     else
       this.initDefaultMaterial();
     end
   end
 
-  function set(this, E, mu)
+  function set(this, E, nu)
   % Sets the properties of this material
     this.E = E;
-    this.mu = mu;
-    this.G = E / (2 * (1 + mu));
+    this.nu = nu;
+    this.G = E / (2 * (1 + nu));
     % Constants for Kelvin fundamental solutions:
     % U,...
-    this.c1 = this.scale / (16 * pi * this.G * (1 - mu));
-    this.c2 = 3 - 4 * mu;
+    this.c1 = this.scale / (16 * pi * this.G * (1 - nu));
+    this.c2 = 3 - 4 * nu;
     % ...T and D,...
-    this.c3 = 1 / (8 * pi * (1 - mu));
-    this.c4 = 1 - 2 * mu;
+    this.c3 = 1 / (8 * pi * (1 - nu));
+    this.c4 = 1 - 2 * nu;
     %...and S
-    this.c5 = this.G / (4 * pi * (1 - mu));
+    this.c5 = this.G / (4 * pi * (1 - nu));
     this.c6 = this.c2 - 2;
   end
 
@@ -55,7 +55,7 @@ methods
   % Sets the material scale (for test only)
     if scale ~= this.scale && scale >= 1
       this.scale = scale;
-      this.c1 = scale / (16 * pi * this.G * (1 - this.mu));
+      this.c1 = scale / (16 * pi * this.G * (1 - this.nu));
     end
   end
 end

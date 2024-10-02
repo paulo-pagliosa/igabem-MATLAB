@@ -2,7 +2,7 @@ classdef VectorExtractor < FieldExtractor
 % VectorExtractor: vector field extractor class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
@@ -10,7 +10,7 @@ classdef VectorExtractor < FieldExtractor
 % each point resulting from the tessellation of a mesh. The vector
 % at a point of an element is determined by a VectorField object.
 %
-% See also: class VectorField
+% See also: VectorField
 
 %% Public methods
 methods

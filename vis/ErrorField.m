@@ -2,14 +2,14 @@ classdef ErrorField < ScalarField
 % ErrorField: generic error field class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
 % An object of the class ErrorField is an evaluator of scalars
 % defined by an absolute or relative error at a point on an element.
 %
-% See also: enum ErrorType
+% See also: ErrorType
 
 %% Public read-only properties
 properties (SetAccess = private)

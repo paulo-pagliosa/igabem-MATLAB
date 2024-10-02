@@ -2,12 +2,14 @@ function loadSolverResults(mesh, filename)
 % Loads BEA results from a file
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 01/10/2024
 %
 % Input
 % =====
 % MESH: mesh in which the BEA results will be saved
 % FILENAME: file with the BEA results
+%
+% See also: Mesh
   assert(isa(mesh, 'Mesh'), 'Mesh expected');
   file = fopen(filename, 'r');
   nn = mesh.nodeCount;

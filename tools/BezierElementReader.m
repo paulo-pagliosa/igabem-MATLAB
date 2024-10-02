@@ -2,7 +2,7 @@ classdef BezierElementReader < ElementReader
 % BezierElementReader: Bezier element reader class
 %
 % Author: Paulo Pagliosa
-% Last revision: 19/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
@@ -11,7 +11,7 @@ classdef BezierElementReader < ElementReader
 % the id and element region of each node, and optionally, the node ids
 % of the face associated with the element.
 %
-% See also: class BezierElement, class Node, class Face
+% See also: BezierElement, Node, Face
 
 %% Public methods
 methods

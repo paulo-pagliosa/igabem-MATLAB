@@ -1,12 +1,12 @@
-classdef KelvinIntegrator < matlab.mixin.SetGet
-% KelvinIntegrator: Kelvin-based integrator class
+classdef QuadIntegrator < matlab.mixin.SetGet
+% QuadIntegrator: quad domain-based BIE integrator class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 30/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
-% The class KelvinIntegrator implements the integration scheme
+% The class QuadIntegrator implements the integration scheme
 % described in Section 5 of the paper.
 
 %% Public constants
@@ -30,21 +30,15 @@ properties (GetAccess = private, Dependent)
 end
 
 %% Private properties
-properties (Access = private)
-  material;
-end
-
 properties (Access = private, Transient)
   gp = GaussPoints;
   evalSingularRegion function_handle;
-  out;
 end
 
 %% Public methods
 methods
-  function this = KelvinIntegrator(material)
+  function this = QuadIntegrator
   % Constructs an integrator
-    this.material = material;
     this.srMethod = '4T';
   end
 
@@ -112,56 +106,31 @@ methods
 end
 
 %% Protected methods
-methods (Access = {?KelvinIntegrator, ?EPBase})
-  function initHG(this, element)
-    n = 3 * element.nodeCount;
-    this.out = struct('targetHandle', @this.addHG, ...
-      'c', zeros(3, 3), ...
-      'h', zeros(3, n), ...
-      'g', zeros(3, n), ...
-      'x', []);
-  end
-
-  function out = performOutsideIntegration(this, p, element)
-  % Performs outside integration.
-  % A method to initialize the OUT property MUST BE invoked
-  % BEFORE invoking this method
+methods (Access = {?QuadIntegrator, ?EPBase})
+  function performOutsideIntegration(this, p, handle)
+  % Performs outside integration
     region = QuadRegion.default;
     n = this.outGaussRule;
     if n == 0
-      this.evalRegion(p, element, region);
+      this.evalRegion(p, handle, region);
     else
-      this.integrateRegion(p, element, region, n, n);
+      this.integrateRegion(p, handle, region, n, n);
     end
-    out = this.out;
   end
 
-  function out = performInsideIntegration(this, csi, p, element)
-  % Performs inside integration.
-  % A method to initialize the OUT property MUST BE invoked
-  % BEFORE invoking this method
+  function performInsideIntegration(this, csi, p, handle)
+  % Performs inside integration
     region = QuadRegion.default;
     if this.minRatio == 0
-      this.evalSingularRegion(csi, p, element, region);
+      this.evalSingularRegion(csi, p, handle, region);
     else
-      this.subdSingularRegion(csi, p, element, region);
+      this.subdSingularRegion(csi, p, handle, region);
     end
-    out = this.out;
   end
 end
 
 methods (Access = protected)
-  function q = addHG(this, p, element, u, v, w)
-    [q, S] = element.positionAt(u, v);
-    [N, J] = element.normalAt(u, v);
-    [U, T] = Kelvin3.computeUT(p, q, N, this.material);
-    T = T * J * w;
-    this.out.c = this.out.c - T;
-    this.out.h = this.out.h + kron(S', T);
-    this.out.g = this.out.g + kron(S', U * J * w);
-  end
-
-  function integrateRegion(this, p, element, region, nu, nv)
+  function integrateRegion(this, p, handle, region, nu, nv)
   % Integrates a regular region using nu x nv Gauss points
     [xgu, wgu] = this.gp.get(nu);
     [xgv, wgv] = this.gp.get(nv);
@@ -174,22 +143,22 @@ methods (Access = protected)
       for j = 1:nv
         v = region.v(xgv(j));
         w = wgu(i) * wgv(j) * rJ * 0.25;
-        x(k, :) = this.out.targetHandle(p, element, u, v, w);
+        x(k, :) = handle.integrate(p, u, v, w);
         k = k + 1;
       end
     end
-    this.out.x = [this.out.x; x];
+    handle.x = [handle.x; x];
   end
 
-  function evalRegion(this, p, element, region)
+  function evalRegion(this, p, ih, region)
   % Integrates a regular region with adaptive subdivision
     splitDepth = this.maxDepth - region.depth;
     stack = Stack(QuadRegion, 3 * splitDepth + 1);
     stack.push(region);
     while ~stack.isEmpty
       region = stack.pop;
-      R = projectPoint(element, p, region);
-      L = regionSize(element, region);
+      R = projectPoint(ih.element, p, region);
+      L = regionSize(ih.element, region);
       nu = this.ruleSizeByBeer(R, L(1));
       nv = this.ruleSizeByBeer(R, L(2));
       if region.depth < splitDepth
@@ -213,11 +182,11 @@ methods (Access = protected)
           continue;
         end
       end
-      this.integrateRegion(p, element, region, nu, nv);
+      this.integrateRegion(p, ih, region, nu, nv);
     end
   end
 
-  function integrateTriangle(this, p, element, v, n)
+  function integrateTriangle(this, p, handle, v, n)
   % Integrates a triangle (degenerated quad) using n x n Gauss points
     triangle = QuadTriangle(v(1, :), v(2, :), v(3, :));
     [xg, wg] = this.gp.get(n);
@@ -230,33 +199,33 @@ methods (Access = protected)
         v = xg(j);
         t = triangle.positionAt(u, v);
         w = wg(i) * wg(j) * triangle.jacobian(u, v) * 0.25;
-        x(k, :) = this.out.targetHandle(p, element, t(1), t(2), w);
+        x(k, :) = handle.integrate(p, t(1), t(2), w);
         k = k + 1;
       end
     end
-    this.out.x = [this.out.x; x];
+    handle.x = [handle.x; x];
   end
 
-  function evalSingularRegion4T(this, csi, p, element, region)
+  function evalSingularRegion4T(this, csi, p, handle, region)
   % Integrates a singular region with subdivision into triangles
     o = region.o;
     c = region.s + o;
     n = this.triGaussRule;
     if ~this.isEqual(csi(2), o(2))
-      this.integrateTriangle(p, element, [o; [c(1) o(2)]; csi], n);
+      this.integrateTriangle(p, handle, [o; [c(1) o(2)]; csi], n);
     end
     if ~this.isEqual(csi(1), c(1))
-      this.integrateTriangle(p, element, [[c(1) o(2)]; c; csi], n);
+      this.integrateTriangle(p, handle, [[c(1) o(2)]; c; csi], n);
     end
     if ~this.isEqual(csi(2), c(2))
-      this.integrateTriangle(p, element, [c; [o(1) c(2)]; csi], n);
+      this.integrateTriangle(p, handle, [c; [o(1) c(2)]; csi], n);
     end
     if ~this.isEqual(csi(1), o(1))
-      this.integrateTriangle(p, element, [[o(1) c(2)]; o; csi], n);
+      this.integrateTriangle(p, handle, [[o(1) c(2)]; o; csi], n);
     end
   end
 
-  function evalSingularRegionTR(this, csi, p, element, region)
+  function evalSingularRegionTR(this, csi, p, handle, region)
   % Integrates a singular region with subdivision into triangles and
   % quad subregions
     o = region.o;
@@ -281,9 +250,9 @@ methods (Access = protected)
           if sv(j) > this.eps
             region = QuadRegion([ou(i), ov(j)], [su(i), sv(j)], 1);
             if i == 2 && j == 2
-              this.evalSingularRegion4T(csi, p, element, region);
+              this.evalSingularRegion4T(csi, p, handle, region);
             else
-              this.evalRegion(p, element, region);
+              this.evalRegion(p, handle, region);
             end
           end
         end
@@ -291,14 +260,14 @@ methods (Access = protected)
     end
   end
 
-  function subdSingularRegion(this, csi, p, element, region)
+  function subdSingularRegion(this, csi, p, handle, region)
   % Subdivides a singular region according to its image aspect ratio
     depth = region.depth;
     stack = Stack(QuadRegion, 5);
     stack.push(region);
     while ~stack.isEmpty
       region = stack.pop;
-      L = regionSize(element, region);
+      L = regionSize(handle.element, region);
       if L(1) / L(2) >= this.minRatio
         testSubregions(region.splitU(0.5), 1);
         continue;
@@ -307,7 +276,7 @@ methods (Access = protected)
         testSubregions(region.splitV(0.5), 2);
         continue;
       end
-      this.evalSingularRegion(csi, p, element, region);
+      this.evalSingularRegion(csi, p, handle, region);
     end
 
     function testSubregions(subregions, d)
@@ -322,7 +291,7 @@ methods (Access = protected)
         % Otherwise, integrate it with the outside integration scheme
         else
           subregion.depth = depth;
-          this.evalRegion(p, element, subregion);
+          this.evalRegion(p, handle, subregion);
         end
       end
     end
@@ -333,13 +302,13 @@ end
 methods (Static, Access = private)
   function n = ruleSizeByBeer(R, L)
     assert(R > 0);
-    idx = find((R / L) > KelvinIntegrator.tableBeer);
+    idx = find((R / L) > QuadIntegrator.tableBeer);
     n = idx(1) + 1; % n in [2,8]
   end
 
   function b = isEqual(x, y)
-    b = abs(x - y) <= KelvinIntegrator.eps;
+    b = abs(x - y) <= QuadIntegrator.eps;
   end
 end
 
-end % KelvinIntegrator
+end % QuadIntegrator

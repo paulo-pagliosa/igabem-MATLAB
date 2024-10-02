@@ -2,14 +2,14 @@ classdef BezierElement < Element
 % BezierElement: Bezier element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 29/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
 % An object of the class BezierElement represents an element whose
 % shape function is an object of the class BezierShapeFunction.
 %
-% See also: class BezierShapeFunction
+% See also: BezierShapeFunction
 
 %% Public properties
 properties

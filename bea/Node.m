@@ -2,7 +2,7 @@ classdef Node < MeshComponent
 % Node: node class
 %
 % Author: Paulo Pagliosa
-% Last revision: 14/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
@@ -12,7 +12,7 @@ classdef Node < MeshComponent
 % have prescribed values), displacement, traction values (according to the
 % multiplicity), and associated load point.
 %
-% See also: class Mesh, class LoadPoint
+% See also: Mesh, LoadPoint
 
 %% Public properties
 properties

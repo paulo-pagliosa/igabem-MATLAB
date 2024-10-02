@@ -2,12 +2,14 @@ classdef LineProperties
 % LineProperties: line properties class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
 % An object of the class LineProperties encapsulates the color, style,
-% and width of lines to be rendered by a renderer (see the class Renderer).
+% and width of lines to be rendered by a renderer.
+%
+% See also: Renderer
 
 %% Public properties
 properties

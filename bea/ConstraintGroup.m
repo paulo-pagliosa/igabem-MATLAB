@@ -2,14 +2,14 @@ classdef ConstraintGroup < BCGroup
 % ConstraintGroup: region constraint class
 %
 % Author: Paulo Pagliosa
-% Last revision: 06/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
-% An object of the class ConstraintGroup represents a constraint imposed
-% to the elements of an element region of a BEA model.
+% An object of the class ConstraintGroup represents a constraint
+% imposed to elements of an element region of a BEA model.
 %
-% See also: class Constraint
+% See also: Constraint
 
 %% Public static methods
 methods (Static)

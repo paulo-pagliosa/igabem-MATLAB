@@ -2,7 +2,7 @@ function mi = testCylinderError(idx)
 % Errors on cylinder
 %
 % Author: M. Peres
-% Last revision: 30/09/2024
+% Last revision: 01/10/2024
 %
 % Input
 % =====
@@ -23,7 +23,7 @@ function mi = testCylinderError(idx)
 % Figure 26 of the paper. Also, it shows a color map of the relative
 % error as in Figure 25(b).
 %
-% See also: function testCylinder
+% See also: testCylinder
 filenames = ["cylinder96.be"; ...
   "cylinder144.be"; ...
   "cylinder216.be"; ...
@@ -50,8 +50,8 @@ mesh = a.mesh;
 clear a;
 % Create the material
 E = 1e5;
-mu = 0;
-m = Material(E, mu);
+nu = 0;
+m = Material(E, nu);
 % Set some constants
 ri = 0.5;
 ro = 1;
@@ -63,10 +63,10 @@ Edr2 = E * dr2;
 % displacement u = 0.01
 u = 0.01;
 r = ri;
-P = (u / ((1 - mu) * r + (ro2 * (1 + mu)) / r) * E * dr2) / ri2;
+P = (u / ((1 - nu) * r + (ro2 * (1 + nu)) / r) * E * dr2) / ri2;
 fprintf('Internal pressure: %g\n', P);
 % Function that computes the "exact" displacements
-u_r = @(r) P * ri2 / Edr2 * ((1 - mu) * r + ((ro2 * (1 + mu)) / r));
+u_r = @(r) P * ri2 / Edr2 * ((1 - nu) * r + ((ro2 * (1 + nu)) / r));
 % Plot the "exact" displacements
 np = 40;
 x = zeros(np + 1, 1);

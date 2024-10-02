@@ -2,7 +2,7 @@ classdef (Abstract) Solver < handle
 % Solver: generic static linear solver class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
@@ -17,7 +17,7 @@ classdef (Abstract) Solver < handle
 % method that must be defined in derived concrete classes for computing the
 % jump term and the influence matrices of a given boundary element.
 %
-% See also: class Mesh
+% See also: Mesh
 
 %% Public properties
 properties

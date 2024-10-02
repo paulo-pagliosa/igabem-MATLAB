@@ -2,7 +2,7 @@ classdef (Abstract) Element < MeshComponent
 % Element: generic element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 23/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
@@ -15,7 +15,7 @@ classdef (Abstract) Element < MeshComponent
 % nodes. Also, there are methods for computing the position, tangents,
 % and normal given the parametric coordinates of a point in the element.
 %
-% See also: class Mesh, class Node, class NodeSet, class Face
+% See also: Mesh, Node, NodeSet, Face
 
 %% Public properties
 properties (Abstract)

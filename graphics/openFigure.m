@@ -21,4 +21,3 @@ function a = openFigure(title)
   %cameratoolbar;
   %rotate3d on;
 end % openFigure
-

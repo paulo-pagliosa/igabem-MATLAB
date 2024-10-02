@@ -1,8 +1,8 @@
 classdef MeshRenderer < Renderer
 % MeshRenderer: mesh renderer class
 %
-% Author: Paulo Pag31liosa
-% Last revision: 05/09/2024
+% Author: Paulo Pagliosa
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
@@ -11,7 +11,7 @@ classdef MeshRenderer < Renderer
 % element of its input mesh into into a triangle submesh. The resulting
 % set of triangle submeshes are then rendered by the mesh renderer.
 %
-% See also: class Mesh, class MeshTessellator
+% See also: Mesh, MeshTessellator
 
 %% Public properties
 properties

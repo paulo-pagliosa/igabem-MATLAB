@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 20/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
@@ -12,7 +12,7 @@ classdef MeshInterface < MeshRenderer
 %
 % https://github.com/paulo-pagliosa/igabem-MATLAB
 %
-% See also: class Mesh
+% See also: Mesh
 
 %% Public properties
 properties

@@ -2,14 +2,14 @@ classdef Shell < MeshComponent
 % Shell: shell class
 %
 % Author: Paulo Pagliosa
-% Last revision: 05/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
 % An object of the class Shell is a mesh component that represents a
 % connected component of a BEA model (not fully implemented yet).
 %
-% See also: class Mesh
+% See also: Mesh
 
 %% Public properties
 properties

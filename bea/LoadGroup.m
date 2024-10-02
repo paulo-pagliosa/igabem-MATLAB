@@ -2,14 +2,14 @@ classdef LoadGroup < BCGroup
 % LoadGroup: region load class
 %
 % Author: Paulo Pagliosa
-% Last revision: 25/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
 % An object of the class LoadGroup represents a load applied to
-% the elements of an element region of a BEA model.
+% elements of an element region of a BEA model.
 %
-% See also: class Load
+% See also: Load
 
 %% Public methods
 methods

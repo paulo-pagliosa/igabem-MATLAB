@@ -2,14 +2,14 @@ classdef LinearTriangle < Element
 % LinearTriangla: 3D linear triangle element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 06/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
 % An object of the class LinearTriangle represents an element whose
 % shape function is an object of the class LinearTriangleShapeFunction.
 %
-% See also: class LinearTriangleShapeFunction
+% See also: LinearTriangleShapeFunction
 
 %% Public methods
 methods

@@ -2,13 +2,15 @@ function saveSolverData(mesh, material, filename)
 % Saves mesh and material data to be used in the C++/CUDA C++ code
 %
 % Author: Paulo Pagliosa
-% Last revision: 24/09/2024
+% Last revision: 01/10/2024
 %
 % Input
 % =====
 % MESH: mesh to be saved
 % MATERIAL: material to be saved
 % FILENAME: file with the mesh and material data
+%
+% See also: Mesh
   assert(isa(mesh, 'Mesh'), 'Mesh expected');
   assert(isa(material, 'Material'), 'Material expected');
   file = fopen(filename, 'w');

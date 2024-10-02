@@ -2,7 +2,7 @@ classdef Mesh < handle
 % Mesh: BEA model class
 %
 % Authors: Paulo Pagliosa
-% Last revision: 25/09/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
@@ -13,7 +13,7 @@ classdef Mesh < handle
 %
 % https://github.com/paulo-pagliosa/igabem-MATLAB
 %
-% See also: class Node, class Element, class Constraint, class Load
+% See also: Node, Element, Constraint, Load
 
 %% Public properties
 properties

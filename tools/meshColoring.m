@@ -2,7 +2,7 @@ function [colors, count, sets] = meshColoring(mesh, check)
 % Colors the elements of a mesh
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 01/10/2024
 %
 % Input
 % =====
@@ -21,6 +21,8 @@ function [colors, count, sets] = meshColoring(mesh, check)
 % Description
 % ===========
 % Colors the elements of MESH as described in Section 6.3 of the paper.
+%
+% See also: Mesh
   assert(isa(mesh, 'Mesh'), 'Mesh expected');
   ne = mesh.elementCount;
   colors = -ones(ne, 1);

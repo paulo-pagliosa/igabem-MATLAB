@@ -2,12 +2,14 @@ classdef PointProperties
 % PointProperties: point properties class
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/08/2024
+% Last revision: 01/10/2024
 %
 % Description
 % ===========
 % An object of the class PointProperties encapsulates the color, shape,
-% and size of points to be rendered by a renderer (see the class Renderer).
+% and size of points to be rendered by a renderer.
+%
+% See also: Renderer
 
 %% Public properties
 properties

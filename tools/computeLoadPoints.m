@@ -2,7 +2,7 @@ function mesh = computeLoadPoints(mesh, eps, dlp)
 % Computes the load points from a mesh with no LTHs
 %
 % Author: Paulo Pagliosa
-% Last revision: 20/09/2024
+% Last revision: 01/10/2024
 %
 % Input
 % =====
@@ -25,7 +25,7 @@ function mesh = computeLoadPoints(mesh, eps, dlp)
 % contain linked tangency handles or virtual vertices (in these cases,
 % the C++ pre-processor must be used to define collocation points).
 %
-% See also: function readMesh
+% See also: readMesh
   assert(isa(mesh, 'Mesh'), 'Mesh expected');
   ne = mesh.elementCount;
   assert(ne > 0, 'No elements in mesh');
