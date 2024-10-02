@@ -2,7 +2,7 @@ classdef (Abstract) ShapeFunction < handle & matlab.mixin.Heterogeneous
 % ShapeFunction: generic shape function class
 %
 % Author: Paulo Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 02/10/2024
 %
 % Description
 % ===========
@@ -70,7 +70,7 @@ end
 %% Protected static methods
 methods (Static, Access = protected)
   function x = weightedSum(x, w)
-    x = sum(x .* repmat(w, 1, size(x, 2)));
+    x = sum(x .* w);
   end
 end
 

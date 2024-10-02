@@ -2,7 +2,7 @@ classdef EPP < EPBase
 % EPP: linear elastostatic post-processor class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 02/10/2024
 %
 % Description
 % ===========
@@ -24,10 +24,11 @@ methods
     this@EPBase(material, varargin{:});
     this.mesh = mesh;
     this.uHandle = IntegrationHandle(this, @initUData, @updateUData);
+    this.sHandle = IntegrationHandle(this, @initSData, @updateSData);
 
     function initUData(handle, element)
-      handle.data = struct('ue', element.nodeDisplacements, ...
-        'te', element.nodeTractions, ...
+      handle.data = struct('u_e', element.nodeDisplacements, ...
+        't_e', element.nodeTractions, ...
         'c', zeros(3, 3), ...
         'u', zeros(1, 3));
     end
@@ -36,13 +37,24 @@ methods
       [U, T] = Kelvin3.computeUT(p, q, N, handle.solver.material);
       T = T * w;
       handle.data.c = handle.data.c - T;
-      t = weightedSum(handle.data.te, S) * U' * w;
-      u = weightedSum(handle.data.ue, S) * T'; 
-      handle.data.u = handle.data.u +  t - u;
+      t = sum(handle.data.t_e .* S) * U' * w;
+      u = sum(handle.data.u_e .* S) * T';
+      handle.data.u = handle.data.u + t - u;
     end
 
-    function x = weightedSum(x, w)
-      x = sum(x .* repmat(w, 1, size(x, 2)));
+    function initSData(handle, element)
+      handle.data = struct('u_e', element.nodeDisplacements, ...
+        't_e', element.nodeTractions, ...
+        's', zeros(3, 3));
+    end
+
+    function updateSData(handle, p, q, N, S, w)
+      u = sum(handle.data.u_e .* S) * w;
+      t = sum(handle.data.t_e .* S) * w;
+      [D, S] = Kelvin3.computeDS(p, q, N, handle.solver.material);
+      d = D(:, :, 1) * t(1) + D(:, :, 2) * t(2) + D(:, :, 3) * t(3);
+      s = S(:, :, 1) * u(1) + S(:, :, 2) * u(2) + S(:, :, 3) * u(3);
+      handle.data.s = handle.data.s + d - s;
     end
  end
 
@@ -103,10 +115,10 @@ methods
       p = points(k, :);
       for i = 1:ne
         element = this.mesh.elements(i);
-        [cp, up, x, b] = this.computeU(p, element, dflag);
-        u(k, :) = u(k, :) + up;
+        [ce, ue, x, b] = this.computeU(p, element, dflag);
+        u(k, :) = u(k, :) + ue;
         bflag = bflag || b;
-        c = c + cp;
+        c = c + ce;
         this.p = [this.p; x];
       end
       if bflag
@@ -155,15 +167,28 @@ methods
     for i = 1:ne
       e = this.mesh.elements(i);
       if e == element
-        [cp, up, x] = this.performInsideUIntegration(csi, p, e);
+        [ce, ue, x] = this.performInsideUIntegration(csi, p, e);
       else
-        [cp, up, x] = this.computeU(p, e, false);
+        [ce, ue, x] = this.computeU(p, e, false);
       end
-      u = u + up;
-      c = c + cp;
+      u = u + ue;
+      c = c + ce;
       this.p = [this.p; x];
     end
     u = (c ^ -1 * u')';
+  end
+
+  function s = computeDomainStress(this, p)
+  % Computes the stress at an internal point
+    this.p = [];
+    s = zeros(3, 3);
+    ne = this.mesh.elementCount;
+    for i = 1:ne
+      e = this.mesh.elements(i);
+      [se, x] = this.performOutsideSIntegration(p, e);
+      s = s + se;
+      this.p = [this.p; x];
+    end
   end
 end
 
@@ -198,17 +223,32 @@ methods (Access = protected)
     x = handle.x;
   end
 
-  function [c, u, x, b] = computeU(this, p, element, dflag)
-    b = false;
+  function [c, u, x, bflag] = computeU(this, p, element, dflag)
+    bflag = false;
     if ~dflag
-      [d, csi] = projectPoint(element, p);
-      b = abs(d) <= this.eps;
+      [bflag, csi] = EPP.isInElement(p, element);
     end
-    if ~b
+    if ~bflag
       [c, u, x] = this.performOutsideUIntegration(p, element);
     else
       [c, u, x] = this.performInsideUIntegration(csi, p, element);
     end
+  end
+
+  function [s, x] = performOutsideSIntegration(this, p, element)
+    handle = this.sHandle;
+    handle.setElement(element);
+    this.integrator.performOutsideIntegration(p, handle);
+    s = handle.data.s;
+    x = handle.x;
+  end
+end
+
+%% Protected static methods
+methods (Access = protected, Static)
+  function [b, csi] = isInElement(p, element)
+    [d, csi] = projectPoint(element, p);
+    b = abs(d) <= EPP.eps;
   end
 end
 
