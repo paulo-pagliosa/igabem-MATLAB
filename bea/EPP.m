@@ -2,7 +2,7 @@ classdef EPP < EPBase
 % EPP: linear elastostatic post-processor class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 02/10/2024
+% Last revision: 03/10/2024
 %
 % Description
 % ===========
@@ -92,9 +92,9 @@ methods
   % obtained by interpolating the element's nodal displacements,
   % but even so, the BIE is fully evaluated). If DFLAG is false,
   % the projection of P is tested. Otherwise, P is assumed to be
-  % an internal point
+  % an internal point.
   %
-  % See also: function projectPoint
+  % See also: projectPoint
     if nargin < 3
       dflag = false;
     end
@@ -102,10 +102,8 @@ methods
     fprintf('**Computing displacements...\n');
     np = size(points, 1);
     u = zeros(np, 3);
-    dots = min(40, np);
-    fprintf('%s\n', repmat('*', 1, dots));
-    slen = dots / np;
-    step = 1;
+    pbar = ProgressBar(np);
+    pbar.start;
     nb = 0;
     nd = 0;
     ne = this.mesh.elementCount;
@@ -114,8 +112,8 @@ methods
       bflag = false;
       p = points(k, :);
       for i = 1:ne
-        element = this.mesh.elements(i);
-        [ce, ue, x, b] = this.computeU(p, element, dflag);
+        e = this.mesh.elements(i);
+        [ce, ue, x, b] = this.computeU(p, e, dflag);
         u(k, :) = u(k, :) + ue;
         bflag = bflag || b;
         c = c + ce;
@@ -128,10 +126,7 @@ methods
         nd = nd + 1;
       end        
       % Print progress
-      if k * slen >= step
-        fprintf('.');
-        step = step + 1;
-      end
+      pbar.update(k);
     end
     fprintf('\n**DONE\n');
     fprintf('Boundary points: %d\nDomain points: %d\nGauss points: %d\n', ...
@@ -178,17 +173,79 @@ methods
     u = (c ^ -1 * u')';
   end
 
-  function s = computeDomainStress(this, p)
-  % Computes the stress at an internal point
-    this.p = [];
-    s = zeros(3, 3);
-    ne = this.mesh.elementCount;
-    for i = 1:ne
-      e = this.mesh.elements(i);
-      [se, x] = this.performOutsideSIntegration(p, e);
-      s = s + se;
-      this.p = [this.p; x];
+  function u = computeDomainStresses(this, points)
+  % Computes the stress at internal points
+    u = this.computeStresses(points, true);
+  end
+
+  function s = computeStresses(this, points, dflag)
+  % Computes the stress at internal and boundary points
+  % 
+  % Input
+  % =====
+  % POINTS: NPx3 array with the coordinates of NP points
+  % DFLAG: domain flag (default: false). If it is true, every
+  % point in POINTS is assumed to be an internal point
+  %
+  % Output
+  % ======
+  % S: 3x3xNPx3 array where S(:,:,K), K in [1:NP], is the stress
+  % of the point POINTS(K,:)
+  %
+  % Description
+  % ===========
+  % For each P=POINTS(K,:), K in [1:NP], S(:,:,K) is computed by
+  % evaluating the stress BIE taking P as the load point if P is
+  % not a boundary point. Otherwise, the stress at P is computed
+  % analytically. The projection of P is tested iff DFLAG==true.
+  % Otherwise, P is assumed to be an internal point.
+    if nargin < 3
+      dflag = false;
     end
+    this.p = [];
+    fprintf('**Computing stresses...\n');
+    np = size(points, 1);
+    s = zeros(3, 3, np);
+    pbar = ProgressBar(np);
+    pbar.start;
+    nb = 0;
+    nd = 0;
+    ne = this.mesh.elementCount;
+    for k = 1:np
+      bflag = false;
+      p = points(k, :);
+      for i = 1:ne
+        e = this.mesh.elements(i);
+        if ~dflag
+          [b, csi] = EPP.isInElement(p, e);
+          if b
+            bflag = true;
+            s(:, :, k) = this.computeBoundaryStress(csi, p, e);
+            break;
+          end
+        end
+        [se, x] = this.performOutsideSIntegration(p, e);
+        s(:, :, k) = s(:, :, k) + se;
+        this.p = [this.p; x];
+      end
+      if bflag
+        nb = nb + 1;
+      else
+        nd = nd + 1;
+      end        
+      % Print progress
+      pbar.update(k);
+    end
+    fprintf('\n**DONE\n');
+    fprintf('Boundary points: %d\nDomain points: %d\nGauss points: %d\n', ...
+      nb, ...
+      nd, ...
+      size(this.p, 1));
+  end
+
+  function s = computeBoundaryStress(this, csi, p, element)
+  % Computes the stress at a boundary point
+    s = zeros(3, 3);
   end
 end
 

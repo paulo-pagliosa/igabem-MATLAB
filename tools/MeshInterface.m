@@ -466,18 +466,18 @@ methods
   % Selects all elements belonging to the regions containing a set
   % of elements, E. The input parameter EIDS provides the IDs of
   % the elements in E. If EIDS is omitted, E is given by the current
-  % selected elements. The algorithm uses a stack of node IDs e node
+  % selected elements. The method uses a stack of node IDs and node
   % regions. For each element in E:
   % - Push onto the stack the node IDs and node regions of all
-  %   unvisited element nodes
+  %   unvisited element nodes.
   % - While the stack is not empty:
   %   - Pop from the stack the ID (NID) and region (RID) of a node
   %   - For each unselected element influeced by the node:
   %     - If the region of the element node (whose ID is) NID is
   %       equal to RID, then:
-  %       - Select the element
+  %       - Select the element.
   %       - Push onto the stack the node IDs and node regions of
-  %         all unvisited element nodes
+  %         all unvisited element nodes.
     if nargin > 1 && ~isempty(eids)
       if any(eids < 1) || any(eids > this.mesh.elementCount)
         fprintf('Invalid element index\n');

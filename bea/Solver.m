@@ -2,7 +2,7 @@ classdef (Abstract) Solver < handle
 % Solver: generic static linear solver class
 %
 % Author: Paulo Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 03/10/2024
 %
 % Description
 % ===========
@@ -131,17 +131,10 @@ methods (Access = protected)
     nn = this.mesh.nodeCount;
     ne = this.mesh.elementCount;
     fprintf('Assembling LS...\n');
-    dots = min(40, nn);
-    fprintf('%s\n', repmat('*', 1, dots));
-    slen = dots / nn;
-    step = 1;
+    pbar = ProgressBar(nn);
+    pbar.start;
     rows = [1 2 3];
     for k = 1:nn
-      % Print progress
-      if k * slen >= step
-        fprintf('.');
-        step = step + 1;
-      end
       c = zeros(3, 3);
       s = this.mesh.nodes(k).loadPoint;
       [p, N] = s.position;
@@ -158,6 +151,8 @@ methods (Access = protected)
       cCols = this.hMap{s.elements(1).id};
       this.H(rows, cCols) = this.H(rows, cCols) + c;
       rows = rows + 3;
+      % Print progress
+      pbar.update(k);
     end
     this.afterAssemblingLS;
     % Apply BCs
