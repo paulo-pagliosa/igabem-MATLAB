@@ -1,8 +1,8 @@
-function mi = testCylinderError(idx)
+function [mi, epp] = testCylinderError(idx)
 % Errors on cylinder
 %
 % Author: M. Peres
-% Last revision: 01/10/2024
+% Last revision: 02/10/2024
 %
 % Input
 % =====
@@ -65,22 +65,21 @@ u = 0.01;
 r = ri;
 P = (u / ((1 - nu) * r + (ro2 * (1 + nu)) / r) * E * dr2) / ri2;
 fprintf('Internal pressure: %g\n', P);
-% Function that computes the "exact" displacements
+% Function that computes the "exact" radial displacements
 u_r = @(r) P * ri2 / Edr2 * ((1 - nu) * r + ((ro2 * (1 + nu)) / r));
-% Plot the "exact" displacements
+% Plot the "exact" radial displacements
 np = 40;
 x = zeros(np + 1, 1);
 y = zeros(np + 1, 1);
 d = (ro - ri) / np;
 for i = 1:np + 1
-  r = ri + (i - 1) * d;
-  x(i) = r;
-  y(i) = u_r(r);
+  x(i) = ri + (i - 1) * d;
+  y(i) = u_r(x(i));
 end
 plot(x, y);
 set(gcf, 'Name', 'Radial displacements');
 hold on;
-% Compute boundary displacements using an EPP and plot them
+% Compute boundary radial displacements using an EPP and plot them
 pi = [ri, 0, 2];
 po = [ro, 0, 2];
 p = zeros(np + 1, 3);
@@ -89,7 +88,6 @@ epp.set('srMethod', 'TR');
 d = (po - pi) / np;
 for i = 1:np + 1
   p(i, :) = pi + (i - 1) * d;
-  x(i) = p(i, 1);
 end
 u = epp.computeDisplacements(p);
 y = u(:, 1);

@@ -2,7 +2,7 @@ classdef (Abstract) Element < MeshComponent
 % Element: generic element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 04/10/2024
 %
 % Description
 % ===========
@@ -92,20 +92,40 @@ methods
   end
 
   function [N, J] = normalAt(this, u, v)
-  % Computing the normal at (U,V)
+  % Computes the normal at (U,V)
     [~, ~, N] = this.tangentAt(u, v);
-    if this.shell.flipNormalFlag
-      N = N * -1;
-    end
     J = norm(N);
-    N = N ./ J;
+    N = N / J;
   end
 
-  function [Su, Sv, N, p] = tangentAt(this, u, v)
-  % Compute the tangents and normal at (U,V)
-    [N, Su, Sv, p] = this.shapeFunction.computeNormal(this.nodePositions, ...
+  function [Su, Sv, g, p] = tangentAt(this, u, v)
+  % Computes the tangents and gradient at (U,V)
+    [g, Su, Sv, p] = this.shapeFunction.computeGradient(this.nodePositions, ...
       u, ...
       v);
+    if this.shell.flipNormalFlag
+      g = -g;
+    end
+  end
+
+  function u = displacementAt(this, u, v)
+    u = this.shapeFunction.interpolate(this.nodeDisplacements, u, v);
+  end
+
+  function t = tractionAt(this, u, v)
+  % Computes the traction at (U,V)
+  %
+  % Remark
+  % ======
+  % To compute multiple values, it is better to do:
+  % te = E.nodeTractions();
+  % for i = 1:n
+  %   t = E.shapeFunction.interpolate(te, CSI(i, 1), CSI(i, 2));
+  %   ...
+  % end
+  % where E is a reference to an element and CSI is a Nx2 array
+  % of parametric coordinates
+    t = this.shapeFunction.interpolate(this.nodeTractions, u, v);
   end
 end
 

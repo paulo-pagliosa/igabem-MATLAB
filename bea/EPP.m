@@ -2,7 +2,7 @@ classdef EPP < EPBase
 % EPP: linear elastostatic post-processor class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 03/10/2024
+% Last revision: 04/10/2024
 %
 % Description
 % ===========
@@ -49,12 +49,12 @@ methods
     end
 
     function updateSData(handle, p, q, N, S, w)
-      u = sum(handle.data.u_e .* S) * w;
-      t = sum(handle.data.t_e .* S) * w;
+      u = sum(handle.data.u_e .* S);
+      t = sum(handle.data.t_e .* S);
       [D, S] = Kelvin3.computeDS(p, q, N, handle.solver.material);
       d = D(:, :, 1) * t(1) + D(:, :, 2) * t(2) + D(:, :, 3) * t(3);
       s = S(:, :, 1) * u(1) + S(:, :, 2) * u(2) + S(:, :, 3) * u(3);
-      handle.data.s = handle.data.s + d - s;
+      handle.data.s = handle.data.s + (d - s) * w;
     end
  end
 
@@ -243,15 +243,62 @@ methods
       size(this.p, 1));
   end
 
-  function s = computeBoundaryStress(this, csi, p, element)
+  function [s, t, N] = computeBoundaryStress(this, csi, ~, element)
   % Computes the stress at a boundary point
+  %
+  % Input
+  % =====
+  % CSI: 1x2 array with the parametric coordinates of P
+  % P: 1x3 array with the coordinates of the boundary point
+  % ELEMENT: reference to an element containing P
+  %
+  % Output
+  % ======
+  % S: 3x3 array with the stress of P
+    [v1, v2, N] = element.tangentAt(csi(1), csi(2));
+    inv_nv1 = 1 / norm(v1);
+    inv_nv2 = 1 / norm(v2);
+    cost = v1 * v2' * inv_nv1 * inv_nv2;
+    inv_sint = 1 / sqrt(1 - cost ^ 2);
+    J11 = inv_nv1;
+    J12 = -cost * inv_sint * inv_nv1;
+    J22 = inv_sint * inv_nv2;
+    % Make a orthonormal local system at P
+    N = N / norm(N);
+    v1 = v1 * inv_nv1;
+    v2 = cross(N, v1);
+    % Local to global rotation matrix
+    R = [v1', v2', N'];
+    % Compute the global traction...
+    [Su, Sv, S] = element.shapeFunction.diff(csi(1), csi(2));
+    t = sum(element.nodeTractions .* S);
+    %...and local displacement derivatives at P
+    ue = element.nodeDisplacements;
+    du = [sum(ue .* Su); sum(ue .* Sv)] * R(:, 1:2);
+    % Compute the local strains
+    e11 = du(1, 1) * J11;
+    e12 = du(1, 1) * J12 + du(2, 1) * J22;
+    e22 = du(1, 2) * J12 + du(2, 2) * J22;
+    % Compute the local stress at P
+    m = this.material;
     s = zeros(3, 3);
+    s(:, 3) = t * R;
+    c1 = m.E / (1 - m.nu ^ 2);
+    c2 = m.nu / (1 - m.nu) * s(3, 3);
+    s(1, 1) = c1 * (e11 + m.nu * e22) + c2;
+    s(2, 2) = c1 * (e22 + m.nu * e11) + c2;
+    s(1, 2) = m.E / (1 + m.nu) * e12;
+    s(2, 1) = s(1, 2);
+    s(3, 1) = s(1, 3);
+    s(3, 2) = s(2, 3);
+    % Transform the stress from local to global
+    s = R * s * R';
   end
 end
 
 %% Protected constant properties
 properties (Constant, Access = protected)
-  eps = 10e-5 / sqrt(10);
+  eps = 10e-4 / sqrt(10);
 end
 
 %% Protected properties

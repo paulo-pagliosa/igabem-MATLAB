@@ -2,7 +2,7 @@ classdef MeshTessellator < handle
 % MeshTessellator: mesh tessellator class
 %
 % Author: Paulo Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 03/10/2024
 %
 % Description
 % ===========
@@ -132,7 +132,7 @@ methods
       k = 1;
       for v = -1:dp:1
         for u = -1:dp:1
-          [g, ~, ~, p] = s.computeNormal(r, u, v);
+          [g, ~, ~, p] = s.computeGradient(r, u, v);
           vertices(k, :) = p;
           N(k, :) = g ./ norm(g) * sign;
           k = k + 1;

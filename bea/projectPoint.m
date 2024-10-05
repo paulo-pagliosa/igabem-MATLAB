@@ -2,7 +2,7 @@ function [d, rc, S] = projectPoint(element, P, region)
 % Projects a point onto an element region
 %
 % Author: Paulo Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 04/10/2024
 %
 % Input
 % =====
@@ -14,7 +14,7 @@ function [d, rc, S] = projectPoint(element, P, region)
 % ======
 % D: distance from P to REGION
 % RC: parametric coordinates of the projection
-% S: spatial position of the projecction
+% S: spatial position of the projection
 %
 % See also: Element, QuadRegion
   if nargin < 3

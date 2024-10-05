@@ -2,7 +2,7 @@ classdef (Abstract) BC < MeshComponent
 % BC: generic element boundary condition class
 %
 % Author: Paulo Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 03/10/2024
 %
 % Description
 % ===========
@@ -153,7 +153,7 @@ methods (Access = {?BC, ?BCGroup})
       [P, S] = s.interpolate(r, u, v);
       A(i, :) = S';
       if isnan(this.direction)
-        D = s.computeNormal(r, u, v);
+        D = s.computeGradient(r, u, v);
         D = D ./ norm(D) * sign;
       end
       P = P(1:3) / P(4);

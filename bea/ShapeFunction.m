@@ -2,7 +2,7 @@ classdef (Abstract) ShapeFunction < handle & matlab.mixin.Heterogeneous
 % ShapeFunction: generic shape function class
 %
 % Author: Paulo Pagliosa
-% Last revision: 02/10/2024
+% Last revision: 04/10/2024
 %
 % Description
 % ===========
@@ -14,6 +14,11 @@ classdef (Abstract) ShapeFunction < handle & matlab.mixin.Heterogeneous
 % at a point.
 %
 % See also: Element
+
+%% Public constant properties
+properties (Constant)
+  eps = 1e-6;
+end
 
 %% Public methods
 methods (Abstract)
@@ -31,7 +36,7 @@ methods
   end
 
   function [xu, xv, xp] = computeTangents(this, x, u, v)
-  % Computes tangents and position at (u,v).
+  % Computes the tangents and position at (U,V).
   % The input parameter X is assumed to be nodal positions and weights
     [Du, Dv, N] = this.diff(u, v);
     xp = ShapeFunction.weightedSum(x, N);
@@ -43,26 +48,13 @@ methods
     xv = (xv(1:3) - xv(4) * xp) * wp;
   end
 
-  function [dn, xu, xv, xp] = computeNormal(this, x, u, v)
-  % Computes normal, tangents, and position at (u,v).
+  function [g, xu, xv, xp] = computeGradient(this, x, u, v)
+  % Computes the gradient, tangents, and position at (U,V).
   % The input parameter X is assumed to be nodal positions and weights
-    u0 = u;
-    v0 = v;
-    maxIt = 10;
-    for i = 1:maxIt
-      [xu, xv, xp] = this.computeTangents(x, u, v);
-      dn = cross(xu, xv);
-      if dn * dn' > 1e-6
-        return;
-      end
-      d = 1e-4;
-      u = u - eps(d); %sign(u) * d;
-      v = v - eps(d); %sign(v) * d;
-    end
-    warning('%s: zero normal at (%f,%f)\n', class(this), u0, v0);
-
-    function r = eps(d)
-      r = (d + d) * rand(1) - d;
+    [xu, xv, xp] = this.computeTangents(x, u, v);
+    g = cross(xu, xv);
+    if g * g' <= this.eps
+      warning('%s: zero normal at (%f,%f)\n', class(this), u, v);
     end
   end
 end
