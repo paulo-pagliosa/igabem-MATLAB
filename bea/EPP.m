@@ -2,7 +2,7 @@ classdef EPP < EPBase
 % EPP: linear elastostatic post-processor class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 04/10/2024
+% Last revision: 05/10/2024
 %
 % Description
 % ===========
@@ -37,9 +37,9 @@ methods
       [U, T] = Kelvin3.computeUT(p, q, N, handle.solver.material);
       T = T * w;
       handle.data.c = handle.data.c - T;
-      t = sum(handle.data.t_e .* S) * U' * w;
       u = sum(handle.data.u_e .* S) * T';
-      handle.data.u = handle.data.u + t - u;
+      u = sum(handle.data.t_e .* S) * U' * w - u;
+      handle.data.u = handle.data.u + u;
     end
 
     function initSData(handle, element)
@@ -107,22 +107,47 @@ methods
     nb = 0;
     nd = 0;
     ne = this.mesh.elementCount;
+    % For each point P in POINTS
     for k = 1:np
       c = zeros(3, 3);
       bflag = false;
+      proj.d = Inf;
       p = points(k, :);
+      % For each element E
       for i = 1:ne
         e = this.mesh.elements(i);
-        [ce, ue, x, b] = this.computeU(p, e, dflag);
+        % Project P onto E
+        [d, csi] = projectPoint(e, p);
+        % If the projection is the boundary point closest to P,
+        % save E and the projection's parametric coordinates
+        if d < proj.d
+          proj.d = d;
+          proj.element = e;
+          proj.csi = csi;
+        end
+        % If P is a boundary point, perform inside integration
+        if abs(d) <= EPP.eps
+          if dflag
+            warning('Point %d is in element %d', k, i);
+          end
+          [ce, ue, x] = this.performInsideUIntegration(csi, p, e);
+          bflag = true;
+        % Otherwise, perform outside integration
+        else
+          [ce, ue, x] = this.performOutsideUIntegration(p, e);
+        end
+        % Update the displacement of P
         u(k, :) = u(k, :) + ue;
-        bflag = bflag || b;
         c = c + ce;
         this.p = [this.p; x];
       end
+      % Apply regularization
       if bflag
         u(k, :) = c ^ -1 * u(k, :)';
         nb = nb + 1;
       else
+        up = proj.element.displacementAt(proj.csi(1), proj.csi(2));
+        u(k, :) = u(k, :) + up - up * c';
         nd = nd + 1;
       end        
       % Print progress
@@ -150,12 +175,11 @@ methods
   % Output
   % ======
   % U: 1x3 array with the displacement of P
-    this.p = [];
     if nargin < 5 || eflag == false
-      u = element.nodeDisplacements;
-      u = element.shapeFunction.interpolate(u, csi(1), csi(2));
+      u = element.displacementAt(csi(1), csi(2));
       return;
     end
+    this.p = [];
     u = [0 0 0];
     c = zeros(3, 3);
     ne = this.mesh.elementCount;
@@ -164,13 +188,14 @@ methods
       if e == element
         [ce, ue, x] = this.performInsideUIntegration(csi, p, e);
       else
-        [ce, ue, x] = this.computeU(p, e, false);
+        [ce, ue, x] = this.computeU(p, e);
       end
       u = u + ue;
       c = c + ce;
       this.p = [this.p; x];
     end
-    u = (c ^ -1 * u')';
+    u = u * (c ^ -1)';
+    fprintf('Gauss points: %d\n', size(this.p, 1));
   end
 
   function u = computeDomainStresses(this, points)
@@ -327,15 +352,12 @@ methods (Access = protected)
     x = handle.x;
   end
 
-  function [c, u, x, bflag] = computeU(this, p, element, dflag)
-    bflag = false;
-    if ~dflag
-      [bflag, csi] = EPP.isInElement(p, element);
-    end
-    if ~bflag
-      [c, u, x] = this.performOutsideUIntegration(p, element);
-    else
+  function [c, u, x, flag] = computeU(this, p, element)
+    [flag, csi] = this.isInElement(p, element);
+    if flag
       [c, u, x] = this.performInsideUIntegration(csi, p, element);
+    else
+      [c, u, x] = this.performOutsideUIntegration(p, element);
     end
   end
 
@@ -349,7 +371,7 @@ methods (Access = protected)
 end
 
 %% Protected static methods
-methods (Access = protected, Static)
+methods (Access = private, Static)
   function [b, csi] = isInElement(p, element)
     [d, csi] = projectPoint(element, p);
     b = abs(d) <= EPP.eps;
