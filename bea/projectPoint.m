@@ -1,14 +1,15 @@
-function [d, rc, S] = projectPoint(element, P, region)
+function [d, rc, S] = projectPoint(element, P, region, eps)
 % Projects a point onto an element region
 %
 % Author: Paulo Pagliosa
-% Last revision: 04/10/2024
+% Last revision: 07/10/2024
 %
 % Input
 % =====
 % ELEMENT: element onto which the point will be projected
 % P: 3D point to project
 % REGION: element region domain
+% EPS: tolerance (default: 1e-6)
 %
 % Output
 % ======
@@ -17,13 +18,15 @@ function [d, rc, S] = projectPoint(element, P, region)
 % S: spatial position of the projection
 %
 % See also: Element, QuadRegion
+  if nargin < 4
+    eps = 1e-6;
+  end
   if nargin < 3
     region = QuadRegion.default;
   end
   r1 = region.o;
   r2 = region.s + r1;
   rc = region.center;
-  eps = 1e-5;
   maxIt = 20;
   it = 0;
   while it < maxIt

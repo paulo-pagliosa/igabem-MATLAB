@@ -2,7 +2,7 @@ classdef ElastostaticSolver < EPBase & Solver
 % ElastostaticSolver: linear elastostatic solver class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 07/10/2024
 %
 % Description
 % ==========
@@ -19,9 +19,9 @@ methods
     this@Solver(mesh);
     this.hgHandle = IntegrationHandle(this, @initHGData, @updateHGData);
 
-    function initHGData(ih, element)
-      n = 3 * element.nodeCount;
-      ih.data = struct('c', zeros(3, 3), ...
+    function initHGData(handle)
+      n = 3 * handle.element.nodeCount;
+      handle.data = struct('c', zeros(3, 3), ...
       'h', zeros(3, n), ...
       'g', zeros(3, n));
     end

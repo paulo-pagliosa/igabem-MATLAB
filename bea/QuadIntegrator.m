@@ -2,7 +2,7 @@ classdef QuadIntegrator < matlab.mixin.SetGet
 % QuadIntegrator: quad domain-based BIE integrator class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 07/10/2024
 %
 % Description
 % ===========
@@ -150,15 +150,15 @@ methods (Access = protected)
     handle.x = [handle.x; x];
   end
 
-  function evalRegion(this, p, ih, region)
+  function evalRegion(this, p, handle, region)
   % Integrates a regular region with adaptive subdivision
     splitDepth = this.maxDepth - region.depth;
     stack = Stack(QuadRegion, 3 * splitDepth + 1);
     stack.push(region);
     while ~stack.isEmpty
       region = stack.pop;
-      R = projectPoint(ih.element, p, region);
-      L = regionSize(ih.element, region);
+      R = projectPoint(handle.element, p, region);
+      L = regionSize(handle.element, region);
       nu = this.ruleSizeByBeer(R, L(1));
       nv = this.ruleSizeByBeer(R, L(2));
       if region.depth < splitDepth
@@ -182,7 +182,7 @@ methods (Access = protected)
           continue;
         end
       end
-      this.integrateRegion(p, ih, region, nu, nv);
+      this.integrateRegion(p, handle, region, nu, nv);
     end
   end
 

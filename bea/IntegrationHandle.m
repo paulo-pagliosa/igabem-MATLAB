@@ -2,14 +2,14 @@ classdef IntegrationHandle < handle
 % IntegrationHandle: integration handle class
 %
 % Author: Paulo Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 07/10/2024
 %
 % Description
 % ===========
 % An object of the class IntegrationHandle encapsulates data
 % used for and resulting from evaluating integrals over an
-% element, which depends on the BIE kernels and the analysis
-% solver or post-processor.
+% element, which depends on the load point, the BIE kernels,
+% and the analysis solver or post-processor.
 
 %% Public properties
 properties
@@ -56,11 +56,10 @@ methods
   end
 
   function setElement(this, element)
-  % Sets the element of this integration handle and initializes
-  % integration data
+  % Initializes integration data for an element
     assert(~isempty(this.updateData), 'No updating function');
     this.element = element;
-    this.initData(this, element);
+    this.initData(this);
     this.x = [];
   end
 

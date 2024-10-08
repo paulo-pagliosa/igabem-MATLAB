@@ -2,7 +2,7 @@ function [mi, epp] = testCylinderError(idx)
 % Errors on cylinder
 %
 % Author: M. Peres
-% Last revision: 02/10/2024
+% Last revision: 07/10/2024
 %
 % Input
 % =====
@@ -80,8 +80,10 @@ plot(x, y);
 set(gcf, 'Name', 'Radial displacements');
 hold on;
 % Compute boundary radial displacements using an EPP and plot them
-pi = [ri, 0, 2];
-po = [ro, 0, 2];
+O = [0 0 2];
+D = [1 0 0];
+pi = O + ri * D;
+po = O + ro * D;
 p = zeros(np + 1, 3);
 epp = EPP(mesh, m);
 epp.set('srMethod', 'TR');
@@ -90,7 +92,7 @@ for i = 1:np + 1
   p(i, :) = pi + (i - 1) * d;
 end
 u = epp.computeDisplacements(p);
-y = u(:, 1);
+y = sqrt(u(:, 1) .^ 2 + u(:, 2) .^ 2);
 plot(x, y);
 hold off;
 % Compute relative errors using a VectorComponentErrorField,...
