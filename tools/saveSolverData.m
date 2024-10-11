@@ -141,7 +141,7 @@ function saveSolverData(mesh, material, filename)
   end
   fprintf(file, ['\n# A row specifying the Young''s modulus (E) and the\n' ...
     '# Poisson''s ratio (\\mu) of the material\n']);
-  fprintf(file, '%g %g\n', material.E, material.mu);
+  fprintf(file, '%g %g\n', material.E, material.nu);
   fclose(file);
 
   function saveRow(file, fmt, data)

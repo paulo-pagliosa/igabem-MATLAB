@@ -1,8 +1,8 @@
-function mi = testTee
+function [mi, m] = testTee
 % Test tee
 %
 % Author: M. Peres
-% Last revision: 25/09/2024
+% Last revision: 11/10/2024
 %
 % Output
 % ======

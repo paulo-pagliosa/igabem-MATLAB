@@ -1,8 +1,8 @@
-function mi = testCylinder(idx)
+function [mi, m] = testCylinder(idx)
 % Test cylinder
 %
 % Author: M. Peres
-% Last revision: 30/09/2024
+% Last revision: 11/10/2024
 %
 % Input
 % =====
