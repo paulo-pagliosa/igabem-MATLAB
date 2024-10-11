@@ -1,5 +1,5 @@
-function [mi, m] = testTee
-% Test tee
+function [mi, m] = testPlate
+% Test plate
 %
 % Author: M. Peres
 % Last revision: 11/10/2024
@@ -11,9 +11,9 @@ function [mi, m] = testTee
 %
 % Description
 % ===========
-% This function runs the analysis of the tee-shaped model as
+% This function runs the analysis of the thick plate with holes as
 % described in Section 7.2.
-  name = 'tests/tee/tee';
+  name = 'tests/plate/plate';
   filename = [name '.be'];
   a = strcat(filename, '.mat');
   solved = exist(a, 'file');
@@ -29,36 +29,38 @@ function [mi, m] = testTee
     mesh.name = 'tee';
   end
   mi = MeshInterface(mesh);
-  % The T-spline faces were purposely designed with clockwise
-  % orientation. We inverte the normals to fix this issue
-  mi.flipVertexNormals;
   % Create the material
   m = Material(210e3, 0.3);
   if ~solved
-    eid_front = 560;
-    eid_top = 322;
-    eid_bottom = 571;
-    % Apply the boundary conditions: loads...
-    mi.selectRegions(eid_top);
-    mi.makeLoad('torque', [0 0 0], [0 0 1], 20);
-    mi.makeLoad([0 20 0]);
-    % ...and constraints
-    mi.selectRegions([eid_front eid_bottom]);
+    eid_h1 = 9;
+    eid_h2 = 117;
+    eid_h3 = 141;
+    eid_h4 = 69;
+    eid_hc = 21;
+    % Apply the boundary conditions: contraints...
+    mi.selectRegions(eid_hc);
     mi.makeConstraint('xyz', 0);
+    % ...and loads
+    mi.selectRegions(eid_h1);
+    mi.makeLoad(-1000, 'direction', 'normal');
+    mi.selectRegions(eid_h3);
+    mi.makeLoad(+1000, 'direction', 'normal');
+    mi.selectRegions([eid_h2 eid_h4]);
+    mi.makeLoad([0 0 100]);
     mi.deselectAllElements;
-    % Create and run the solver. This may take a while...
+    % Create and run the solver. This may take some time...
     solver = ElastostaticSolver(mesh, m);
     solver.set('srMethod', 'TR');
     solver.set('minRatio', 1);
-    solver.execute;
+    solver.execute();
     % Save the mesh and results
     save(a, 'mesh');
   end
-  % Figure 33(a) of the paper
-  mi.deformMesh(50);
+  % Figure 34(b) of the paper
+  mi.deformMesh(15);
   mi.setScalars('u', 'xyz');
   mi.setColorTable(coolWarm);
   mi.showColorMap;
   mi.showColorBar;
   mi.showPatchEdges(false);
-end % testTee
+end % testPlate

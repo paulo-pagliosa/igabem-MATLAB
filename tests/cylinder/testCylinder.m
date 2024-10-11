@@ -13,6 +13,7 @@ function [mi, m] = testCylinder(idx)
 % Output
 % ======
 % MI: MeshInterface object showing the mesh
+% M: material used in BEA
 %
 % Description
 % ===========
