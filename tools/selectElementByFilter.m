@@ -2,7 +2,7 @@ function eids = selectElementByFilter(mi, filter)
 % Selects elements using a filter function
 %
 % Author: Paulo Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 16/10/2024
 %
 % Input
 % =====
@@ -28,4 +28,5 @@ function eids = selectElementByFilter(mi, filter)
     mi.deselectAllElements;
     mi.selectElements(eids);
   end
+  fprintf('Selected elements: %d\n', numel(eids));
 end % selectElementByFilter
