@@ -2,7 +2,7 @@ classdef ScalarExtractor < FieldExtractor
 % ScalarExtractor: scalar field extractor class
 %
 % Author: Paulo Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 22/10/2024
 %
 % Description
 % ===========
@@ -21,7 +21,6 @@ end
 properties (SetAccess = private)
   minValue = 0;
   maxValue = 1;
-  eps = 10e-5 / sqrt(10);
 end
 
 %% Public methods
@@ -32,12 +31,19 @@ methods
   % Input
   % =====
   % TESSELLATOR: tesselattor object
-  % FIELD: scalar field object
-  % VARARGIN: if FIELD is 'u' or 't', VARARGIN{1} must be a
-  % char array with any combination of 'x', 'y', and 'z', or
-  % array with any combination of 1, 2, and 3. VARARGIN{1}
-  % defines the component(s) of the displacement or traction
-  % field used to set the scalar field to be extracted
+  % FIELD: scalar field object or 'u' or 't'
+  % VARARGIN: if FIELD is 'u' or 't', then the displacement or
+  % traction is used to set the scalar at a point, P, inside a
+  % boundary element. In this case, VARARGIN{1} can be:
+  % - 'direction': the scalar is the projection of the displacement
+  % or traction at P onto the direction given by VARARGIN{2}
+  % - 'normal': the scalar is the projection of the displacement or
+  % traction at P onto the normal at P
+  % - a char array with any combination of 'x', 'y', and 'z', or an
+  % array with any combination of 1, 2, and 3: the scalar is a
+  % component (e.g, 'z') or the module of the vector of two or more
+  % components (e.g, 'xy' or 'xyz') of the displacement or traction
+  % at P
     this = this@FieldExtractor(tessellator);
     if nargin < 2
       this.setField('u', 'z');
@@ -49,12 +55,26 @@ methods
   function setField(this, field, varargin)
   % Sets the field of this extractor
     if ischar(field)
+      dof = [];
+      direction = [];
       if nargin < 3
         dof = 'z';
       else
-        dof = varargin{1};
+        switch varargin{1}
+          case 'direction'
+            assert(nargin > 3, 'Direction vector expected');
+            direction = varargin{2};
+          case 'normal'
+            assert(nargin < 4, 'Unexpected parameter');
+          otherwise
+            dof = varargin{1};
+        end
       end
-      field = VectorComponentField(field, dof);
+      if ~isempty(dof)
+        field = VectorComponentField(field, dof);
+      else
+        field = VectorProjectionField(field, direction);
+      end
     end
     setField@FieldExtractor(this, field);
   end
@@ -86,6 +106,11 @@ methods
       this.minError = value;
     end
   end
+end
+
+%% Protected properties
+properties (Access = protected, Constant)
+  eps = 10e-5 / sqrt(10);
 end
 
 %% Protected methods

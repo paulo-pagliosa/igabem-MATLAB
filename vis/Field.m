@@ -2,7 +2,7 @@ classdef (Abstract) Field < handle
 % Field: generic field class
 %
 % Author: Paulo Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 22/10/2024
 %
 % Description
 % ===========
@@ -26,7 +26,7 @@ end
 properties (Access = protected)
   nodalValuesHandle;
   nodalValues;
-  shapeFunction;
+  element Element;
 end
 
 %% Public methods
@@ -34,7 +34,7 @@ methods
   function setElement(this, element)
   % Sets the element of this field
     assert(isa(element, 'Element'), 'Element expected');
-    this.shapeFunction = element.shapeFunction;
+    this.element = element;
     if ~isempty(this.nodalValuesHandle)
       this.nodalValues = this.nodalValuesHandle(element);
       s = size(this.nodalValues);
@@ -46,7 +46,7 @@ methods
 
   function x = valueAt(this, u, v)
   % Computes the field value at a point on the element of this field
-    x = this.shapeFunction.interpolate(this.nodalValues, u, v);
+    x = this.element.shapeFunction.interpolate(this.nodalValues, u, v);
   end
 end
 
