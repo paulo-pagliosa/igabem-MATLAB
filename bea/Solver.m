@@ -2,7 +2,7 @@ classdef (Abstract) Solver < handle
 % Solver: generic static linear solver class
 %
 % Author: Paulo Pagliosa
-% Last revision: 03/10/2024
+% Last revision: 22/10/2024
 %
 % Description
 % ===========
@@ -74,6 +74,9 @@ methods (Access = protected)
     m = 0;
     for i = 1:nn
       node = this.mesh.nodes(i);
+      if isempty(node.loadPoint)
+        error('Load point %d is empty', i);
+      end
       for k = 1:3
         n = n + 1;
         if node.dofs(k, 1) > 0 % constraint

@@ -47,7 +47,7 @@ methods
   function setElement(this, element)
   % Sets the element of this field
     this.vectorField.setElement(element);
-    this.element = element;
+    this.setElement@ScalarField(element);
   end
 
   function x = valueAt(this, u, v)

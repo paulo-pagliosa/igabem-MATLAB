@@ -2,7 +2,7 @@ classdef VectorComponentErrorField < ErrorField
 % VectorComponentErrorField: vector component error field class
 %
 % Author: Paulo Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 22/10/2024
 %
 % Description
 % ===========
@@ -46,8 +46,8 @@ methods
 
   function setElement(this, element)
   % Sets the element of this field
-    setElement@ErrorField(this, element);
     this.field.setElement(element);
+    this.setElement@ErrorField(element);
   end
 end
 

@@ -2,7 +2,7 @@ classdef ErrorField < ScalarField
 % ErrorField: generic error field class
 %
 % Author: Paulo Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 22/10/2024
 %
 % Description
 % ===========
@@ -18,7 +18,6 @@ end
 
 %% Private properties
 properties (Access = private)
-  element;
   valuesHandle;
 end
 
@@ -44,11 +43,6 @@ methods
       this.errorType = errorType;
       this.handleErrorTypeChange;
     end
-  end
-
-  function setElement(this, element)
-  % Sets the element of this field
-    this.element = element;
   end
 
   function x = valueAt(this, u, v)
