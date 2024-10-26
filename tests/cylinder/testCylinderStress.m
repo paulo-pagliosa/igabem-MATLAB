@@ -1,7 +1,7 @@
-function [mi, epp] = testCylinderError(idx)
-% Errors on cylinder
+function epp = testCylinderStress(idx)
+% Tests cylinder stresses
 %
-% Author: M. Peres
+% Author: Paulo Pagliosa
 % Last revision: 26/10/2024
 %
 % Input
@@ -18,12 +18,10 @@ function [mi, epp] = testCylinderError(idx)
 % ===========
 % This function runs the analysis of a hollow cylinder subject to an
 % internal pressure as described in Section 7.1 of the paper. It
-% plots curves of the "exact" and computed radial displacements on a
-% line crossing the model. These values were used to generate
-% Figure 26 of the paper. Also, it shows a color map of the relative
-% error as in Figure 25(b).
+% plots curves of the "exact" and computed radial stresses on a
+% line crossing the model.
 %
-% See also: testCylinder
+% See also: testCylinderError
 filenames = ["cylinder96.be"; ...
   "cylinder144.be"; ...
   "cylinder216.be"; ...
@@ -58,16 +56,15 @@ ro = 1;
 ri2 = ri * ri;
 ro2 = ro * ro;
 dr2 = ro2 - ri2;
-Edr2 = E * dr2;
 % Compute the internal pressure corresponding to the radial
 % displacement u = 0.01
 u = 0.01;
 r = ri;
 P = (u / ((1 - nu) * r + (ro2 * (1 + nu)) / r) * E * dr2) / ri2;
 fprintf('Internal pressure: %g\n', P);
-% Function that computes the "exact" radial displacements
-u_r = @(r) P * ri2 / Edr2 * ((1 - nu) * r + ((ro2 * (1 + nu)) / r));
-% Plot the "exact" radial displacements
+% Function that computes the "exact" radial stresses
+s_r = @(r) P * ri2 / dr2 * (1 - ro2 / r ^ 2);
+% Plot the "exact" radial stresses
 np = 40;
 x = zeros(np + 1, 1);
 y = zeros(np + 1, 1);
@@ -80,26 +77,33 @@ dp = dr * D;
 for i = 1:np + 1
   p(i, :) = pi + (i - 1) * dp;
   x(i) = ri + (i - 1) * dr;
-  y(i) = u_r(x(i));
+  y(i) = s_r(x(i));
 end
 plot(x, y);
-set(gcf, 'Name', 'Radial displacements');
+set(gcf, 'Name', 'Radial stresses');
 hold on;
-% Compute boundary radial displacements using an EPP and plot them
+% Compute radial stresses using an EPP and plot them
 epp = EPP(mesh, m);
 epp.set('srMethod', 'TR');
-u = epp.computeDisplacements(p);
-y = sqrt(u(:, 1) .^ 2 + u(:, 2) .^ 2);
-plot(x, y);
+s = epp.computeStresses(p);
+t = zeros(np + 1, 1);
+for i = 1:np + 1
+  sp = s(:, :, i) * D';
+  t(i) = D * sp;
+end
+plot(x, t);
 hold off;
-% Compute relative errors using a VectorComponentErrorField,...
-avHandle = @(~, p, ~) u_r(sqrt(p(1) ^ 2 + p(2) ^ 2));
-errorField = VectorComponentErrorField('u', 'xyz', avHandle);
-%...open a mesh interface,...
-mi = MeshInterface(mesh);
-%...and show them as in Figure 25(b) of the paper
-mi.setScalars(errorField);
-mi.setColorTable(blackBody);
-mi.showColorMap;
-mi.showColorBar;
-mi.showPatchEdges(false);
+[minS, maxS] = bounds(y);
+E = abs(t - y);
+fprintf("Max absolute error: %g in [%g:%g]\n", max(E), minS, maxS);
+e = y ~= 0;
+x = x(e);
+y = y(e);
+t = t(e);
+e = abs((t - y) ./ y);
+[max_e, i] = max(e);
+fprintf("Max relative error: %.3g%% (r: %g exact: %g BEA: %g)\n", ...
+  max_e * 100, ...
+  x(i), ...
+  y(i), ...
+  t(i));

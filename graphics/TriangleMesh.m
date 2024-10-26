@@ -2,7 +2,7 @@ classdef TriangleMesh < handle
 % TriangleMesh: triangle mesh class
 %
 % Author: Paulo Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 23/10/2024
 %
 % Description
 % ===========
@@ -40,6 +40,12 @@ methods
   % Sets the vertex scalats of this triangle mesh
     assert(numel(scalars) == size(this.vertices, 1));
     this.scalars = scalars;
+  end
+
+  function b = bounds(this)
+  % Computes the bounding box of this mesh
+    b = BoundingBox;
+    b.inflate(this.vertices);
   end
 end
 

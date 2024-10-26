@@ -2,7 +2,7 @@ classdef ScalarExtractor < FieldExtractor
 % ScalarExtractor: scalar field extractor class
 %
 % Author: Paulo Pagliosa
-% Last revision: 22/10/2024
+% Last revision: 23/10/2024
 %
 % Description
 % ===========
@@ -65,7 +65,7 @@ methods
             assert(nargin > 3, 'Direction vector expected');
             direction = varargin{2};
           case 'normal'
-            assert(nargin < 4, 'Unexpected parameter');
+            assert(nargin < 4, 'Unexpected argument');
           otherwise
             dof = varargin{1};
         end

@@ -2,7 +2,7 @@ classdef MeshTessellator < handle
 % MeshTessellator: mesh tessellator class
 %
 % Author: Paulo Pagliosa
-% Last revision: 03/10/2024
+% Last revision: 23/10/2024
 %
 % Description
 % ===========
@@ -140,6 +140,14 @@ methods
       end
       this.patches(i) = TriangleMesh(i, vertices, faces, N);
       this.patchEdges{i} = vertices(pidx, :);
+    end
+  end
+
+  function b = bounds(this)
+  % Computes the bounding box of the patches of this tessellator
+    b = BoundingBox;
+    for i = 1:numel(this.patches)
+      b.inflate(this.patches(i).bounds);
     end
   end
 end

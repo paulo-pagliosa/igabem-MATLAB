@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 23/10/2024
 %
 % Description
 % ===========
@@ -30,6 +30,7 @@ properties (SetAccess = private)
   vectorColor = [255 128 0] / 255;
   vectorScale = 3;
   virtualPoints VirtualPointSet;
+  bounds (:, 1) BoundingBox = BoundingBox.empty;
 end
 
 %% Dependent properties
@@ -162,6 +163,13 @@ methods
       this.virtualPoints = VirtualPointSet(this.mesh);
     end
     value = this.virtualPoints;
+  end
+
+  function value = get.bounds(this)
+    if isempty(this.bounds)
+      this.bounds = this.tessellator.bounds;
+    end
+    value = this.bounds;
   end
 
   function showUndeformedMesh(this, flag)
@@ -335,6 +343,7 @@ methods
 
   function remesh(this, resolution)
     if this.tessellator.setResolution(resolution)
+      this.bounds = BoundingBox.empty;
       flag = this.flags.colorMap;
       this.flags.colorMap = false;
       this.redraw;
@@ -399,9 +408,14 @@ methods
   end
 
   function moveNode(this, t)
+    if this.selectedNodeIndex == 0
+      fprintf('No selected node\n');
+      return;
+    end
     this.selectedNode.move(t);
     index = this.mesh.nodeElements{this.selectedNodeIndex};
     this.tessellator.execute(index);
+    this.bounds = BoundingBox.empty;
     this.flags.colorMap = false;
     this.redraw;
   end
@@ -588,6 +602,7 @@ methods
       index = union(index, this.mesh.nodeElements{i});
     end
     this.tessellator.execute(index);
+    this.bounds = BoundingBox.empty;
     this.flags.colorMap = false;
     this.redraw;
   end
@@ -677,6 +692,7 @@ methods
     if this.mesh.deform(scale)
       this.showColorBar(false);
       this.tessellator.execute;
+      this.bounds = BoundingBox.empty;
       this.flags.colorMap = false;
       this.redraw;
     end
@@ -911,7 +927,7 @@ methods (Access = private)
       nlp = nlp + 1;
     end
     if nlp ~= nn
-      fprintf('Missing load points\n');
+      fprintf('Missing load point(s)\n');
     else
       s = this.nodeProperties.size + 2;
       this.meshPlots.loadPoints = this.drawPoint(p, 'red', '*', s);
