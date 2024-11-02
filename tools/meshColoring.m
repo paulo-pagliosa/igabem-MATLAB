@@ -2,7 +2,7 @@ function [colors, count, sets] = meshColoring(mesh, check)
 % Colors the elements of a mesh
 %
 % Author: Paulo Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 01/11/2024
 %
 % Input
 % =====
@@ -24,35 +24,46 @@ function [colors, count, sets] = meshColoring(mesh, check)
 %
 % See also: Mesh
   assert(isa(mesh, 'Mesh'), 'Mesh expected');
+  ns = mesh.shellCount;
+  firstShellElement = zeros(ns, 1);
   ne = mesh.elementCount;
+  % Get the first element of each sub-mesh
+  for i = ne:-1:1
+    element = mesh.elements(i);
+    firstShellElement(element.shell.id) = element.id;
+  end
   colors = -ones(ne, 1);
   nodeElements = mesh.nodeElements;
   count = zeros(ne, 1);
-  queue = Queue;
-  queue.add(1);
-  while ~queue.isEmpty
-    id = queue.remove;
-    if colors(id) ~= -1
-      continue;
-    end
-    used_colors = false(ne, 1);
-    u = horzcat(nodeElements{mesh.elements(id).nodeIds});
-    u = u(u ~= id);
-    queue.add(u);
-    for i = 1 : numel(u)
-      c = colors(u(i));
-      if c ~= -1
-        used_colors(c) = true;
+  % Compute the colors for the elements of each sub-mesh
+  for k = 1:ns
+    id = firstShellElement(k);
+    queue = Queue;
+    queue.add(id);
+    while ~queue.isEmpty
+      id = queue.remove;
+      if colors(id) ~= -1
+        continue;
       end
+      used_colors = false(ne, 1);
+      u = horzcat(nodeElements{mesh.elements(id).nodeIds});
+      u = u(u ~= id);
+      queue.add(u);
+      for i = 1 : numel(u)
+        c = colors(u(i));
+        if c ~= -1
+          used_colors(c) = true;
+        end
+      end
+      c = find(used_colors == false, 1);
+      if isempty(c)
+        disp(used_colors);
+        disp(colors(u));
+        error('Error: no color for element %d', id);
+      end
+      colors(id) = c;
+      count(c) = count(c) + 1;
     end
-    c = find(used_colors == false, 1);
-    if isempty(c)
-      disp(used_colors);
-      disp(colors(u));
-      error('Error: no color for element %d', id);
-    end
-    colors(id) = c;
-    count(c) = count(c) + 1;
   end
   count = count(count > 0);
   nc = numel(count);
