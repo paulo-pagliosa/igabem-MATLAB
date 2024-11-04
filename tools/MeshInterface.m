@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 23/10/2024
+% Last revision: 03/11/2024
 %
 % Description
 % ===========
@@ -29,6 +29,7 @@ properties (SetAccess = private)
   undeformedMeshColor = [0.9 0.9 0.9];
   vectorColor = [255 128 0] / 255;
   vectorScale = 3;
+  creaseEdgeWidth = 2;
   virtualPoints VirtualPointSet;
   bounds (:, 1) BoundingBox = BoundingBox.empty;
 end
@@ -133,6 +134,16 @@ methods
     this.axes.CameraViewAngle = a * scale;
   end
 
+  function setCreaseEdgeWidth(this, value)
+    value = max(value, 1);
+    if value ~= this.creaseEdgeWidth
+      this.creaseEdgeWidth = value;
+      for i = 1:numel(this.meshPlots.regionEdges)
+        set(this.meshPlots.regionEdges{i}, 'LineWidth', value);
+      end
+    end
+  end
+
   function set.groundFaceColor(this, value)
     this.groundFaceColor = value;
     this.redrawGround;
@@ -144,8 +155,11 @@ methods
   end
 
   function set.groundFaceAlpha(this, value)
-    this.groundFaceAlpha = value;
-    this.redrawGround;
+    value = min(max(value, 0), 1);
+    if value ~= this.groundFaceAlpha
+      this.groundFaceAlpha = value;
+      this.redrawGround;
+    end
   end
 
   function set.selectElementColor(this, value)
@@ -189,12 +203,12 @@ methods
   end
 
   function setUndeformedMeshAlpha(this, value)
-    if value < 0 || value > 1
-      return;
-    end
-    this.undeformedMeshAlpha = value;
-    if ~isempty(this.meshPlots.undeformed.mesh)
-      set(this.meshPlots.undeformed.mesh, 'FaceAlpha', value);
+    value = min(max(value, 0), 1);
+    if value ~= this.undeformedMeshAlpha
+      this.undeformedMeshAlpha = value;
+      if ~isempty(this.meshPlots.undeformed.mesh)
+        set(this.meshPlots.undeformed.mesh, 'FaceAlpha', value);
+      end
     end
   end
 
@@ -887,7 +901,9 @@ methods (Access = private)
           if ~c(k).isVirtual && c(k).multiplicity > 1
             cn = c(rem(k, 4) + 1);
             if ~cn.isVirtual && cn.multiplicity > 1
-              hfc(k) = drawPatchEdges(p(sidx:eidx, :), 2, isVisible);
+              hfc(k) = drawPatchEdges(p(sidx:eidx, :), ...
+                this.creaseEdgeWidth, ...
+                isVisible);
             end
           end
           sidx = eidx;

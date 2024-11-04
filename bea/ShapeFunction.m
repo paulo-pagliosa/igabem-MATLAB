@@ -2,7 +2,7 @@ classdef (Abstract) ShapeFunction < handle & matlab.mixin.Heterogeneous
 % ShapeFunction: generic shape function class
 %
 % Author: Paulo Pagliosa
-% Last revision: 04/10/2024
+% Last revision: 02/11/2024
 %
 % Description
 % ===========
@@ -17,7 +17,7 @@ classdef (Abstract) ShapeFunction < handle & matlab.mixin.Heterogeneous
 
 %% Public constant properties
 properties (Constant)
-  eps = 1e-6;
+  eps = 1e-10;
 end
 
 %% Public methods
