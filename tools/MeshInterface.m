@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 03/11/2024
+% Last revision: 08/11/2024
 %
 % Description
 % ===========
@@ -579,7 +579,8 @@ methods
     if this.mesh.shellCount == 1
       this.selectAllElements;
     else
-      elements = findobj(this.mesh.elements, 'shell', shell);
+      elements = this.mesh.elements;
+      elements = elements([elements.shell] == shell);
       this.selectElements([elements.id]);
     end
   end
