@@ -2,7 +2,7 @@ classdef (Abstract) Field < handle
 % Field: generic field class
 %
 % Author: Paulo Pagliosa
-% Last revision: 22/10/2024
+% Last revision: 18/11/2024
 %
 % Description
 % ===========
@@ -36,7 +36,7 @@ methods
     assert(isa(element, 'Element'), 'Element expected');
     this.element = element;
     if ~isempty(this.nodalValuesHandle)
-      this.nodalValues = this.nodalValuesHandle(element);
+      this.nodalValues = this.nodalValuesHandle(this, element);
       s = size(this.nodalValues);
       if s(1) ~= element.nodeCount || s(2) ~= this.dim
         error('Field: bad nodal values size');
