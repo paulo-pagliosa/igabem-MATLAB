@@ -819,7 +819,8 @@ methods
         return;
       end
     end
-  set(this.meshPlot(pids), 'FaceColor', color);
+    pids = pids(~this.hiddenPatchFlag(pids));
+    set(this.meshPlot(pids), 'FaceColor', color, 'FaceAlpha', this.faceAlpha);
   end
 
   function meshColoring(this, colorMapHandler, shuffle)
