@@ -2,7 +2,7 @@ classdef MeshRenderer < Renderer
 % MeshRenderer: mesh renderer class
 %
 % Author: Paulo Pagliosa
-% Last revision: 01/10/2024
+% Last revision: 22/11/2024
 %
 % Description
 % ===========
@@ -303,14 +303,19 @@ methods (Access = protected)
   end
 
   function renderVertexNormals(this)
-    delete(this.vertexNormalPlot);
-    this.vertexNormalPlot = [];
+    if ~isempty(this.vertexNormalPlot)
+      delete(this.vertexNormalPlot);
+      this.vertexNormalPlot = [];
+    end
     if ~this.flags.vertexNormal
       return;
     end
     np = this.tessellator.patchCount;
     h = zeros(np, 1);
     for i = 1:np
+      if get(this.meshPlot(i), 'Visible') == false
+        continue;
+      end
       p = this.tessellator.patches(i);
       N = p.vertexNormals;
       if isempty(N)

@@ -2,7 +2,7 @@ classdef VectorField < Field
 % VectorField: vector field class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 22/11/2024
 %
 % Description
 % ===========
@@ -22,7 +22,7 @@ methods
   % Input
   % =====
   % HANDLE: handle to a function that returns the 3D vectors associated
-  % with the nodes of an element. The function takes as input parameter
+  % with the nodes of an element. The function takes as input THIS and
   % a reference to the element. Alternatively, HANDLE can 'u' or 't'.
   % In this case, the vectors are the displacements or tractions of the
   % element's nodes, respectively
@@ -30,10 +30,10 @@ methods
     if ischar(handle)
       switch handle
         case 'u'
-          handle = @(element) element.nodeDisplacements;
+          handle = @(~, element) element.nodeDisplacements;
           dflLabel = 'displacement';
         case 't'
-          handle = @(element) element.nodeTractions;
+          handle = @(~, element) element.nodeTractions;
           dflLabel = 'traction';
         otherwise
           error('Unknown vector field');

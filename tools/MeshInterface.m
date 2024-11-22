@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 08/11/2024
+% Last revision: 22/11/2024
 %
 % Description
 % ===========
@@ -762,7 +762,7 @@ methods
     end
     if flag ~= this.flags.vector || ~isequal(handle, this.vectorHandle)
       if isempty(this.vectorHandle)
-        fprintf("No vector handle specified\n");
+        fprintf("No vector handler specified\n");
       else
         this.flags.vector = flag;
         this.renderVectors;
@@ -803,10 +803,15 @@ methods
     this.renderGround;
   end
 
-  function paintPatches(this, color, pids)
+  function pids = paintPatches(this, color, pids)
     np = this.mesh.elementCount;
     if nargin < 3
-      pids = 1:np;
+      pids = find(this.selectedElementFlag);
+      if isempty(pids)
+        pids = 1:np;
+      else
+        this.deselectAllElements;
+      end
     else
       pids = pids(pids > 0);
       pids = pids(pids <= np);
