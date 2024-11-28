@@ -2,7 +2,7 @@ classdef MeshRenderer < Renderer
 % MeshRenderer: mesh renderer class
 %
 % Author: Paulo Pagliosa
-% Last revision: 22/11/2024
+% Last revision: 27/11/2024
 %
 % Description
 % ===========
@@ -31,7 +31,7 @@ properties (Access = protected)
   meshPlot;
   nodePlot;
   vertexNormalPlot;
-  faceColor = [0.5 0.5 0.5];
+  faceColor = [0.7 0.7 0.7];
   faceAlpha = 1;
   normalScale = 2;
   normalColor = [102, 0, 102] / 255;

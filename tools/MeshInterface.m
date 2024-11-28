@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 22/11/2024
+% Last revision: 28/11/2024
 %
 % Description
 % ===========
@@ -32,6 +32,7 @@ properties (SetAccess = private)
   creaseEdgeWidth = 2;
   virtualPoints VirtualPointSet;
   bounds (:, 1) BoundingBox = BoundingBox.empty;
+  patchEdgeColor = [0 0 0];
 end
 
 %% Dependent properties
@@ -134,12 +135,12 @@ methods
     this.axes.CameraViewAngle = a * scale;
   end
 
-  function setCreaseEdgeWidth(this, value)
-    value = max(value, 1);
-    if value ~= this.creaseEdgeWidth
-      this.creaseEdgeWidth = value;
+  function setCreaseEdgeWidth(this, width)
+    width = max(width, 1);
+    if width ~= this.creaseEdgeWidth
+      this.creaseEdgeWidth = width;
       for i = 1:numel(this.meshPlots.regionEdges)
-        set(this.meshPlots.regionEdges{i}, 'LineWidth', value);
+        set(this.meshPlots.regionEdges{i}, 'LineWidth', width);
       end
     end
   end
@@ -170,6 +171,21 @@ methods
   function set.nodeElementColor(this, value)
     this.nodeElementColor = value;
     this.redrawSelectedNodeElements;
+  end
+
+  function setPatchEdgeColor(this, color)
+    this.patchEdgeColor = color;
+    if ~isempty(this.meshPlots.edges)
+      set(this.meshPlots.edges, 'Color', color);
+      for i = 1:1:numel(this.meshPlots.regionEdges)
+        set(this.meshPlots.regionEdges{i}, 'Color', color);
+      end
+    end
+  end
+
+  function setLightColor(this, color)
+    this.lights(1).Color = color;
+    this.lights(2).Color = color * 0.5;
   end
 
   function value = get.virtualPoints(this)
@@ -289,11 +305,16 @@ methods
     if flag == this.flags.nodeElement
       return;
     end
-    this.flags.nodeElement = flag;
     if flag
+      if this.selectedNodeIndex == 0
+        fprintf('No selected node\n');
+        return;
+      end
       this.deselectAllElements;
+      this.flags.nodeElement = true;
       this.redrawSelectedNodeElements;
     else
+      this.flags.nodeElement = false;
       index = this.mesh.nodeElements{this.selectedNodeIndex};
       this.renderPatches(index);
     end
@@ -419,6 +440,7 @@ methods
   function deselectNode(this)
     this.selectedNodeIndex = 0;
     this.redrawSelectedNode;
+    this.flags.nodeElement = false;
   end
 
   function moveNode(this, t)
@@ -926,7 +948,7 @@ methods (Access = private)
         'XData', p(:, 1), ...
         'YData', p(:, 2), ...
         'ZData', p(:, 3), ...
-        'Color', 'black', ...
+        'Color', this.patchEdgeColor, ...
         'LineWidth', width, ...
         'Visible', isVisible);
     end
@@ -951,9 +973,10 @@ methods (Access = private)
     end
     if nlp ~= nn
       fprintf('Missing load point(s)\n');
+      this.flags.loadPoint = false;
     else
-      s = this.nodeProperties.size + 2;
-      this.meshPlots.loadPoints = this.drawPoint(p, 'red', '*', s);
+      s = this.nodeProperties.size;
+      this.meshPlots.loadPoints = this.drawPoint(p, 'red', 'o', s);
     end
   end
 
