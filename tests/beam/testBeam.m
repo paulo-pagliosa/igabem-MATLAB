@@ -11,8 +11,8 @@ function [mi, m] = testBeam
 %
 % Description
 % ===========
-% This function runs the analysis of the beam with semi-discontinuous
-% elements as described in Section 7.2.
+% This function runs the analysis of the beam with multiple regions
+% as described in Section 7.2.
   name = 'tests/beam/beam';
   filename = [name '.be'];
   a = strcat(filename, '.mat');
