@@ -2,7 +2,7 @@ function nr = paintRegions(mi, colors, eid)
 % Paints element regions of a mesh
 %
 % Author: Paulo Pagliosa
-% Last revision: 22/11/2024
+% Last revision: 28/11/2024
 %
 % Input
 % =====
@@ -18,7 +18,7 @@ function nr = paintRegions(mi, colors, eid)
   assert(isa(mi, 'MeshInterface'));
   mesh = mi.mesh;
   ne = mesh.elementCount;
-  if nargin < 2
+  if nargin < 2 || isempty(colors)
     colors = [ ...
       0 0.447 0.741; ...
       0.850 0.325 0.098; ...

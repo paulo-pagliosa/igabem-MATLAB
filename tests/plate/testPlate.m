@@ -2,7 +2,7 @@ function [mi, m] = testPlate
 % Test plate
 %
 % Author: M. Peres
-% Last revision: 11/10/2024
+% Last revision: 29/11/2024
 %
 % Output
 % ======
@@ -26,7 +26,7 @@ function [mi, m] = testPlate
     % Read the mesh. We use the flag '-f' since the model was
     % generated with has no element face data
     mesh = readMesh('-f', char(filename));
-    mesh.name = 'tee';
+    mesh.name = 'plate';
   end
   mi = MeshInterface(mesh);
   % Create the material
