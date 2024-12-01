@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 28/11/2024
+% Last revision: 30/11/2024
 %
 % Description
 % ===========
@@ -240,8 +240,9 @@ methods
       return;
     end
     this.vectorScale = scale;
+    a = scale > 0;
     if ~isempty(this.meshPlots.vectors)
-      this.meshPlots.vectors.AutoScaleFactor = scale;
+      set(this.meshPlots.vectors, 'AutoScaleFactor', scale, 'AutoScale', a);
     end
   end
 
@@ -503,26 +504,31 @@ methods
     end
   end
   
-  function selectRegions(this, eids)
-  % Selects element regions
+  function eids = pickRegions(this, eids)
+  % Picks element regions
   %
   % Input
   % =====
   % THIS: reference to a MeshInterface object
-  % EIDS: optional array of element IDs
+  % EIDS: optional array with element IDs
+  %
+  % Output
+  % ======
+  % EIDS: array with the picked element IDs 
   %
   % Description
   % ===========
-  % Selects all elements belonging to the regions containing a set
-  % of elements, E. The input parameter EIDS provides the IDs of
-  % the elements in E. If EIDS is omitted, E is given by the current
-  % selected elements. The method uses a stack of node IDs and node
+  % Picks all elements belonging to the regions containing a set,
+  % E, of seed elements. The input parameter EIDS provides the
+  % IDs of the seed elements in E. If EIDS is omitted or empty,
+  % the set E is given by the current selected elements, which
+  % remain selected. The method uses a stack of node IDs and node
   % regions. For each element in E:
   % - Push onto the stack the node IDs and node regions of all
   %   unvisited element nodes.
   % - While the stack is not empty:
   %   - Pop from the stack the ID (NID) and region (RID) of a node
-  %   - For each unselected element influeced by the node:
+  %   - For each unpicked element influeced by the node:
   %     - If the region of the element node (whose ID is) NID is
   %       equal to RID, then:
   %       - Select the element.
@@ -533,10 +539,9 @@ methods
         fprintf('Invalid element index\n');
         return;
       end
-      this.deselectAllElements;
       E = this.mesh.elements(unique(eids, 'stable'));
     else
-      % Selected elements define the regions to be selected
+      % Selected elements define the regions to be picked
       E = this.selectedElements;
       if isempty(E)
         fprintf('No selected element\n');
@@ -567,7 +572,6 @@ methods
         end
       end
     end
-    this.selectElements(eids);
 
     function pushNodes(element)
       nodes = element.nodes;
@@ -579,6 +583,34 @@ methods
           pushedNodeFlag(id) = true;
         end
       end
+    end
+  end
+
+  function selectRegions(this, eids)
+  % Selects element regions
+  %
+  % Input
+  % =====
+  % THIS: reference to a MeshInterface object
+  % EIDS: optional array with element IDs
+  %
+  % Output
+  % ======
+  % EIDS: selected element IDs 
+  %
+  % Description
+  % ===========
+  % Selects all elements belonging to the regions containing a set
+  % of seed elements. The input parameter EIDS provides the IDs of
+  % the seed elements. If EIDS is omitted or empty, the set is
+  % given by the current selected elements.
+    if nargin < 2
+      eids = [];
+    end
+    eids = this.pickRegions(eids);
+    if ~isempty(eids)
+      this.deselectAllElements;
+      this.selectElements(eids);
     end
   end
 
@@ -767,28 +799,47 @@ methods
     this.redrawSelectedElements;
   end
 
-  function showVectors(this, flag)
+  function showVectors(this, flag, eids)
     handle = this.vectorHandle;
+    update = false;
     if nargin < 2
       flag = true;
     elseif ischar(flag)
       switch flag
         case 'u'
-          this.vectorHandle = @MeshInterface.uHandle;
+          handle = @MeshInterface.uHandle;
         case 't'
-          this.vectorHandle = @MeshInterface.tHandle;
+          handle = @MeshInterface.tHandle;
+        case 'update'
+          update = true;
         otherwise
-          error('Bad vector handler');
+          error("Bad vector handler");
       end
       flag = true;
-    end
-    if flag ~= this.flags.vector || ~isequal(handle, this.vectorHandle)
-      if isempty(this.vectorHandle)
-        fprintf("No vector handler specified\n");
-      else
-        this.flags.vector = flag;
-        this.renderVectors;
+      if ~isequal(handle, this.vectorHandle)
+        update = true;
       end
+    end
+    if nargin < 3
+      eids = [];
+    elseif ~flag
+      warning("Unused element ID(s)");
+    end
+    if ~isempty(eids)
+      if any(eids < 0) || any(eids > this.mesh.elementCount)
+        fprintf('Invalid element index\n');
+        return;
+      end
+      update = true;
+    end
+    if flag ~= this.flags.vector || update
+      if isempty(handle)
+        fprintf("No vector handler specified\n");
+        return;
+      end
+      this.vectorHandle = handle;
+      this.flags.vector = flag | update;
+      this.renderVectors(eids);
     end
   end
 
@@ -874,22 +925,27 @@ methods (Access = private)
       this.nodeProperties.size);
   end
 
-  function h = drawVectors(this, elements, handle)
+  function h = drawVectors(this, eids, color)
     function x = patchVertices(element)
       x = this.tessellator.patches(this.mesh.elements == element);
       x = x.vertices;
     end
 
+    h = [];
+    eids = eids(~this.hiddenPatchFlag(eids));
+    if isempty(eids)
+      return;
+    end    
     n = this.tessellator.resolution + 1;
     p = gridSpace(n);
     n = n ^ 2;
-    m = numel(elements);
+    m = numel(eids);
     V = zeros(n, 3, m);
     X = zeros(n, 3, m);
     for k = 1:m
-      element = elements(k);
+      element = this.mesh.elements(eids(k));
       s = element.shapeFunction;
-      v = handle(element);
+      v = this.vectorHandle(element);
       for i = 1:n
         V(i, :, k) = s.interpolate(v, p(i, 1), p(i, 2));
       end
@@ -899,7 +955,7 @@ methods (Access = private)
       X(:, 1, :), X(:, 2, :), X(:, 3, :), ...
       V(:, 1, :), V(:, 2, :), V(:, 3, :), ...
       this.vectorScale);
-    h.Color = this.vectorColor;
+    h.Color = color;
   end
 
   function renderPatchEdges(this)
@@ -996,17 +1052,19 @@ methods (Access = private)
     this.meshPlots.virtualPoints = this.drawPoint(p, 'yellow', 'o', s);
   end
 
-  function renderVectors(this)
+  function renderVectors(this, eids)
     delete(this.meshPlots.vectors);
     this.meshPlots.vectors = [];
     if ~this.flags.vector || isempty(this.vectorHandle)
       return;
     end
-    elements = this.selectedElements;
-    if isempty(elements)
-      elements = this.mesh.elements;
+    if nargin < 2 || isempty(eids)
+      eids = find(this.selectedElementFlag);
+      if isempty(eids)
+        eids = 1:this.mesh.elementCount;
+      end
     end
-    this.meshPlots.vectors = this.drawVectors(elements, this.vectorHandle);
+    this.meshPlots.vectors = this.drawVectors(eids, this.vectorColor);
   end
 
   function renderDisplacements(this)

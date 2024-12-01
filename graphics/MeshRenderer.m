@@ -2,7 +2,7 @@ classdef MeshRenderer < Renderer
 % MeshRenderer: mesh renderer class
 %
 % Author: Paulo Pagliosa
-% Last revision: 27/11/2024
+% Last revision: 30/11/2024
 %
 % Description
 % ===========
@@ -162,14 +162,17 @@ methods
   % Shows/hides patch normals
     if nargin < 2
       flag = true;
+    elseif strcmp(flag, 'update')
+      this.flags.vertexNormal = false;
+      flag = true;
     end
     if flag == this.flags.vertexNormal
       return;
     end
-  this.flags.vertexNormal = flag;
-  this.renderVertexNormals;
+    this.flags.vertexNormal = flag;
+    this.renderVertexNormals;
   end
-  
+
   function showNodes(this, flag)
   % Shows/hides mesh nodes
     if nargin < 2
@@ -178,10 +181,10 @@ methods
     if flag == this.flags.node
       return;
     end
-  this.flags.node = flag;
-  this.renderMeshNodes;
+    this.flags.node = flag;
+    this.renderMeshNodes;
   end
-  
+
   function showColorMap(this, flag)
   % Shows/hides the color map for mesh scalars
     if nargin == 1
