@@ -2,7 +2,7 @@ classdef MeshRenderer < Renderer
 % MeshRenderer: mesh renderer class
 %
 % Author: Paulo Pagliosa
-% Last revision: 30/11/2024
+% Last revision: 09/12/2024
 %
 % Description
 % ===========
@@ -21,6 +21,13 @@ properties
 end
 
 %% Public read-only properties
+properties (SetAccess = protected)
+  faceColor = [0.7 0.7 0.7];
+  faceAlpha = 1;
+  normalScale = 2;
+  normalColor = [102, 0, 102] / 255;
+end
+
 properties (SetAccess = private)
   mesh;
 end
@@ -31,10 +38,6 @@ properties (Access = protected)
   meshPlot;
   nodePlot;
   vertexNormalPlot;
-  faceColor = [0.7 0.7 0.7];
-  faceAlpha = 1;
-  normalScale = 2;
-  normalColor = [102, 0, 102] / 255;
   flags = struct('vertex', false, ...
     'edge', false, ...
     'vertexNormal', false, ...
@@ -239,10 +242,6 @@ methods (Access = protected)
     delete(this.nodePlot);
     this.nodePlot = [];
     if this.flags.node
-      %this.nodePlot = this.drawPoint(this.mesh.nodePositions, ...
-      %  this.nodeProperties.color, ...
-      %  this.nodeProperties.shape, ...
-      %  this.nodeProperties.size);
       this.nodePlot = this.drawMeshNodes;
     end
   end

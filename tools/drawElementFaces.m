@@ -1,14 +1,13 @@
-function [h, v, f] = drawElementFaces(mesh, axes, color, alpha)
+function [h, v, f] = drawElementFaces(mi, color, alpha)
 % Draws the faces of the elements of a mesh
 %
 % Author: Paulo Pagliosa
-% Last revision: 26/10/2024
+% Last revision: 09/12/2024
 %
 % Input
 % =====
-% MESH: reference to a mesh with NV nodes and NE elements
-% AXES: handle of the axes in which the faces will be drawn
-% COLOR: face color (default: [0.8, 0.8, 0.8])
+% MI: MeshInterface object having the mesh with NV nodes and NE elements
+% COLOR: face color (default: MI.faceColor)
 % ALPHA: face transparency (default: 0.5)
 %
 % Output
@@ -21,8 +20,13 @@ function [h, v, f] = drawElementFaces(mesh, axes, color, alpha)
 % See also: Mesh, Face
   h = [];
   v = [];
+  mesh = mi.mesh;
   ne = mesh.elementCount;
   f = zeros(ne, 4, 'int32');
+  colors = zeros(ne, 3);
+  if nargin < 2 || isempty(color)
+    color = mi.faceColor;
+  end
   nf = 0;
   for i = 1:ne
     face = mesh.elements(i).face;
@@ -40,22 +44,25 @@ function [h, v, f] = drawElementFaces(mesh, axes, color, alpha)
     end
     if nfv == 4
       nf = nf + 1;
+      if mi.isSelectedElement(i)
+        colors(nf, :) = mi.selectElementColor;
+      else
+        colors(nf, :) = color;
+      end
     end
   end
   f = f(1:nf, :);
   if nf > 0
     v = mesh.nodePositions;
     v = v(:, 1:3);
-    if nargin < 4
+    if nargin < 3
       alpha = 0.5;
     end
-    if nargin < 3
-      color = [0.8, 0.8, 0.8];
-    end
-    h = patch('Parent', axes, ...
+    h = patch('Parent', mi.axes, ...
       'Vertices', v, ...
       'Faces', f, ...
-      'FaceColor', color, ...
+      'FaceVertexCData', colors, ...
+      'FaceColor','flat', ...
       'FaceAlpha', alpha);
   end
 end

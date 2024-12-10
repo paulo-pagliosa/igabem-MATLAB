@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 30/11/2024
+% Last revision: 09/12/2024
 %
 % Description
 % ===========
@@ -503,7 +503,16 @@ methods
       this.redrawSelectedElements;
     end
   end
-  
+
+  function b = isSelectedElement(this, i)
+    if any(i < 1) || any(i > this.mesh.elementCount)
+      fprintf('Invalid element index\n');
+      b = false;
+    else
+      b = this.selectedElementFlag(i);
+    end
+  end
+
   function eids = pickRegions(this, eids)
   % Picks element regions
   %
@@ -843,6 +852,35 @@ methods
     end
   end
 
+  function nr = showVectorsByRegion(this, handle, colors)
+    if nargin < 1 || isempty(handle)
+      handle = this.vectorHandle;
+    elseif handle == 'u'
+      handle = @MeshInterface.uHandle;
+    elseif handle == 't'
+      handle = @MeshInterface.tHandle;
+    else
+      error("Bad vector handler");
+    end
+    if nargin < 3 || isempty(colors)
+      colors = this.axes.ColorOrder;
+    end
+    cidx = 1;
+    this.showVectors(false);
+    this.setVectorScale(0);
+    this.vectorHandle = handle;
+    this.flags.vector = true;
+    nr = processRegions(this, @regionHandle);
+
+    function regionHandle(mi, ~, eids)
+      h = mi.drawVectors(eids, colors(cidx, :));
+      if ~isempty(h)
+        mi.meshPlots.vectors(end + 1) = h;
+        cidx = rem(cidx, size(colors, 1)) + 1;
+      end
+    end
+  end
+
   function showLoadPoints(this, flag)
     if nargin == 1
       flag = true;
@@ -951,11 +989,13 @@ methods (Access = private)
       end
       X(:, :, k) = patchVertices(element);
     end
-    h = quiver3(this.axes, ...
-      X(:, 1, :), X(:, 2, :), X(:, 3, :), ...
-      V(:, 1, :), V(:, 2, :), V(:, 3, :), ...
-      this.vectorScale);
-    h.Color = color;
+    if any(V(:))
+      h = quiver3(this.axes, ...
+        X(:, 1, :), X(:, 2, :), X(:, 3, :), ...
+        V(:, 1, :), V(:, 2, :), V(:, 3, :), ...
+        this.vectorScale);
+      h.Color = color;
+    end
   end
 
   function renderPatchEdges(this)
