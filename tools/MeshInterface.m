@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 09/12/2024
+% Last revision: 13/12/2024
 %
 % Description
 % ===========
@@ -279,6 +279,11 @@ methods
         end
       end
     end
+  end
+
+  function hideAllPatches(this)
+    this.selectAllElements;
+    this.hidePatches;
   end
 
   function showPatchEdges(this, flag)

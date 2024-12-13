@@ -2,7 +2,7 @@ function [h, v, f] = drawElementFaces(mi, color, alpha)
 % Draws the faces of the elements of a mesh
 %
 % Author: Paulo Pagliosa
-% Last revision: 09/12/2024
+% Last revision: 12/12/2024
 %
 % Input
 % =====
@@ -62,7 +62,7 @@ function [h, v, f] = drawElementFaces(mi, color, alpha)
       'Vertices', v, ...
       'Faces', f, ...
       'FaceVertexCData', colors, ...
-      'FaceColor','flat', ...
+      'FaceColor', 'flat', ...
       'FaceAlpha', alpha);
   end
 end
