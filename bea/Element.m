@@ -2,7 +2,7 @@ classdef (Abstract) Element < MeshComponent
 % Element: generic element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 04/10/2024
+% Last revision: 16/12/2024
 %
 % Description
 % ===========
@@ -42,11 +42,6 @@ methods
     s.typeId = this.typeId;
     s.nodeRegions = this.nodeRegions;
     s.shapeFunction = this.shapeFunction;
-  end
-
-  function nodes = nodeSet(these)
-  % Returns the node set of this element
-    nodes = NodeSet(these).nodes;
   end
 
   function n = nodeCount(this)
@@ -126,6 +121,13 @@ methods
   % where E is a reference to an element and CSI is a Nx2 array
   % of parametric coordinates
     t = this.shapeFunction.interpolate(this.nodeTractions, u, v);
+  end
+end
+
+methods (Sealed)
+  function nodes = nodeSet(these)
+  % Returns the node set of this element
+    nodes = NodeSet(these).nodes;
   end
 end
 
