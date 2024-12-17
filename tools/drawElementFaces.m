@@ -2,7 +2,7 @@ function [h, v, f] = drawElementFaces(mi, color, alpha)
 % Draws the faces of the elements of a mesh
 %
 % Author: Paulo Pagliosa
-% Last revision: 12/12/2024
+% Last revision: 17/12/2024
 %
 % Input
 % =====
@@ -54,7 +54,8 @@ function [h, v, f] = drawElementFaces(mi, color, alpha)
   f = f(1:nf, :);
   if nf > 0
     v = mesh.nodePositions;
-    v = v(:, 1:3);
+    v = v(:, 1:3) ./ v(:, 4);
+    colors = colors(1:nf, :);
     if nargin < 3
       alpha = 0.5;
     end
