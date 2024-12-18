@@ -2,7 +2,7 @@ classdef CameraGismo < handle
 % CameraGismo: camera gismo class
 %
 % Author: Paulo Pagliosa
-% Last revision: 17/12/2024
+% Last revision: 18/12/2024
 %
 % Description
 % ===========
@@ -11,15 +11,7 @@ classdef CameraGismo < handle
 % camera axis x, y, and z are represented by the cube faces filled in red,
 % green, and blue, respectively. The negative directions are represented
 % by the faces with diagonal lines in the same colors. A camera gismo is
-% drawn on axes passed as an argument in the constructor.
-
-%% Public constant properties
-properties (Constant)
-  southwest = 1;
-  southeast = 2;
-  northwest = 3;
-  northeast = 4;
-end
+% drawn on the axes passed as an argument in the constructor.
 
 %% Dependent properties
 properties (Dependent)
@@ -31,20 +23,20 @@ end
 properties (SetAccess = private)
   axes;
   client;
-  position = 0;
+  location = "";
 end
 
 %% Public methods
 methods
-  function this = CameraGismo(client, position)
+  function this = CameraGismo(client, location)
   % Constructs a camera gismo
     assert(isa(client, 'matlab.graphics.axis.Axes'), 'Axes expected');
     this.axes = CameraGismo.makeAxes(client);
     this.client = client;
     if nargin < 2
-      position = CameraGismo.southwest;
+      location = "SW";
     end
-    this.setPosition(position);
+    this.setLocation(location);
     this.render;
   end
 
@@ -58,13 +50,16 @@ methods
     this.axes.View = value;
   end
 
-  function setPosition(this, position)
-  % Sets the position of this camera gismo w.r.t. its figure
-    if position < 1 || position > 4
-      error('Bad camera gismo position');
+  function setLocation(this, location)
+  % Sets the location of this camera gismo w.r.t. its figure
+    location = upper(location);
+    i = find(CameraGismo.locations == location);
+    if isempty(i)
+      error('Bad camera gismo location');
     end
-    if position ~= this.position
-      this.position = position;
+    if i ~= this.locationIndex
+      this.location = location;
+      this.locationIndex = i;
       this.update;
     end
   end
@@ -74,14 +69,20 @@ methods
     s = 50;
     x = 30;
     y = 30;
-    if this.position ~= CameraGismo.southwest
+    b = CameraGismo.locationBits(this.locationIndex);
+    if b % SW
       p = this.axes.Parent.Position;
-      b = this.position - 1;
-      if bitand(b, 1)
-        x = p(3) - (x + s);
+      switch bitand(b, 0b0011)
+        case 1
+          x = p(3) - (x + s);
+        case 2
+          x = (p(3) - s) / 2;
       end
-      if bitand(b, 2)
-        y = p(4) - (y + s);
+      switch bitand(b, 0b1100)
+        case 4
+          y = p(4) - (y + s);
+        case 8
+          y = (p(4) - s) / 2;
       end
     end
     set(this.axes, 'Position', [x, y, s, s]);
@@ -91,6 +92,19 @@ methods
   % Shows/hides this camera gismo
     set(this.axes.Children, 'Visible', value);
   end
+end
+
+%% Private properties
+properties (Access = private, Constant)
+  locations = ["SW", "SE", "S", "NW", "NE", "N"];
+  % locationBits: yyxx
+  % SW: 0000, SE: 0001, S: 0010
+  % NW: 0100, NE: 0101, N: 0110
+  locationBits = [0b0000 0b0001 0b0010 0b0100 0b0101 0b0110];
+end
+
+properties (Access = private)
+  locationIndex = 0;
 end
 
 %% Private methods

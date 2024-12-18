@@ -118,11 +118,11 @@ methods
     this.cameraGismo.visible = flag;
   end
 
-  function updateCameraGismo(this, position)
-    if nargin < 2 || position == this.cameraGismo.position
+  function updateCameraGismo(this, location)
+    if nargin < 2 || strcmp(location, this.cameraGismo.location)
       this.cameraGismo.update;
     else
-      this.cameraGismo.setPosition(position);
+      this.cameraGismo.setLocation(location);
     end
   end
 
@@ -608,7 +608,7 @@ methods
     end
   end
 
-  function selectRegions(this, eids)
+  function eids = selectRegions(this, eids)
   % Selects element regions
   %
   % Input
