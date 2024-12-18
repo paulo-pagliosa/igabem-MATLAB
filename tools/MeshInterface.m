@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 17/12/2024
+% Last revision: 18/12/2024
 %
 % Description
 % ===========
@@ -119,7 +119,7 @@ methods
   end
 
   function updateCameraGismo(this, position)
-    if nargin < 2
+    if nargin < 2 || position == this.cameraGismo.position
       this.cameraGismo.update;
     else
       this.cameraGismo.setPosition(position);
