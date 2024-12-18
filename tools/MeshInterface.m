@@ -2,7 +2,7 @@ classdef MeshInterface < MeshRenderer
 % MeshInterface: mesh interface class
 %
 % Authors: M.A. Peres and P. Pagliosa
-% Last revision: 13/12/2024
+% Last revision: 17/12/2024
 %
 % Description
 % ===========
@@ -116,6 +116,14 @@ methods
       flag = true;
     end
     this.cameraGismo.visible = flag;
+  end
+
+  function updateCameraGismo(this, position)
+    if nargin < 2
+      this.cameraGismo.update;
+    else
+      this.cameraGismo.setPosition(position);
+    end
   end
 
   function setView(this, azimuth, elevation)

@@ -2,7 +2,7 @@ classdef CameraGismo < handle
 % CameraGismo: camera gismo class
 %
 % Author: Paulo Pagliosa
-% Last revision: 31/08/2024
+% Last revision: 17/12/2024
 %
 % Description
 % ===========
@@ -12,6 +12,14 @@ classdef CameraGismo < handle
 % green, and blue, respectively. The negative directions are represented
 % by the faces with diagonal lines in the same colors. A camera gismo is
 % drawn on axes passed as an argument in the constructor.
+
+%% Public constant properties
+properties (Constant)
+  southwest = 1;
+  southeast = 2;
+  northwest = 3;
+  northeast = 4;
+end
 
 %% Dependent properties
 properties (Dependent)
@@ -23,15 +31,20 @@ end
 properties (SetAccess = private)
   axes;
   client;
+  position = 0;
 end
 
 %% Public methods
 methods
-  function this = CameraGismo(client)
+  function this = CameraGismo(client, position)
   % Constructs a camera gismo
     assert(isa(client, 'matlab.graphics.axis.Axes'), 'Axes expected');
     this.axes = CameraGismo.makeAxes(client);
     this.client = client;
+    if nargin < 2
+      position = CameraGismo.southwest;
+    end
+    this.setPosition(position);
     this.render;
   end
 
@@ -43,6 +56,35 @@ methods
   function set.view(this, value)
   % Sets the view of this camera gismo
     this.axes.View = value;
+  end
+
+  function setPosition(this, position)
+  % Sets the position of this camera gismo w.r.t. its figure
+    if position < 1 || position > 4
+      error('Bad camera gismo position');
+    end
+    if position ~= this.position
+      this.position = position;
+      this.update;
+    end
+  end
+
+  function update(this)
+  % Updates this camera gismo
+    s = 50;
+    x = 30;
+    y = 30;
+    if this.position ~= CameraGismo.southwest
+      p = this.axes.Parent.Position;
+      b = this.position - 1;
+      if bitand(b, 1)
+        x = p(3) - (x + s);
+      end
+      if bitand(b, 2)
+        y = p(4) - (y + s);
+      end
+    end
+    set(this.axes, 'Position', [x, y, s, s]);
   end
 
   function set.visible(this, value)
@@ -88,13 +130,9 @@ methods (Static, Access = private)
     f = client.Parent;
     a = axes(f);
     axis(a, 'square', 'equal', 'tight', 'vis3d');
-    x = 30;
-    y = 40;
-    s = 50;
     set(a, 'Visible', 'off', ...
       'Clipping', 'off', ...
       'Units', 'pixels', ...,
-      'Position', [x, y, s, s], ...
       'Projection', client.Projection, ...
       'View', client.View);
   end
