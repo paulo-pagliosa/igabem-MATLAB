@@ -2,7 +2,7 @@ classdef Mesh < handle
 % Mesh: BEA model class
 %
 % Authors: Paulo Pagliosa
-% Last revision: 08/10/2024
+% Last revision: 19/03/2025
 %
 % Description
 % ===========
@@ -139,13 +139,14 @@ methods
   end
 
   function node = findNode(this, id)
-    ids = this.nodeIds;
-    n = numel(id);
     node = Node.empty(0, 1);
-    for i = 1:n
-      k = find(ids == id(i));
+    nids = this.nodeIds;
+    n = 0;
+    for i = 1:numel(id)
+      k = find(nids == id(i));
       if ~isempty(k)
-        node(i) = this.nodes(k);
+        n = n + 1;
+        node(n) = this.nodes(k);
       end
     end
   end
@@ -210,13 +211,14 @@ methods
   end
 
   function element = findElement(this, id)
-    ids = this.elementIds;
-    n = numel(id);
     element = Element.empty(0, 1);
-    for i = 1:n
-      k = find(ids == id(i));
+    eids = this.elementIds;
+    n = 0;
+    for i = 1:numel(id)
+      k = find(eids == id(i));
       if ~isempty(k)
-        element(i) = this.elements(k);
+        n = n + 1;
+        element(n) = this.elements(k);
       end
     end
   end
