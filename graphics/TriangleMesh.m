@@ -2,7 +2,7 @@ classdef TriangleMesh < handle
 % TriangleMesh: triangle mesh class
 %
 % Author: Paulo Pagliosa
-% Last revision: 23/10/2024
+% Last revision: 10/03/2026
 %
 % Description
 % ===========
@@ -22,11 +22,13 @@ end
 methods
   function this = TriangleMesh(id, vertices, faces, normals)
   % Constructs a triangle mesh
-    this.id = id;
-    this.vertices = vertices;
-    this.faces = faces;
-    if nargin == 4
-      this.setVertexNormals(normals);
+    if nargin > 0
+      this.id = id;
+      this.vertices = vertices;
+      this.faces = faces;
+      if nargin > 3
+        this.setVertexNormals(normals);
+      end
     end
   end
 

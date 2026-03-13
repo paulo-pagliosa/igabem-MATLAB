@@ -2,7 +2,7 @@ classdef (Abstract) Element < MeshComponent
 % Element: generic element class
 %
 % Author: Paulo Pagliosa
-% Last revision: 16/12/2024
+% Last revision: 07/03/2026
 %
 % Description
 % ===========
@@ -10,10 +10,11 @@ classdef (Abstract) Element < MeshComponent
 % properties and behavior of a generic element of a BEA model. The
 % properties of an element are the set of element nodes, the element
 % region for each element node, the element shape functions, and the
-% element face. The class define methods for getting the element node set,
-% and the id, position, displacement, and traction values of the element
-% nodes. Also, there are methods for computing the position, tangents,
-% and normal given the parametric coordinates of a point in the element.
+% element face. The class defines methods for getting the element node
+% set, and the id, position, displacement, and traction values of the
+% element nodes. Also, there are methods for computing the position,
+% tangents, and normal given the parametric coordinates of a point in
+% the element.
 %
 % See also: Mesh, Node, NodeSet, Face
 
