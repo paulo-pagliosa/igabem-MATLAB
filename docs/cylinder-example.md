@@ -95,7 +95,7 @@ mi.showColorBar;
 This step always runs, whether or not the mesh was freshly solved, so the window reproduces Figure 25(a) — the deformed cylinder, colored by traction magnitude — every time the script is called.
 
 <p align="center">
-  <img src="images/cylinder144-result.png" alt="Deformed cylinder colored by traction magnitude" width="60%"><br>
+  <img src="images/cylinder144-result.png" alt="Deformed cylinder colored by traction magnitude" width="55%"><br>
   Deformed cylinder colored by traction magnitude.
 </p>
 
