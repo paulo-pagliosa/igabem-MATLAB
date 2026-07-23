@@ -104,6 +104,6 @@ mi.showColorBar;
 The window now reproduces Figure 30(b): the deformed beam, viewed from a custom angle and colored by the `z` displacement component.
 
 <p align="center">
-  <img src="images/beam-result.png" alt="Deformed beam colored by z displacement" width="65%"><br>
+  <img src="images/beam-result.png" alt="Deformed beam colored by z displacement" width="60%"><br>
   Deformed beam colored by z displacement.
 </p>
