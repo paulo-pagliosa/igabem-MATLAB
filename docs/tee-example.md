@@ -28,7 +28,7 @@ else
 end
 ```
 
-As in other examples, this script caches its own results: if `tests/tee/tee.be.mat` already exists, it is loaded directly (`mesh` then already carries the boundary conditions and computed results from a previous run), and the boundary-condition/solver steps below are skipped entirely. Otherwise, the mesh is read from `tests/tee/tee.be` with the `'-f'` flag, since this particular model was generated without element face data (see the [`MeshInterface` manual](MeshInterface.md) for details on `readMesh`).
+As in other examples, this script caches its own results: if `tests/tee/tee.be.mat` already exists, it is loaded directly (`mesh` then already carries the boundary conditions and computed results from a previous run), and the boundary-condition/solver steps below are skipped entirely. Otherwise, the mesh is read from `tests/tee/tee.be` with the `'-f'` flag, since this particular model was generated without element face data (see the [MeshInterface manual](MeshInterface.md) for details on `readMesh`).
 
 ## 2. Opening the mesh interface and fixing normals
 
@@ -65,7 +65,7 @@ mi.deselectAllElements;
 
 - `mi.selectRegions(eid_top)` selects the top region of the tee (seeded by element `322`);
 - `mi.makeLoad('torque', [0 0 0], [0 0 1], 20)` applies a torque load to that region: about an axis passing through `[0 0 0]` with direction `[0 0 1]` and scale `20` (see `Load.m` — internally this builds the load field `F(P) = 20 * ([0 0 1] × r)`, where `r` is the component of `P` perpendicular to the axis, applied along all three components regardless of any `'direction'` argument);
-- `mi.makeLoad([0 20 0])` adds a *second*, independent load on the same region: a uniform load of `[0 20 0]` (recall `makeLoad` has no `dofs` argument — a load's evaluator always supplies the full 3D traction, or a scalar to be projected via `'direction'`, as covered in the [`MeshInterface` manual](MeshInterface.md), §5.9). Both loads accumulate on the top region;
+- `mi.makeLoad([0 20 0])` adds a *second*, independent load on the same region: a uniform load of `[0 20 0]` (recall `makeLoad` has no `dofs` argument — a load's evaluator always supplies the full 3D traction, or a scalar to be projected via `'direction'`, as covered in the [MeshInterface manual](MeshInterface.md), §5.9). Both loads accumulate on the top region;
 - `mi.selectRegions([eid_front eid_bottom])` selects the front and bottom regions, which are then fully clamped with `mi.makeConstraint('xyz', 0)` (zero displacement in x, y and z);
 - `mi.deselectAllElements` clears the selection afterwards.
 
@@ -93,7 +93,7 @@ mi.showPatchEdges(false);
 
 - `mi.deformMesh(50)` shows the mesh deformed by the computed displacements, exaggerated by a factor of 50;
 - `mi.setScalars('u', 'xyz')` maps the magnitude of the displacement vector (all three components) to a scalar field;
-- `mi.setColorTable(coolWarm)` / `mi.showColorMap` / `mi.showColorBar` turn on the `coolWarm`-colored map and its color bar (see the [`MeshInterface` manual](MeshInterface.md), §5.5);
+- `mi.setColorTable(coolWarm)` / `mi.showColorMap` / `mi.showColorBar` turn on the `coolWarm`-colored map and its color bar (see the [MeshInterface manual](MeshInterface.md), §5.5);
 - `mi.showPatchEdges(false)` hides the tessellation edges for a cleaner view.
 
 The window now reproduces Figure 33(a): the deformed tee, colored by displacement magnitude.

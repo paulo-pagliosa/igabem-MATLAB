@@ -63,7 +63,7 @@ mi.deselectAllElements;
 The plate has five holes, each identified by a seed element used with `selectRegions`:
 
 - `eid_hc` (center hole) is fully clamped: `mi.makeConstraint('xyz', 0)` sets zero displacement in x, y and z;
-- `eid_h1` receives an inward pressure load: `mi.makeLoad(-1000, 'direction', 'normal')` — a scalar evaluator of `-1000` projected onto the local surface normal (see the [`MeshInterface` manual](MeshInterface.md), §5.9, on the `'direction'` option; this is equivalent to the shorthand `mi.makeLoad('pressure', -1000)`);
+- `eid_h1` receives an inward pressure load: `mi.makeLoad(-1000, 'direction', 'normal')` — a scalar evaluator of `-1000` projected onto the local surface normal (see the [MeshInterface manual](MeshInterface.md), §5.9, on the `'direction'` option; this is equivalent to the shorthand `mi.makeLoad('pressure', -1000)`);
 - `eid_h3` receives the opposite, an outward pressure of `+1000` along the normal;
 - `eid_h2` and `eid_h4` receive the same uniform out-of-plane load `[0 0 100]` (recall `makeLoad`'s evaluator always supplies the full 3D traction directly, with no separate `dofs` argument);
 - `mi.deselectAllElements` clears the selection afterwards.
@@ -93,7 +93,7 @@ mi.setView(160, 30);
 
 - `mi.deformMesh(15)` shows the mesh deformed by the computed displacements, exaggerated by a factor of 15;
 - `mi.setScalars('u', 'xyz')` maps the magnitude of the displacement vector (all three components) to a scalar field;
-- `mi.setColorTable(coolWarm)` / `mi.showColorMap` / `mi.showColorBar` turn on the `coolWarm`-colored map and its color bar (see the [`MeshInterface` manual](MeshInterface.md), §5.5);
+- `mi.setColorTable(coolWarm)` / `mi.showColorMap` / `mi.showColorBar` turn on the `coolWarm`-colored map and its color bar (see the [MeshInterface manual](MeshInterface.md), §5.5);
 - `mi.showPatchEdges(false)` hides the tessellation edges for a cleaner view.
 
 The window now reproduces Figure 34(b): the deformed plate, colored by displacement magnitude.

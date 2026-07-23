@@ -99,7 +99,7 @@ mi.showColorBar;
 - `mi.deformMesh(100)` shows the mesh deformed by the computed displacements, exaggerated by a factor of 100;
 - `mi.setUndeformedMeshAlpha(0)` makes the undeformed-mesh overlay fully transparent — a subtler alternative to `showUndeformedMesh(false)`, since the overlay stays technically "shown" but invisible;
 - `mi.setScalars('u', 'z')` maps only the `z` component of the displacement (not its magnitude, unlike the previous examples) to the scalar field;
-- `mi.setColorTable(coolWarm)` / `mi.showColorMap` / `mi.showColorBar` turn on the `coolWarm`-colored map and its color bar (see the [`MeshInterface` manual](MeshInterface.md), §5.5).
+- `mi.setColorTable(coolWarm)` / `mi.showColorMap` / `mi.showColorBar` turn on the `coolWarm`-colored map and its color bar (see the [MeshInterface manual](MeshInterface.md), §5.5).
 
 The window now reproduces Figure 30(b): the deformed beam, viewed from a custom angle and colored by the `z` displacement component.
 

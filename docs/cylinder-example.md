@@ -42,7 +42,7 @@ else
 end
 ```
 
-As in other examples, this script caches its own results: if a `.mat` file matching the chosen resolution (e.g. `tests/cylinder/cylinder96.be.mat`) already exists, it is loaded directly (`mesh` then already carries the boundary condition and computed results from a previous run), and the boundary-condition/solver steps below are skipped entirely. Otherwise, the mesh is read from the corresponding `.be` file with `readMesh` (see the [`MeshInterface` manual](MeshInterface.md) for details on this function), given a name matching its source file, and `computeLoadPoints(mesh)` computes the load points required by the elastostatic solver.
+As in other examples, this script caches its own results: if a `.mat` file matching the chosen resolution (e.g. `tests/cylinder/cylinder96.be.mat`) already exists, it is loaded directly (`mesh` then already carries the boundary condition and computed results from a previous run), and the boundary-condition/solver steps below are skipped entirely. Otherwise, the mesh is read from the corresponding `.be` file with `readMesh` (see the [MeshInterface manual](MeshInterface.md) for details on this function), given a name matching its source file, and `computeLoadPoints(mesh)` computes the load points required by the elastostatic solver.
 
 ## 3. Opening the mesh interface and material
 
@@ -90,7 +90,7 @@ mi.showColorBar;
 - `mi.deformMesh(25)` displays the mesh deformed by the computed displacements, exaggerated by a factor of 25 for visualization;
 - `mi.setScalars('t', 'xyz')` maps the magnitude of the traction vector (all three components) to a scalar field;
 - `mi.setColorTable(coolWarm)` switches the color map palette to `coolWarm` (a custom colormap function used throughout the paper's figures, not part of `MeshInterface` itself);
-- `mi.showColorMap` / `mi.showColorBar` turn on the color-mapped rendering and its color bar (see the [`MeshInterface` manual](MeshInterface.md), §5.5).
+- `mi.showColorMap` / `mi.showColorBar` turn on the color-mapped rendering and its color bar (see the [MeshInterface manual](MeshInterface.md), §5.5).
 
 This step always runs, whether or not the mesh was freshly solved, so the window reproduces Figure 25(a) — the deformed cylinder, colored by traction magnitude — every time the script is called.
 
