@@ -1,5 +1,7 @@
 # MeshInterface — A Brief User Manual
 
+[← Back to README](../README.md)
+
 `MeshInterface` is the graphic tool used to visualize the geometry and analysis results of a BEA/IGA model. It extends `MeshRenderer` (basic mesh rendering) and adds:
 
 - a **toolbar** with navigation/selection tools;
