@@ -110,7 +110,7 @@ mi.groundFaceAlpha = 0.5;        % semi-transparent ground
 | `vectorColor` | orange `[255 128 0]/255` | Color of vectors (displacement/traction). Set with `setVectorColor`. |
 | `vectorScale` | `3` | Scale factor of vectors. Set with `setVectorScale`. |
 | `creaseEdgeWidth` | `2` | Width of crease edges (region boundaries). Set with `setCreaseEdgeWidth`. |
-| `bounds` | — | Array of `BoundingBox` objects (axis-aligned bounding boxes, see `BoundingBox.m`) describing the spatial extent of the tessellated mesh. Computed lazily on first access and cached; the cache is cleared (recomputed on next access) whenever the tessellated geometry changes (e.g. after `remesh`, `moveNode`, `moveElement`, or `deformMesh`). |
+| `bounds` | — | Array of `BoundingBox` objects (axis-aligned bounding boxes, see [`BoundingBox.m`](../graphics/BoundingBox.m)) describing the spatial extent of the tessellated mesh. Computed lazily on first access and cached; the cache is cleared (recomputed on next access) whenever the tessellated geometry changes (e.g. after `remesh`, `moveNode`, `moveElement`, or `deformMesh`). |
 
 **Remark:** a *region* is a set of elements delimited by *crease* edges, see [[1]](../README.md/#ref1).
 
@@ -233,7 +233,7 @@ mi.setFaceAlpha(0.6);
 
 ### 5.5 Colors and color maps (scalar results)
 
-`MeshInterface` uses a `ScalarExtractor` (see `ScalarExtractor.m`) to map a scalar field onto the tessellated mesh.
+`MeshInterface` uses a `ScalarExtractor` (see [`ScalarExtractor.m`](../vis/ScalarExtractor.m)) to map a scalar field onto the tessellated mesh.
 
 | Command | Description |
 |---|---|
@@ -330,7 +330,7 @@ A `Load`, in contrast, always affects all three traction components at once — 
 
 #### `evaluator` — common forms (both `makeConstraint` and `makeLoad`)
 
-Whenever `evaluator` is **not** a char array, both commands parse it the same way (`BC.parseArgs`/`BCFunction.parse`, see `BC.m`/`BCFunction.m`):
+Whenever `evaluator` is **not** a char array, both commands parse it the same way (`BC.parseArgs`/`BCFunction.parse`, see [`BC.m`](../bea/BC.m)/[`BCFunction.m`](../bea/BCFunction.m)):
 
 - a numeric constant (scalar, applied to every prescribed dof and every node), or a numeric vector with one value per dof (`makeConstraint`) / per component (`makeLoad`);
 - a function handle with signature `value = evaluator(u, v, P)`, where `u, v` are the local parametric coordinates (in `[-1, 1]`) of the evaluation point on the element and `P` is its position (3D) in global coordinates; it is evaluated once per element node.
@@ -348,11 +348,11 @@ For `makeConstraint`, `evaluator` may also be one of these strings, handled by t
 - `'constant'` followed by a scalar value `z`: builds a function that returns `z` regardless of `u`, `v`, `P` (equivalent to `BCFunction.constant(z)`);
 - `'bilinear'` followed by `z1, z2`: builds a bilinear function of the local coordinates, `f(u, v) = a(u) * b(v)`, where `a` linearly interpolates `z1` and `b` linearly interpolates `z2` over `[-1, 1]`. Each of `z1`, `z2` can be a scalar (constant along that direction) or a 2-element vector `[value_at_-1, value_at_+1]`.
 
-**These two shortcuts are not available for `makeLoad`.** `Load` overrides the argument parsing (`Load.parseArgs`, see `Load.m`) and intercepts *any* char `evaluator` itself, recognizing only `'pressure'` and `'torque'` (below); passing `'constant'`/`'bilinear'` to `makeLoad` does not fall back to the generic parsing and results in an error.
+**These two shortcuts are not available for `makeLoad`.** `Load` overrides the argument parsing (`Load.parseArgs`, see [`Load.m`](../bea/Load.m)) and intercepts *any* char `evaluator` itself, recognizing only `'pressure'` and `'torque'` (below); passing `'constant'`/`'bilinear'` to `makeLoad` does not fall back to the generic parsing and results in an error.
 
 #### `evaluator` — `makeLoad`-only string shortcuts
 
-For `makeLoad`, `evaluator` may instead be one of these strings (handled by `Load.parseArgs`, see `Load.m`):
+For `makeLoad`, `evaluator` may instead be one of these strings (handled by `Load.parseArgs`, see [`Load.m`](../bea/Load.m)):
 
 - `'pressure', p` — shorthand for a scalar pressure `p` applied along the local surface normal; equivalent to calling `makeLoad(p, 'direction', 'normal')`;
 - `'torque', O, D, S` — a torque load about the axis passing through point `O` (3D) with direction `D` (3D, normalized internally) and scale `S`. Internally builds the load field `F(P) = S * (D × r)`, where `r` is the component of `P - O` perpendicular to the axis (so that the torque about the axis equals `S * |r|`, in the direction given by `D`). Always applied along all three components, regardless of any `'direction'` argument (which is not accepted together with `'torque'`).
