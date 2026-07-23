@@ -2,7 +2,7 @@ function [mi, m] = testTee
 % Test tee
 %
 % Author: M. Peres
-% Last revision: 11/10/2024
+% Last revision: 22/07/2026
 %
 % Output
 % ======
@@ -61,4 +61,8 @@ function [mi, m] = testTee
   mi.showColorMap;
   mi.showColorBar;
   mi.showPatchEdges(false);
+  mi.setView(70, 30);
+  mi.axes.Units = 'pixels';
+  mi.axes.Parent.Position = [100 100 570 520];
+  mi.axes.Position = [60 50 375 425];
 end % testTee

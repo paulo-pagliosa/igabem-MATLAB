@@ -2,7 +2,7 @@ function [mi, m] = testPlate
 % Test plate
 %
 % Author: M. Peres
-% Last revision: 29/11/2024
+% Last revision: 22/07/2026
 %
 % Output
 % ======
@@ -63,4 +63,8 @@ function [mi, m] = testPlate
   mi.showColorMap;
   mi.showColorBar;
   mi.showPatchEdges(false);
+  mi.setView(160, 30);
+  mi.axes.Units = 'pixels';
+  mi.axes.Parent.Position = [100 100 810 480];
+  mi.axes.Position = [80 50 600 400];
 end % testPlate

@@ -1,0 +1,7 @@
+*.mat
+subd/
+temp/
+tests/ball/
+tests/cube/
+tests/subd/
+vol/

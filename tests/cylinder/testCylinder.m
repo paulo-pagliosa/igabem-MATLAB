@@ -2,7 +2,7 @@ function [mi, m] = testCylinder(idx)
 % Test cylinder
 %
 % Author: M. Peres
-% Last revision: 11/10/2024
+% Last revision: 22/07/2026
 %
 % Input
 % =====
@@ -35,27 +35,38 @@ end
 folder = "tests/cylinder/";
 fid = [58, 71, 134, 243];
 filename = strcat(folder, filenames(idx));
-% Read the mesh
-mesh = readMesh(char(filename));
-mesh.name = filenames(idx);
-% Compute the load points
-computeLoadPoints(mesh);
+a = strcat(filename, '.mat');
+solved = exist(a, 'file');
+if solved
+  % Load the mesh
+  a = load(a, 'mesh');
+  mesh = a.mesh;
+  clear a;
+else
+  % Read the mesh
+  mesh = readMesh(char(filename));
+  mesh.name = filenames(idx);
+  % Compute the load points
+  computeLoadPoints(mesh);
+end
 % Open a mesh interface
 mi = MeshInterface(mesh);
-% Apply the boundary conditions
-u = -0.01;
-mi.selectRegions(fid(idx));
-mi.makeConstraint('xyz', u, 'direction', 'normal');
-mi.deselectAllElements;
 % Create the material
 m = Material(1e5, 0);
-% Create and run the solver
-solver = ElastostaticSolver(mesh, m);
-solver.set('srMethod', 'TR');
-solver.set('minRatio', 1);
-solver.execute;
-% Save the mesh and results
-save(strcat(filename, '.mat'), 'mesh');
+if ~solved
+  % Apply the boundary conditions
+  u = -0.01;
+  mi.selectRegions(fid(idx));
+  mi.makeConstraint('xyz', u, 'direction', 'normal');
+  mi.deselectAllElements;
+  % Create and run the solver
+  solver = ElastostaticSolver(mesh, m);
+  solver.set('srMethod', 'TR');
+  solver.set('minRatio', 1);
+  solver.execute;
+  % Save the mesh and results
+  save(a, 'mesh');
+end
 % Figure 25(a) of the paper
 mi.deformMesh(25);
 mi.setScalars('t', 'xyz');
@@ -66,4 +77,7 @@ mi.showColorBar;
 % outer and inner surface and invoke the following method:
 mi.hidePatches;
 mi.showPatchEdges(false);
-
+mi.setView(140, 30);
+mi.axes.Units = 'pixels';
+mi.axes.Parent.Position = [100 100 460 420];
+mi.axes.Position = [90 40 240 340];
