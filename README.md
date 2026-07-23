@@ -40,10 +40,10 @@ A brief user manual of `MeshInterface`, the graphic tool used to visualize meshe
 
 The following worked examples, reproducing figures from [[1]](#ref1), are documented step by step:
 
-- [Pressurized hollow cylinder](docs/examples/cylinder-example.md) (`tests/cylinder/testCylinder.m`)
-- [Beam with multiple regions](docs/examples/beam-example.md) (`tests/beam/testBeam.m`)
-- [Tee-shaped model under torque and uniform load](docs/examples/tee-example.md) (`tests/tee/testTee.m`)
-- [Thick plate with holes](docs/examples/plate-example.md) (`tests/plate/testPlate.m`)
+- [Pressurized hollow cylinder](docs/cylinder-example.md) (`tests/cylinder/testCylinder.m`)
+- [Beam with multiple regions](docs/beam-example.md) (`tests/beam/testBeam.m`)
+- [Tee-shaped model under torque and uniform load](docs/tee-example.md) (`tests/tee/testTee.m`)
+- [Thick plate with holes](docs/plate-example.md) (`tests/plate/testPlate.m`)
 
 ## References
 
